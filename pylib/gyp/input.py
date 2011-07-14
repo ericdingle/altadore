@@ -1492,7 +1492,8 @@ def DoDependentSettings(key, flat_list, targets, dependency_nodes):
                  build_file, dependency_build_file)
 
 
-def AdjustStaticLibraryDependencies(flat_list, targets, dependency_nodes):
+def AdjustStaticLibraryDependencies(flat_list, targets, dependency_nodes,
+                                    sort_dependencies):
   # Recompute target "dependencies" properties.  For each static library
   # target, remove "dependencies" entries referring to other static libraries,
   # unless the dependency has the "hard_dependency" attribute set.  For each
@@ -1545,6 +1546,14 @@ def AdjustStaticLibraryDependencies(flat_list, targets, dependency_nodes):
           target_dict['dependencies'] = []
         if not dependency in target_dict['dependencies']:
           target_dict['dependencies'].append(dependency)
+      # Sort the dependencies list in the order from dependents to dependencies.
+      # e.g. If A and B depend on C and C depends on D, sort them in A, B, C, D.
+      # Note: flat_list is already sorted in the order from dependencies to
+      # dependents.
+      if sort_dependencies and 'dependencies' in target_dict:
+        target_dict['dependencies'] = [dep for dep in reversed(flat_list)
+                                       if dep in target_dict['dependencies']]
+
 
 # Initialize this here to speed up MakePathRelative.
 exception_re = re.compile(r'''["']?[-/$<>]''')
@@ -1938,23 +1947,26 @@ def ProcessListFiltersInDict(name, the_dict):
         [action, pattern] = regex_item
         pattern_re = re.compile(pattern)
 
+        if action == 'exclude':
+          # This item matches an exclude regex, so set its value to 0 (exclude).
+          action_value = 0
+        elif action == 'include':
+          # This item matches an include regex, so set its value to 1 (include).
+          action_value = 1
+        else:
+          # This is an action that doesn't make any sense.
+          raise ValueError, 'Unrecognized action ' + action + ' in ' + name + \
+                            ' key ' + key
+
         for index in xrange(0, len(the_list)):
           list_item = the_list[index]
+          if list_actions[index] == action_value:
+            # Even if the regex matches, nothing will change so continue (regex
+            # searches are expensive).
+            continue
           if pattern_re.search(list_item):
             # Regular expression match.
-
-            if action == 'exclude':
-              # This item matches an exclude regex, so set its value to 0
-              # (exclude).
-              list_actions[index] = 0
-            elif action == 'include':
-              # This item matches an include regex, so set its value to 1
-              # (include).
-              list_actions[index] = 1
-            else:
-              # This is an action that doesn't make any sense.
-              raise ValueError, 'Unrecognized action ' + action + ' in ' + \
-                                name + ' key ' + key
+            list_actions[index] = action_value
 
       # The "whatever/" list is no longer needed, dump it.
       del the_dict[regex_key]
@@ -2262,7 +2274,8 @@ def Load(build_files, variables, includes, depth, generator_input_info, check,
   # that they need so that their link steps will be correct.
   gii = generator_input_info
   if gii['generator_wants_static_library_dependencies_adjusted']:
-    AdjustStaticLibraryDependencies(flat_list, targets, dependency_nodes)
+    AdjustStaticLibraryDependencies(flat_list, targets, dependency_nodes,
+                                    gii['generator_wants_sorted_dependencies'])
 
   # Apply "post"/"late"/"target" variable expansions and condition evaluations.
   for target in flat_list:

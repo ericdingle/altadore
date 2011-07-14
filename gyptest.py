@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2009 Google Inc. All rights reserved.
+# Copyright (c) 2011 Google Inc. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -205,14 +205,15 @@ def main(argv=None):
     format_list = opts.format.split(',')
   else:
     # TODO:  not duplicate this mapping from pylib/gyp/__init__.py
-    format_list = [ {
-      'freebsd7': 'make',
-      'freebsd8': 'make',
-      'cygwin':   'msvs',
-      'win32':    'msvs',
-      'linux2':   'make',
-      'darwin':   'xcode',
-    }[sys.platform] ]
+    format_list = {
+      'freebsd7': ['make'],
+      'freebsd8': ['make'],
+      'cygwin':   ['msvs'],
+      'win32':    ['msvs'],
+      'linux2':   ['make'],
+      'linux3':   ['make'],
+      'darwin':   ['make', 'xcode'],
+    }[sys.platform]
 
   for format in format_list:
     os.environ['TESTGYP_FORMAT'] = format

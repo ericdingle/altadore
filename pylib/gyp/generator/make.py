@@ -28,6 +28,7 @@ import gyp.common
 import gyp.system_test
 import os.path
 import os
+import sys
 
 # Debugging-related imports -- remove me once we're solid.
 import code
@@ -36,11 +37,9 @@ import pprint
 generator_default_variables = {
   'EXECUTABLE_PREFIX': '',
   'EXECUTABLE_SUFFIX': '',
-  'OS': 'linux',
   'STATIC_LIB_PREFIX': 'lib',
   'SHARED_LIB_PREFIX': 'lib',
   'STATIC_LIB_SUFFIX': '.a',
-  'SHARED_LIB_SUFFIX': '.so',
   'INTERMEDIATE_DIR': '$(obj).$(TOOLSET)/geni',
   'SHARED_INTERMEDIATE_DIR': '$(obj)/gen',
   'PRODUCT_DIR': '$(builddir)',
@@ -58,10 +57,105 @@ generator_default_variables = {
 # Make supports multiple toolsets
 generator_supports_multiple_toolsets = True
 
+# Request sorted dependencies in the order from dependents to dependencies.
+generator_wants_sorted_dependencies = False
+
+
+def GetFlavor(params):
+  """Returns |params.flavor| if it's set, the system's default flavor else."""
+  return params.get('flavor', 'mac' if sys.platform == 'darwin' else 'linux')
+
+
+def CalculateVariables(default_variables, params):
+  """Calculate additional variables for use in the build (called by gyp)."""
+  cc_target = os.environ.get('CC.target', os.environ.get('CC', 'cc'))
+  default_variables['LINKER_SUPPORTS_ICF'] = \
+      gyp.system_test.TestLinkerSupportsICF(cc_command=cc_target)
+
+  if GetFlavor(params) == 'mac':
+    default_variables.setdefault('OS', 'mac')
+    default_variables.setdefault('SHARED_LIB_SUFFIX', '.dylib')
+
+    # Copy additional generator configuration data from Xcode, which is shared
+    # by the Mac Make generator.
+    import gyp.generator.xcode as xcode_generator
+    global generator_additional_non_configuration_keys
+    generator_additional_non_configuration_keys = getattr(xcode_generator,
+        'generator_additional_non_configuration_keys', [])
+    global generator_additional_path_sections
+    generator_additional_path_sections = getattr(xcode_generator,
+        'generator_additional_path_sections', [])
+    global generator_extra_sources_for_rules
+    generator_extra_sources_for_rules = getattr(xcode_generator,
+        'generator_extra_sources_for_rules', [])
+    global COMPILABLE_EXTENSIONS
+    COMPILABLE_EXTENSIONS.update({'.m': 'objc', '.mm' : 'objcxx'})
+  else:
+    default_variables.setdefault('OS', 'linux')
+    default_variables.setdefault('SHARED_LIB_SUFFIX', '.so')
+
+
+def CalculateGeneratorInputInfo(params):
+  """Calculate the generator specific info that gets fed to input (called by
+  gyp)."""
+  generator_flags = params.get('generator_flags', {})
+  android_ndk_version = generator_flags.get('android_ndk_version', None)
+  # Android NDK requires a strict link order.
+  if android_ndk_version:
+    global generator_wants_sorted_dependencies
+    generator_wants_sorted_dependencies = True
+
+
 def ensure_directory_exists(path):
   dir = os.path.dirname(path)
   if dir and not os.path.exists(dir):
     os.makedirs(dir)
+
+
+LINK_COMMANDS_LINUX = """\
+# Due to circular dependencies between libraries :(, we wrap the
+# special "figure out circular dependencies" flags around the entire
+# input list during linking.
+quiet_cmd_link = LINK($(TOOLSET)) $@
+cmd_link = $(LINK.$(TOOLSET)) $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -o $@ -Wl,--start-group $(filter-out FORCE_DO_CMD, $^) -Wl,--end-group $(LIBS)
+
+# We support two kinds of shared objects (.so):
+# 1) shared_library, which is just bundling together many dependent libraries
+# into a link line.
+# 2) loadable_module, which is generating a module intended for dlopen().
+#
+# They differ only slightly:
+# In the former case, we want to package all dependent code into the .so.
+# In the latter case, we want to package just the API exposed by the
+# outermost module.
+# This means shared_library uses --whole-archive, while loadable_module doesn't.
+# (Note that --whole-archive is incompatible with the --start-group used in
+# normal linking.)
+
+# Other shared-object link notes:
+# - Set SONAME to the library filename so our binaries don't reference
+# the local, absolute paths used on the link command-line.
+quiet_cmd_solink = SOLINK($(TOOLSET)) $@
+cmd_solink = $(LINK.$(TOOLSET)) -shared $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -Wl,-soname=$(@F) -o $@ -Wl,--whole-archive $(filter-out FORCE_DO_CMD, $^) -Wl,--no-whole-archive $(LIBS)
+
+quiet_cmd_solink_module = SOLINK_MODULE($(TOOLSET)) $@
+cmd_solink_module = $(LINK.$(TOOLSET)) -shared $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -Wl,-soname=$(@F) -o $@ -Wl,--start-group $(filter-out FORCE_DO_CMD, $^) -Wl,--end-group $(LIBS)
+"""
+
+LINK_COMMANDS_MAC = """\
+quiet_cmd_link = LINK($(TOOLSET)) $@
+cmd_link = $(LINK.$(TOOLSET)) $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -o $@ $(filter-out FORCE_DO_CMD, $^) $(LIBS)
+
+# TODO(thakis): Find out and document the difference between shared_library and
+# loadable_module on mac.
+quiet_cmd_solink = SOLINK($(TOOLSET)) $@
+cmd_solink = $(LINK.$(TOOLSET)) -shared $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -o $@ $(filter-out FORCE_DO_CMD, $^) $(LIBS)
+
+# TODO(thakis): The solink_module rule is likely wrong. Xcode seems to pass
+# -bundle -single_module here (for osmesa.so).
+quiet_cmd_solink_module = SOLINK_MODULE($(TOOLSET)) $@
+cmd_solink_module = $(LINK.$(TOOLSET)) -shared $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -o $@ $(filter-out FORCE_DO_CMD, $^) $(LIBS)
+"""
 
 # Header of toplevel Makefile.
 # This should go into the build tree, but it's easier to keep it here for now.
@@ -114,7 +208,7 @@ all_deps :=
 #   export LINK="$(CXX)"
 #
 # This will allow make to invoke N linker processes as specified in -jN.
-LINK ?= flock $(builddir)/linker.lock $(CXX) %(LINK_flags)s
+LINK ?= %(flock)s $(builddir)/linker.lock $(CXX) %(LINK_flags)s
 
 CC.target ?= $(CC)
 CFLAGS.target ?= $(CFLAGS)
@@ -190,7 +284,7 @@ cmd_cc = $(CC.$(TOOLSET)) $(GYP_CFLAGS) $(DEPFLAGS) $(CFLAGS.$(TOOLSET)) -c -o $
 
 quiet_cmd_cxx = CXX($(TOOLSET)) $@
 cmd_cxx = $(CXX.$(TOOLSET)) $(GYP_CXXFLAGS) $(DEPFLAGS) $(CXXFLAGS.$(TOOLSET)) -c -o $@ $<
-
+%(objc_commands)s
 quiet_cmd_alink = AR($(TOOLSET)) $@
 cmd_alink = rm -f $@ && $(AR.$(TOOLSET)) $(ARFLAGS.$(TOOLSET)) $@ $(filter %%.o,$^)
 
@@ -201,33 +295,7 @@ quiet_cmd_copy = COPY $@
 # send stderr to /dev/null to ignore messages when linking directories.
 cmd_copy = ln -f $< $@ 2>/dev/null || cp -af $< $@
 
-# Due to circular dependencies between libraries :(, we wrap the
-# special "figure out circular dependencies" flags around the entire
-# input list during linking.
-quiet_cmd_link = LINK($(TOOLSET)) $@
-cmd_link = $(LINK.$(TOOLSET)) $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -o $@ -Wl,--start-group $(filter-out FORCE_DO_CMD, $^) -Wl,--end-group $(LIBS)
-
-# We support two kinds of shared objects (.so):
-# 1) shared_library, which is just bundling together many dependent libraries
-# into a link line.
-# 2) loadable_module, which is generating a module intended for dlopen().
-#
-# They differ only slightly:
-# In the former case, we want to package all dependent code into the .so.
-# In the latter case, we want to package just the API exposed by the
-# outermost module.
-# This means shared_library uses --whole-archive, while loadable_module doesn't.
-# (Note that --whole-archive is incompatible with the --start-group used in
-# normal linking.)
-
-# Other shared-object link notes:
-# - Set SONAME to the library filename so our binaries don't reference
-# the local, absolute paths used on the link command-line.
-quiet_cmd_solink = SOLINK($(TOOLSET)) $@
-cmd_solink = $(LINK.$(TOOLSET)) -shared $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -Wl,-soname=$(@F) -o $@ -Wl,--whole-archive $(filter-out FORCE_DO_CMD, $^) -Wl,--no-whole-archive $(LIBS)
-
-quiet_cmd_solink_module = SOLINK_MODULE($(TOOLSET)) $@
-cmd_solink_module = $(LINK.$(TOOLSET)) -shared $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -Wl,-soname=$(@F) -o $@ -Wl,--start-group $(filter-out FORCE_DO_CMD, $^) -Wl,--end-group $(LIBS)
+%(link_commands)s
 """
 
 r"""
@@ -274,7 +342,7 @@ define do_cmd
 $(if $(or $(command_changed),$(prereq_changed)),
   @$(call exact_echo,  $($(quiet)cmd_$(1)))
   @mkdir -p $(dir $@) $(dir $(depfile))
-  $(if $(findstring flock,$(word 1,$(cmd_$1))),
+  $(if $(findstring flock,$(word %(flock_index)d,$(cmd_$1))),
     @$(cmd_$(1))
     @echo "  $(quiet_cmd_$(1)): Finished",
     @$(cmd_$(1))
@@ -296,48 +364,34 @@ FORCE_DO_CMD:
 
 """)
 
-ROOT_HEADER_SUFFIX_RULES = ("""\
-# Suffix rules, putting all outputs into $(obj).
-$(obj).$(TOOLSET)/%.o: $(srcdir)/%.c FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(srcdir)/%.s FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(srcdir)/%.S FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(srcdir)/%.cpp FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
-$(obj).$(TOOLSET)/%.o: $(srcdir)/%.cc FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
-$(obj).$(TOOLSET)/%.o: $(srcdir)/%.cxx FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
+SHARED_HEADER_OBJC_COMMANDS = """
+quiet_cmd_objc = CXX($(TOOLSET)) $@
+cmd_objc = $(CC.$(TOOLSET)) $(GYP_OBJCFLAGS) $(DEPFLAGS) -c -o $@ $<
 
-# Try building from generated source, too.
-$(obj).$(TOOLSET)/%.o: $(obj).$(TOOLSET)/%.c FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(obj).$(TOOLSET)/%.s FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(obj).$(TOOLSET)/%.S FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(obj).$(TOOLSET)/%.cc FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
-$(obj).$(TOOLSET)/%.o: $(obj).$(TOOLSET)/%.cpp FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
-$(obj).$(TOOLSET)/%.o: $(obj).$(TOOLSET)/%.cxx FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
+quiet_cmd_objcxx = CXX($(TOOLSET)) $@
+cmd_objcxx = $(CXX.$(TOOLSET)) $(GYP_OBJCXXFLAGS) $(DEPFLAGS) -c -o $@ $<
+"""
 
-$(obj).$(TOOLSET)/%.o: $(obj)/%.c FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(obj)/%.s FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(obj)/%.S FORCE_DO_CMD
-	@$(call do_cmd,cc,1)
-$(obj).$(TOOLSET)/%.o: $(obj)/%.cc FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
-$(obj).$(TOOLSET)/%.o: $(obj)/%.cpp FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
-$(obj).$(TOOLSET)/%.o: $(obj)/%.cxx FORCE_DO_CMD
-	@$(call do_cmd,cxx,1)
-""")
+
+def WriteRootHeaderSuffixRules(writer):
+  extensions = sorted(COMPILABLE_EXTENSIONS.keys(), key=str.lower)
+
+  writer.write('# Suffix rules, putting all outputs into $(obj).\n')
+  for ext in extensions:
+    writer.write('$(obj).$(TOOLSET)/%%.o: $(srcdir)/%%%s FORCE_DO_CMD\n' % ext)
+    writer.write('\t@$(call do_cmd,%s,1)\n' % COMPILABLE_EXTENSIONS[ext])
+
+  writer.write('\n# Try building from generated source, too.\n')
+  for ext in extensions:
+    writer.write(
+        '$(obj).$(TOOLSET)/%%.o: $(obj).$(TOOLSET)/%%%s FORCE_DO_CMD\n' % ext)
+    writer.write('\t@$(call do_cmd,%s,1)\n' % COMPILABLE_EXTENSIONS[ext])
+  writer.write('\n')
+  for ext in extensions:
+    writer.write('$(obj).$(TOOLSET)/%%.o: $(obj)/%%%s FORCE_DO_CMD\n' % ext)
+    writer.write('\t@$(call do_cmd,%s,1)\n' % COMPILABLE_EXTENSIONS[ext])
+  writer.write('\n')
+
 
 SHARED_HEADER_SUFFIX_RULES_COMMENT1 = ("""\
 # Suffix rules, putting all outputs into $(obj).
@@ -368,6 +422,14 @@ $(obj).$(TOOLSET)/$(TARGET)/%.o: $(srcdir)/%.cc FORCE_DO_CMD
 $(obj).$(TOOLSET)/$(TARGET)/%.o: $(srcdir)/%.cxx FORCE_DO_CMD
 	@$(call do_cmd,cxx,1)
 """),
+    '.m': ("""\
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(srcdir)/%.m FORCE_DO_CMD
+	@$(call do_cmd,objc,1)
+"""),
+    '.mm': ("""\
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(srcdir)/%.mm FORCE_DO_CMD
+	@$(call do_cmd,objcxx,1)
+"""),
 }
 
 SHARED_HEADER_SUFFIX_RULES_COMMENT2 = ("""\
@@ -387,6 +449,14 @@ $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj).$(TOOLSET)/%.cc FORCE_DO_CMD
 $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj).$(TOOLSET)/%.cpp FORCE_DO_CMD
 	@$(call do_cmd,cxx,1)
 """),
+    '.m': ("""\
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj).$(TOOLSET)/%.m FORCE_DO_CMD
+	@$(call do_cmd,objc,1)
+"""),
+    '.mm': ("""\
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj).$(TOOLSET)/%.mm FORCE_DO_CMD
+	@$(call do_cmd,objcxx,1)
+"""),
 }
 
 SHARED_HEADER_SUFFIX_RULES_OBJDIR2 = {
@@ -402,15 +472,15 @@ $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.cc FORCE_DO_CMD
 $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.cpp FORCE_DO_CMD
 	@$(call do_cmd,cxx,1)
 """),
+    '.m': ("""\
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.m FORCE_DO_CMD
+	@$(call do_cmd,objc,1)
+"""),
+    '.mm': ("""\
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.mm FORCE_DO_CMD
+	@$(call do_cmd,objcxx,1)
+"""),
 }
-
-SHARED_HEADER_SUFFIX_RULES = (
-    SHARED_HEADER_SUFFIX_RULES_COMMENT1 +
-    ''.join(SHARED_HEADER_SUFFIX_RULES_SRCDIR.values()) +
-    SHARED_HEADER_SUFFIX_RULES_COMMENT2 +
-    ''.join(SHARED_HEADER_SUFFIX_RULES_OBJDIR1.values()) +
-    ''.join(SHARED_HEADER_SUFFIX_RULES_OBJDIR2.values())
-)
 
 SHARED_FOOTER = """\
 # "all" is a concatenation of the "all" targets from all the included
@@ -444,11 +514,19 @@ header = """\
 
 """
 
+# Maps every compilable file extension to the do_cmd that compiles it.
+COMPILABLE_EXTENSIONS = {
+  '.c': 'cc',
+  '.cc': 'cxx',
+  '.cpp': 'cxx',
+  '.cxx': 'cxx',
+  '.s': 'cc',
+  '.S': 'cc',
+}
 
 def Compilable(filename):
   """Return true if the file is compilable (should be in OBJS)."""
-  for res in (filename.endswith(e) for e
-             in ['.c', '.cc', '.cpp', '.cxx', '.s', '.S']):
+  for res in (filename.endswith(e) for e in COMPILABLE_EXTENSIONS):
     if res:
       return True
   return False
@@ -518,14 +596,191 @@ target_outputs = {}
 target_link_deps = {}
 
 
+class XcodeSettings(object):
+  """A class that understands the gyp 'xcode_settings' object."""
+
+  def __init__(self, config):
+    self.config = config
+
+    # 'xcode_settings' is pushed down into configs.
+    self.xcode_settings = self.config.get('xcode_settings', {})
+
+  def _Test(self, test_key, cond_key, default):
+    return self.xcode_settings.get(test_key, default) == cond_key
+
+  def _Appendf(self, lst, test_key, format_str):
+    if test_key in self.xcode_settings:
+      lst.append(format_str % str(self.xcode_settings[test_key]))
+
+  def _WarnUnimplemented(self, test_key):
+    if test_key in self.xcode_settings:
+      print 'Warning: Ignoring not yet implemented key "%s".' % test_key
+
+  def GetCflags(self):
+    """Returns flags that need to be added to .c, .cc, .m, and .mm
+    compilations."""
+    # This functions (and the similar ones below) do not offer complete
+    # emulation of all xcode_settings keys. They're implemented on demand.
+
+    cflags = []
+
+    sdk_root = 'Mac10.5'
+    if 'SDKROOT' in self.xcode_settings:
+      sdk_root = self.xcode_settings['SDKROOT']
+      cflags.append('-isysroot /Developer/SDKs/%s.sdk' % sdk_root)
+    sdk_root_dir = '/Developer/SDKs/%s.sdk' % sdk_root
+
+    if self._Test('GCC_CW_ASM_SYNTAX', 'YES', default='YES'):
+      cflags.append('-fasm-blocks')
+
+    if 'GCC_DYNAMIC_NO_PIC' in self.xcode_settings:
+      if self.xcode_settings['GCC_DYNAMIC_NO_PIC'] == 'YES':
+        cflags.append('-mdynamic-no-pic')
+    else:
+      pass
+      # TODO: In this case, it depends on the target. xcode passes
+      # mdynamic-no-pic by default for executable and possibly static lib
+      # according to mento
+
+    if self._Test('GCC_ENABLE_PASCAL_STRINGS', 'YES', default='YES'):
+      cflags.append('-mpascal-strings')
+
+    self._Appendf(cflags, 'GCC_OPTIMIZATION_LEVEL', '-O%s')
+
+    dbg_format = self.xcode_settings.get('DEBUG_INFORMATION_FORMAT', 'dwarf')
+    if dbg_format == 'none':
+      pass
+    elif dbg_format == 'dwarf':
+      cflags.append('-gdwarf-2')
+    elif dbg_format == 'stabs':
+      raise NotImplementedError('stabs debug format is not supported yet.')
+    elif dbg_format == 'dwarf-with-dsym':
+      # TODO(thakis): this is needed for mac_breakpad chromium builds, but not
+      # for regular chromium builds.
+      # -gdwarf-2 as well, but needs to invoke dsymutil after linking too:
+      #   dsymutil build/Default/TestAppGyp.app/Contents/MacOS/TestAppGyp \
+      #       -o build/Default/TestAppGyp.app.dSYM
+      raise NotImplementedError('dsym debug format is not supported yet.')
+    else:
+      raise NotImplementedError('Unknown debug format %s' % dbg_format)
+
+    if self._Test('GCC_SYMBOLS_PRIVATE_EXTERN', 'NO', default='YES'):
+      cflags.append('-fvisibility=hidden')
+
+    if self._Test('GCC_TREAT_WARNINGS_AS_ERRORS', 'YES', default='NO'):
+      cflags.append('-Werror')
+
+    if self._Test('GCC_WARN_ABOUT_MISSING_NEWLINE', 'YES', default='NO'):
+      cflags.append('-Wnewline-eof')
+
+    self._Appendf(cflags, 'MACOSX_DEPLOYMENT_TARGET', '-mmacosx-version-min=%s')
+
+    # TODO:
+    self._WarnUnimplemented('ARCHS')
+    self._WarnUnimplemented('COPY_PHASE_STRIP')
+    self._WarnUnimplemented('DEPLOYMENT_POSTPROCESSING')
+    self._WarnUnimplemented('DYLIB_COMPATIBILITY_VERSION')
+    self._WarnUnimplemented('DYLIB_CURRENT_VERSION')
+    self._WarnUnimplemented('DYLIB_INSTALL_NAME_BASE')
+    self._WarnUnimplemented('DYLIB_INSTALL_NAME_BASE')
+    self._WarnUnimplemented('INFOPLIST_PREPROCESS')
+    self._WarnUnimplemented('INFOPLIST_PREPROCESSOR_DEFINITIONS')
+    self._WarnUnimplemented('LD_DYLIB_INSTALL_NAME')
+    self._WarnUnimplemented('STRIPFLAGS')
+    self._WarnUnimplemented('STRIP_INSTALLED_PRODUCT')
+
+    # TODO: Do not hardcode arch. Supporting fat binaries will be annoying.
+    cflags.append('-arch i386')
+
+    cflags += self.xcode_settings.get('OTHER_CFLAGS', [])
+    cflags += self.xcode_settings.get('WARNING_CFLAGS', [])
+
+    framework_dirs = self.config.get('mac_framework_dirs', [])
+    for directory in framework_dirs:
+      cflags.append('-F ' + os.path.join(sdk_root_dir, directory))
+
+    return cflags
+
+  def GetCflagsC(self):
+    """Returns flags that need to be added to .c, and .m compilations."""
+    cflags_c = []
+    self._Appendf(cflags_c, 'GCC_C_LANGUAGE_STANDARD', '-std=%s')
+    return cflags_c
+
+  def GetCflagsCC(self):
+    """Returns flags that need to be added to .cc, and .mm compilations."""
+    cflags_cc = []
+    if self._Test('GCC_ENABLE_CPP_RTTI', 'NO', default='YES'):
+      cflags_cc.append('-fno-rtti')
+    if self._Test('GCC_ENABLE_CPP_EXCEPTIONS', 'NO', default='YES'):
+      cflags_cc.append('-fno-exceptions')
+    if self._Test('GCC_INLINES_ARE_PRIVATE_EXTERN', 'NO', default='YES'):
+      cflags_cc.append('-fvisibility-inlines-hidden')
+    if self._Test('GCC_THREADSAFE_STATICS', 'NO', default='YES'):
+      cflags_cc.append('-fno-threadsafe-statics')
+    return cflags_cc
+
+  def GetCflagsObjC(self):
+    """Returns flags that need to be added to .m compilations."""
+    return []
+
+  def GetCflagsObjCC(self):
+    """Returns flags that need to be added to .mm compilations."""
+    cflags_objcc = []
+    if self._Test('GCC_OBJC_CALL_CXX_CDTORS', 'YES', default='NO'):
+      cflags_objcc.append('-fobjc-call-cxx-cdtors')
+    return cflags_objcc
+
+  def GetLdflags(self, target):
+    """Returns flags that need to be passed to the linker."""
+    ldflags = []
+
+    # The xcode build is relative to a gyp file's directory, and OTHER_LDFLAGS
+    # contains two entries that depend on this. Explicitly absolutify for these
+    # two cases.
+    def AbsolutifyPrefix(flag, prefix):
+      if flag.startswith(prefix):
+        flag = prefix + target.Absolutify(flag[len(prefix):])
+      return flag
+    for ldflag in self.xcode_settings.get('OTHER_LDFLAGS', []):
+      # Required for ffmpeg (no idea why they don't use LIBRARY_SEARCH_PATHS,
+      # TODO(thakis): Update ffmpeg.gyp):
+      ldflag = AbsolutifyPrefix(ldflag, '-L')
+      # Required for the nacl plugin:
+      ldflag = AbsolutifyPrefix(ldflag, '-Wl,-exported_symbols_list ')
+      ldflags.append(ldflag)
+
+    if self._Test('PREBINDING', 'YES', default='NO'):
+      ldflags.append('-Wl,-prebind')
+
+    for library_path in self.xcode_settings.get('LIBRARY_SEARCH_PATHS', []):
+      ldflags.append('-L' + library_path)
+
+    if 'ORDER_FILE' in self.xcode_settings:
+      ldflags.append(
+          '-Wl,-order_file ' +
+          '-Wl,' + target.Absolutify(self.xcode_settings['ORDER_FILE']))
+
+    # TODO: Do not hardcode arch. Supporting fat binaries will be annoying.
+    ldflags.append('-arch i386')
+
+    # Xcode adds the product directory by default. It writes static libraries
+    # into the product directory. So add both.
+    ldflags.append('-L' + generator_default_variables['LIB_DIR'])
+    ldflags.append('-L' + generator_default_variables['PRODUCT_DIR'])
+
+    return ldflags
+
+
 class MakefileWriter:
   """MakefileWriter packages up the writing of one target-specific foobar.mk.
 
   Its only real entry point is Write(), and is mostly used for namespacing.
   """
 
-  def __init__(self, generator_flags):
+  def __init__(self, generator_flags, flavor):
     self.generator_flags = generator_flags
+    self.flavor = flavor
     # Keep track of the total number of outputs for this makefile.
     self._num_outputs = 0
 
@@ -866,12 +1121,31 @@ class MakefileWriter:
       config = configs[configname]
       self.WriteList(config.get('defines'), 'DEFS_%s' % configname, prefix='-D',
           quoter=EscapeCppDefine)
-      self.WriteLn("# Flags passed to both C and C++ files.");
-      self.WriteList(config.get('cflags'), 'CFLAGS_%s' % configname)
-      self.WriteLn("# Flags passed to only C (and not C++) files.");
-      self.WriteList(config.get('cflags_c'), 'CFLAGS_C_%s' % configname)
-      self.WriteLn("# Flags passed to only C++ (and not C) files.");
-      self.WriteList(config.get('cflags_cc'), 'CFLAGS_CC_%s' % configname)
+
+
+      if self.flavor == 'mac':
+        settings = XcodeSettings(config)
+        cflags = settings.GetCflags()
+        cflags_c = settings.GetCflagsC()
+        cflags_cc = settings.GetCflagsCC()
+        cflags_objc = settings.GetCflagsObjC()
+        cflags_objcc = settings.GetCflagsObjCC()
+      else:
+        cflags = config.get('cflags')
+        cflags_c = config.get('cflags_c')
+        cflags_cc = config.get('cflags_cc')
+
+      self.WriteLn("# Flags passed to all source files.");
+      self.WriteList(cflags, 'CFLAGS_%s' % configname)
+      self.WriteLn("# Flags passed to only C files.");
+      self.WriteList(cflags_c, 'CFLAGS_C_%s' % configname)
+      self.WriteLn("# Flags passed to only C++ files.");
+      self.WriteList(cflags_cc, 'CFLAGS_CC_%s' % configname)
+      if self.flavor == 'mac':
+        self.WriteLn("# Flags passed to only ObjC files.");
+        self.WriteList(cflags_objc, 'CFLAGS_OBJC_%s' % configname)
+        self.WriteLn("# Flags passed to only ObjC++ files.");
+        self.WriteList(cflags_objcc, 'CFLAGS_OBJCC_%s' % configname)
       includes = config.get('include_dirs')
       if includes:
         includes = map(Sourceify, map(self.Absolutify, includes))
@@ -919,6 +1193,19 @@ class MakefileWriter:
                    "$(INCS_$(BUILDTYPE)) "
                    "$(CFLAGS_$(BUILDTYPE)) "
                    "$(CFLAGS_CC_$(BUILDTYPE))")
+      if self.flavor == 'mac':
+        self.WriteLn("$(OBJS): GYP_OBJCFLAGS := "
+                     "$(DEFS_$(BUILDTYPE)) "
+                     "$(INCS_$(BUILDTYPE)) "
+                     "$(CFLAGS_$(BUILDTYPE)) "
+                     "$(CFLAGS_C_$(BUILDTYPE)) "
+                     "$(CFLAGS_OBJC_$(BUILDTYPE))")
+        self.WriteLn("$(OBJS): GYP_OBJCXXFLAGS := "
+                     "$(DEFS_$(BUILDTYPE)) "
+                     "$(INCS_$(BUILDTYPE)) "
+                     "$(CFLAGS_$(BUILDTYPE)) "
+                     "$(CFLAGS_CC_$(BUILDTYPE)) "
+                     "$(CFLAGS_OBJCC_$(BUILDTYPE))")
 
     # If there are any object files in our input file list, link them into our
     # output.
@@ -948,6 +1235,13 @@ class MakefileWriter:
         target = target[3:]
       target_prefix = 'lib'
       target_ext = '.so'
+      if self.flavor == 'mac':
+        if self.type == 'shared_library':
+          target_ext = '.dylib'
+        else:
+          # Non-bundled loadable_modules are called foo.so for some reason
+          # (that is, .so and no prefix) with the xcode build -- match that.
+          target_prefix = ''
     elif self.type == 'none':
       target = '%s.stamp' % target
     elif self.type == 'settings':
@@ -956,7 +1250,7 @@ class MakefileWriter:
       path = os.path.join('$(builddir)')
     else:
       print ("ERROR: What output file should be generated?",
-             "typ", self.type, "target", target)
+             "type", self.type, "target", target)
 
     path = spec.get('product_dir', path)
     target_prefix = spec.get('product_prefix', target_prefix)
@@ -1015,7 +1309,12 @@ class MakefileWriter:
     if self.type not in ('settings', 'none'):
       for configname in sorted(configs.keys()):
         config = configs[configname]
-        self.WriteList(config.get('ldflags'), 'LDFLAGS_%s' % configname)
+        if self.flavor == 'mac':
+          settings = XcodeSettings(config)
+          ldflags = settings.GetLdflags(self)
+        else:
+          ldflags = config.get('ldflags')
+        self.WriteList(ldflags, 'LDFLAGS_%s' % configname)
       libraries = spec.get('libraries')
       if libraries:
         # Remove duplicate entries
@@ -1318,7 +1617,7 @@ def WriteAutoRegenerationRule(params, root_makefile, makefile_name,
                      build_files_args)})
 
 
-def RunSystemTests():
+def RunSystemTests(flavor):
   """Run tests against the system to compute default settings for commands.
 
   Returns:
@@ -1332,8 +1631,10 @@ def RunSystemTests():
   ar_target = os.environ.get('AR.target', os.environ.get('AR', 'ar'))
   cc_target = os.environ.get('CC.target', os.environ.get('CC', 'cc'))
   arflags_target = 'crs'
-  if gyp.system_test.TestArSupportsT(ar_command=ar_target,
-                                     cc_command=cc_target):
+  # ar -T enables thin archives on Linux. OS X's ar supports a -T flag, but it
+  # does something useless (it limits filenames in the archive to 15 chars).
+  if flavor != 'mac' and gyp.system_test.TestArSupportsT(ar_command=ar_target,
+                                                         cc_command=cc_target):
     arflags_target = 'crsT'
 
   ar_host = os.environ.get('AR.host', 'ar')
@@ -1343,7 +1644,8 @@ def RunSystemTests():
   # cross-compiles, but due to quirks of history CC.host defaults to 'gcc'
   # while CC.target defaults to 'cc', so the commands really are different
   # even though they're nearly guaranteed to run the same code underneath.
-  if gyp.system_test.TestArSupportsT(ar_command=ar_host, cc_command=cc_host):
+  if flavor != 'mac' and gyp.system_test.TestArSupportsT(ar_command=ar_host,
+                                                         cc_command=cc_host):
     arflags_host = 'crsT'
 
   link_flags = ''
@@ -1363,15 +1665,22 @@ def RunSystemTests():
            'LINK_flags': link_flags }
 
 
-def CalculateVariables(default_variables, params):
-  """Calculate additional variables for use in the build (called by gyp)."""
-  cc_target = os.environ.get('CC.target', os.environ.get('CC', 'cc'))
-  default_variables['LINKER_SUPPORTS_ICF'] = \
-      gyp.system_test.TestLinkerSupportsICF(cc_command=cc_target)
+def CopyMacTool(out_path):
+  """Finds mac_tool.gyp in the gyp directory and copies it to |out_path|."""
+  source_path = os.path.join(
+      os.path.dirname(os.path.abspath(__file__)), '..', 'mac_tool.py')
+  source_file = open(source_path)
+  source = source_file.readlines()
+  source_file.close()
+  mactool_file = open(out_path, 'w')
+  mactool_file.write(
+      ''.join([source[0], '# Generated by gyp. Do not edit.\n'] + source[1:]))
+  mactool_file.close()
 
 
 def GenerateOutput(target_list, target_dicts, data, params):
   options = params['options']
+  flavor = GetFlavor(params)
   generator_flags = params.get('generator_flags', {})
   builddir_name = generator_flags.get('output_dir', 'out')
   android_ndk_version = generator_flags.get('android_ndk_version', None)
@@ -1415,11 +1724,22 @@ def GenerateOutput(target_list, target_dicts, data, params):
     srcdir_prefix = '$(srcdir)/'
 
   header_params = {
-      'srcdir': srcdir,
       'builddir': builddir_name,
       'default_configuration': default_configuration,
+      'flock': 'flock',
+      'flock_index': 1,
+      'link_commands': LINK_COMMANDS_LINUX,
+      'objc_commands': '',
+      'srcdir': srcdir,
     }
-  header_params.update(RunSystemTests())
+  if flavor == 'mac':
+    header_params.update({
+        'flock': './gyp-mac-tool flock',
+        'flock_index': 2,
+        'link_commands': LINK_COMMANDS_MAC,
+        'objc_commands': SHARED_HEADER_OBJC_COMMANDS,
+    })
+  header_params.update(RunSystemTests(flavor))
 
   ensure_directory_exists(makefile_path)
   root_makefile = open(makefile_path, 'w')
@@ -1433,7 +1753,15 @@ def GenerateOutput(target_list, target_dicts, data, params):
         '\n')
   for toolset in toolsets:
     root_makefile.write('TOOLSET := %s\n' % toolset)
-    root_makefile.write(ROOT_HEADER_SUFFIX_RULES)
+    WriteRootHeaderSuffixRules(root_makefile)
+
+  # Put mac_tool next to the root Makefile.
+  if flavor == 'mac':
+    mactool_path = os.path.join(os.path.dirname(makefile_path), 'gyp-mac-tool')
+    if os.path.exists(mactool_path):
+      os.remove(mactool_path)
+    CopyMacTool(mactool_path)
+    os.chmod(mactool_path, 0o755)  # Make file executable.
 
   # Find the list of targets that derive from the gyp file(s) being built.
   needed_targets = set()
@@ -1471,7 +1799,19 @@ def GenerateOutput(target_list, target_dicts, data, params):
     spec = target_dicts[qualified_target]
     configs = spec['configurations']
 
-    writer = MakefileWriter(generator_flags)
+    # The xcode generator special-cases global xcode_settings and does something
+    # that amounts to merging in the global xcode_settings into each local
+    # xcode_settings dict.
+    if flavor == 'mac':
+      global_xcode_settings = data[build_file].get('xcode_settings', {})
+      for configname in configs.keys():
+        config = configs[configname]
+        if 'xcode_settings' in config:
+          new_settings = global_xcode_settings.copy()
+          new_settings.update(config['xcode_settings'])
+          config['xcode_settings'] = new_settings
+
+    writer = MakefileWriter(generator_flags, flavor)
     writer.Write(qualified_target, base_path, output_file, spec, configs,
                  part_of_all=qualified_target in needed_targets)
     num_outputs += writer.NumOutputs()
