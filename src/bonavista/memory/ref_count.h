@@ -1,7 +1,7 @@
 #ifndef BONAVISTA_MEMORY_REF_COUNT_H_
 #define BONAVISTA_MEMORY_REF_COUNT_H_
 
-#include "bonavista/types.h"
+#include "bonavista/base/types.h"
 
 namespace memory {
 

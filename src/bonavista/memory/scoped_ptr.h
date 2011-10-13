@@ -1,7 +1,7 @@
 #ifndef BONAVISTA_MEMORY_SCOPED_PTR_H_
 #define BONAVISTA_MEMORY_SCOPED_PTR_H_
 
-#include "bonavista/types.h"
+#include "bonavista/base/types.h"
 #include "bonavista/logging/assert.h"
 
 namespace memory {

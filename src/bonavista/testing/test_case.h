@@ -2,8 +2,8 @@
 #define BONAVISTA_TESTING_TEST_CASE_H_
 
 #include <vector>
+#include "bonavista/base/types.h"
 #include "bonavista/testing/test_case_expect.h"
-#include "bonavista/types.h"
 
 namespace testing {
 
