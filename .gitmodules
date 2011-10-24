@@ -1,0 +1,3 @@
+[submodule "src/gyp"]
+	path = src/gyp
+	url = https://github.com/martine/gyp.git
