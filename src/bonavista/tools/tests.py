@@ -2,7 +2,7 @@ import glob
 import os
 import platform
 
-def RunTests(current_file, relative_src_path):
+def Run(current_file, relative_src_path):
   os.chdir(os.path.join(os.path.dirname(os.path.realpath(current_file)), relative_src_path))
 
   if platform.system() == 'Linux':
@@ -18,4 +18,4 @@ def RunTests(current_file, relative_src_path):
       exit()
 
 if __name__ == '__main__':
-  RunTests(__file__, '../..')
+  Run(__file__, '../..')
