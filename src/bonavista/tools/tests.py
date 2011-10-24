@@ -2,10 +2,6 @@ import glob
 import os
 import platform
 
-def RunGyp(current_file, relative_gyp_path, root_gyp_file):
-  os.chdir(os.path.dirname(os.path.realpath(current_file)))
-  os.system('python %s %s' % (os.path.join(relative_gyp_path, 'gyp/gyp'), root_gyp_file))
-
 def RunTests(current_file, relative_src_path):
   os.chdir(os.path.join(os.path.dirname(os.path.realpath(current_file)), relative_src_path))
 
@@ -20,3 +16,6 @@ def RunTests(current_file, relative_src_path):
   for test in tests:
     if os.system(test) != 0:
       exit()
+
+if __name__ == '__main__':
+  RunTests(__file__, '../..')
