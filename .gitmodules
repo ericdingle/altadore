@@ -1,6 +1,0 @@
-[submodule "src/gyp"]
-	path = src/gyp
-	url = https://github.com/martine/gyp.git
-[submodule "src/bonavista"]
-	path = src/bonavista
-	url = https://code.google.com/p/bonavista
