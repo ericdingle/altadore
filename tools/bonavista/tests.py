@@ -18,4 +18,4 @@ def Run(current_file, relative_src_path):
       exit()
 
 if __name__ == '__main__':
-  Run(__file__, '../..')
+  Run(__file__, '../../src')
