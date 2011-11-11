@@ -4,9 +4,8 @@
 namespace logging {
 
 enum Color {
-  DEFAULT,
-  RED,
-  GREEN
+  COLOR_RED,
+  COLOR_GREEN
 };
 
 void ColorPrintf(Color color, const char* format, ...);
