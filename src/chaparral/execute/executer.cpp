@@ -1,6 +1,6 @@
 #include "chaparral/execute/executer.h"
 
-#include "bonavista/types.h"
+#include "bonavista/base/types.h"
 #include "bonavista/string/format.h"
 #include "chaparral/execute/expression.h"
 #include "chaparral/parse/identifier_symbol.h"
