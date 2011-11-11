@@ -18,4 +18,4 @@ void RefCount::Release() const {
   }
 }
 
-}  // namespace
+}  // namespace memory

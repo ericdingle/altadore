@@ -8,14 +8,12 @@ namespace {
 
 class Dummy : public memory::RefCount,
               public testing::InstCount<Dummy> {
-public:
-  Dummy() : RefCount(), testing::InstCount<Dummy>() {}
+ public:
+  Dummy() {}
   ~Dummy() {}
 };
 
-}
-
-using memory::scoped_ref;
+} // namespace
 
 TEST_CASE(ScopedRefTest) {
 };
@@ -23,12 +21,12 @@ TEST_CASE(ScopedRefTest) {
 TEST(ScopedRefTest, ConstructorAndDestructor) {
   EXPECT_EQ(Dummy::inst_count(), 0);
   {
-    scoped_ref<Dummy> dummy(new Dummy());
+    memory::scoped_ref<Dummy> dummy(new Dummy());
     EXPECT_EQ(dummy->ref_count(), 1);
     EXPECT_EQ(Dummy::inst_count(), 1);
 
     {
-      scoped_ref<Dummy>dummy2(dummy);
+      memory::scoped_ref<Dummy>dummy2(dummy);
       EXPECT_EQ(dummy->ref_count(), 2);
       EXPECT_EQ(Dummy::inst_count(), 1);
     }
@@ -40,30 +38,30 @@ TEST(ScopedRefTest, ConstructorAndDestructor) {
 }
 
 TEST(ScopedRefTest, ConstCopyConstructor) {
-  scoped_ref<Dummy> dummy1;
-  scoped_ref<const Dummy> dummy2(dummy1);
+  memory::scoped_ref<Dummy> dummy1;
+  memory::scoped_ref<const Dummy> dummy2(dummy1);
   EXPECT_EQ(Dummy::inst_count(), 0);
 
-  scoped_ref<Dummy> dummy3(new Dummy());
+  memory::scoped_ref<Dummy> dummy3(new Dummy());
   EXPECT_EQ(dummy3->ref_count(), 1);
   EXPECT_EQ(Dummy::inst_count(), 1);
 
-  scoped_ref<const Dummy> dummy4(dummy3);
+  memory::scoped_ref<const Dummy> dummy4(dummy3);
   EXPECT_EQ(dummy3->ref_count(), 2);
   EXPECT_EQ(Dummy::inst_count(), 1);
 }
 
 TEST(ScopedRefTest, AssignmentOperator) {
-  scoped_ref<Dummy> dummy1;
-  scoped_ref<Dummy> dummy2;
+  memory::scoped_ref<Dummy> dummy1;
+  memory::scoped_ref<Dummy> dummy2;
   dummy2 = dummy1;
   EXPECT_EQ(Dummy::inst_count(), 0);
 
-  scoped_ref<Dummy> dummy3(new Dummy());
+  memory::scoped_ref<Dummy> dummy3(new Dummy());
   EXPECT_EQ(dummy3->ref_count(), 1);
   EXPECT_EQ(Dummy::inst_count(), 1);
 
-  scoped_ref<Dummy> dummy4;
+  memory::scoped_ref<Dummy> dummy4;
   dummy4 = dummy3;
   EXPECT_EQ(dummy3->ref_count(), 2);
   EXPECT_EQ(Dummy::inst_count(), 1);
@@ -77,18 +75,18 @@ TEST(ScopedRefTest, AssignmentOperator) {
 }
 
 TEST(ScopedRefTest, Vector) {
-  std::vector<scoped_ref<Dummy> > dummies;
+  std::vector<memory::scoped_ref<Dummy> > dummies;
 
-  scoped_ref<Dummy> dummy1(new Dummy());
+  memory::scoped_ref<Dummy> dummy1(new Dummy());
   EXPECT_EQ(dummy1->ref_count(), 1);
 
   dummies.push_back(dummy1);
   EXPECT_EQ(dummy1->ref_count(), 2);
 
-  scoped_ref<Dummy> dummy2(new Dummy());
+  memory::scoped_ref<Dummy> dummy2(new Dummy());
   EXPECT_EQ(dummy2->ref_count(), 1);
 
-  dummies.push_back(scoped_ref<Dummy>(dummy2));
+  dummies.push_back(memory::scoped_ref<Dummy>(dummy2));
   EXPECT_EQ(dummy1->ref_count(), 2);
   EXPECT_EQ(dummy2->ref_count(), 2);
 }

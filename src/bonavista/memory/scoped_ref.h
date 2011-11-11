@@ -7,19 +7,17 @@ namespace memory {
 
 class RefCount;
 
-class AddRefFunc {
-public:
+struct AddRefFunc {
   void operator()(const RefCount* ptr) const;
 };
 
-class ReleaseFunc {
-public:
+struct ReleaseFunc {
   void operator()(const RefCount* ptr) const;
 };
 
 template <typename T>
 class scoped_ref : public scoped_ptr_base<T, AddRefFunc, ReleaseFunc> {
-public:
+ public:
   scoped_ref(T* ptr=NULL) : scoped_ptr_base<T, AddRefFunc, ReleaseFunc>(ptr) {}
   ~scoped_ref() {}
 

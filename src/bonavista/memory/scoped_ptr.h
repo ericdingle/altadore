@@ -9,7 +9,7 @@ namespace memory {
 
 template <typename T, typename InitFunc, typename UninitFunc>
 class scoped_ptr_base {
-public:
+ public:
   explicit scoped_ptr_base(T* ptr=NULL) : ptr_(ptr) {
     init_func_(ptr_);
   }
@@ -41,7 +41,7 @@ public:
 
   T* ptr() const { return ptr_; }
 
-private:
+ private:
   static const InitFunc init_func_;
   static const UninitFunc uninit_func_;
 
@@ -56,14 +56,12 @@ const InitFunc scoped_ptr_base<T, InitFunc, UninitFunc>::init_func_ = InitFunc()
 template <typename T, typename InitFunc, typename UninitFunc>
 const UninitFunc scoped_ptr_base<T, InitFunc, UninitFunc>::uninit_func_ = UninitFunc();
 
-class VoidFunc {
-public:
+struct VoidFunc {
   void operator()(const void* v) const {}
 };
 
 template <typename T>
-class DeletePtrFunc {
-public:
+struct DeletePtrFunc {
   void operator()(T* ptr) const {
     delete ptr;
   }
@@ -71,17 +69,16 @@ public:
 
 template <typename T>
 class scoped_ptr : public scoped_ptr_base<T, VoidFunc, DeletePtrFunc<T> > {
-public:
+ public:
   explicit scoped_ptr(T* ptr=NULL) : scoped_ptr_base<T, VoidFunc, DeletePtrFunc<T> >(ptr) {}
   ~scoped_ptr() {}
 
-private:
+ private:
   DISALLOW_COPY_AND_ASSIGN(scoped_ptr);
 };
 
 template <typename T>
-class DeleteArrayFunc {
-public:
+struct DeleteArrayFunc {
   void operator()(T* ptr) const {
     delete [] ptr;
   }
@@ -89,7 +86,7 @@ public:
 
 template <typename T>
 class scoped_array : public scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> > {
-public:
+ public:
   explicit scoped_array(T* ptr=NULL) : scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> >(ptr) {}
   ~scoped_array() {}
 
@@ -99,7 +96,7 @@ public:
     return ptr[index];
   }
 
-private:
+ private:
   DISALLOW_COPY_AND_ASSIGN(scoped_array);
 };
 

@@ -3,16 +3,12 @@
 #include "bonavista/testing/inst_count.h"
 #include "bonavista/testing/test_case.h"
 
-namespace {
-
 class Dummy : public memory::RefCount,
               public testing::InstCount<Dummy> {
 public:
   Dummy() : memory::RefCount(), testing::InstCount<Dummy>() {}
   ~Dummy() {}
 };
-
-}
 
 TEST_CASE(RefCountTest) {
 };

@@ -7,7 +7,7 @@
 namespace memory {
 
 class RefCount {
-public:
+ public:
   RefCount();
   virtual ~RefCount();
 
@@ -16,7 +16,7 @@ public:
 
   uint ref_count() const { return ref_count_; }
 
-private:
+ private:
   mutable uint ref_count_;
 
   DISALLOW_COPY_AND_ASSIGN(RefCount);
