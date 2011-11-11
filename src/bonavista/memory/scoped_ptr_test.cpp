@@ -69,38 +69,28 @@ TEST(ScopedPtrBaseTest, Receive) {
   EXPECT_EQ(1, i);
 }
 
-namespace {
-
-class Dummy : public testing::InstCount<Dummy> {
-public:
-  Dummy() {}
-  ~Dummy() {}
-};
-
-}  // namespace
-
 TEST_CASE(ScopedPtrTest) {
 };
 
 TEST(ScopedPtrTest, ConstructorAndDestructor) {
-  EXPECT_EQ(Dummy::inst_count(), 0);
+  EXPECT_EQ(testing::InstCount::inst_count(), 0);
   {
-    memory::scoped_ptr<Dummy> ptr(new Dummy());
-    EXPECT_EQ(Dummy::inst_count(), 1);
+    memory::scoped_ptr<testing::InstCount> ptr(new testing::InstCount());
+    EXPECT_EQ(testing::InstCount::inst_count(), 1);
   }
-  EXPECT_EQ(Dummy::inst_count(), 0);
+  EXPECT_EQ(testing::InstCount::inst_count(), 0);
 }
 
 TEST_CASE(ScopedArrayTest) {
 };
 
 TEST(ScopedArrayTest, ConstructorAndDestructor) {
-  EXPECT_EQ(Dummy::inst_count(), 0);
+  EXPECT_EQ(testing::InstCount::inst_count(), 0);
   {
-    memory::scoped_array<Dummy> array(new Dummy[5]);
-    EXPECT_EQ(Dummy::inst_count(), 5);
+    memory::scoped_array<testing::InstCount> array(new testing::InstCount[5]);
+    EXPECT_EQ(testing::InstCount::inst_count(), 5);
   }
-  EXPECT_EQ(Dummy::inst_count(), 0);
+  EXPECT_EQ(testing::InstCount::inst_count(), 0);
 }
 
 TEST(ScopedArrayTest, IndexOperator) {

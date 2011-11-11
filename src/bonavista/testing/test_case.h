@@ -9,10 +9,10 @@
 namespace testing {
 
 class TestCase {
-public:
+ public:
   static uint RunAll();
 
-protected:
+ protected:
   static void AddTest(TestCase* test);
 
   TestCase();
@@ -21,7 +21,7 @@ protected:
 
   void set_succeeded(bool succeeded) { succeeded_ = succeeded; }
 
-private:
+ private:
   static std::vector<TestCase*>& GetTests();
   static uint GetNumTests(uint index);
   static bool RunTest(TestCase* test);

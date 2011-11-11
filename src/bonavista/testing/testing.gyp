@@ -9,6 +9,7 @@
       '../logging/logging.gyp:logging_lib',
     ],
     'sources': [
+      'inst_count.cpp',
       'inst_count.h',
       'test_case.cpp',
       'test_case.h',
