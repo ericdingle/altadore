@@ -2,6 +2,7 @@
 #define BONAVISTA_TESTING_TEST_CASE_H_
 
 #include <vector>
+#include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 #include "bonavista/testing/test_case_expect.h"
 
@@ -29,12 +30,11 @@ private:
   virtual void TearDown();
   virtual void Run()=0;
 
-  TestCase(const TestCase&);
-  void operator=(const TestCase&);
-
   const char* testCaseName_;
   const char* testName_;
   bool succeeded_;
+
+  DISALLOW_COPY_AND_ASSIGN(TestCase);
 };
 
 }  // namespace testing

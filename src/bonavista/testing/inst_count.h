@@ -1,6 +1,7 @@
 #ifndef BONAVISTA_TESTING_INSTANCE_COUNT_H_
 #define BONAVISTA_TESTING_INSTANCE_COUNT_H_
 
+#include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 
 namespace testing {
@@ -18,10 +19,9 @@ public:
   static uint inst_count() { return inst_count_; }
 
 private:
-  InstCount(const InstCount&);
-  void operator=(const InstCount&);
-
   static uint inst_count_;
+
+  DISALLOW_COPY_AND_ASSIGN(InstCount);
 };
 
 template <typename T>

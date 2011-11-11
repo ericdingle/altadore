@@ -1,6 +1,7 @@
 #ifndef BONAVISTA_MEMORY_SCOPED_PTR_H_
 #define BONAVISTA_MEMORY_SCOPED_PTR_H_
 
+#include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 #include "bonavista/logging/assert.h"
 
@@ -41,13 +42,12 @@ public:
   T* ptr() const { return ptr_; }
 
 private:
-  scoped_ptr_base(const scoped_ptr_base&);
-  void operator=(const scoped_ptr_base&);
-
   static const InitFunc init_func_;
   static const UninitFunc uninit_func_;
 
   T* ptr_;
+
+  DISALLOW_COPY_AND_ASSIGN(scoped_ptr_base);
 };
 
 template <typename T, typename InitFunc, typename UninitFunc>
@@ -76,8 +76,7 @@ public:
   ~scoped_ptr() {}
 
 private:
-  scoped_ptr(const scoped_ptr&);
-  void operator=(const scoped_ptr&);
+  DISALLOW_COPY_AND_ASSIGN(scoped_ptr);
 };
 
 template <typename T>
@@ -101,8 +100,7 @@ public:
   }
 
 private:
-  scoped_array(const scoped_array&);
-  void operator=(const scoped_array&);
+  DISALLOW_COPY_AND_ASSIGN(scoped_array);
 };
 
 }  // namespace memory
