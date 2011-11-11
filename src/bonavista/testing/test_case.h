@@ -46,7 +46,7 @@ class TestCase {
 
 #define TEST(testCaseName, testName) \
   class TEST_CLASS_NAME(testCaseName, testName) : public testCaseName { \
-  private: \
+   private: \
     TEST_CLASS_NAME(testCaseName, testName)() : testing::TestCase(#testCaseName, #testName) { \
       testing::TestCase::AddTest(this); \
     } \
