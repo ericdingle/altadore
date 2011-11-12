@@ -11,9 +11,9 @@ namespace logging {
 #if OS_WIN
 WORD GetColorAttribute(Color color) {
   switch (color) {
-    case RED:
+    case COLOR_RED:
       return FOREGROUND_RED;
-    case GREEN:
+    case COLOR_GREEN:
       return FOREGROUND_GREEN;
     default:
       return 0;
@@ -22,9 +22,9 @@ WORD GetColorAttribute(Color color) {
 #elif OS_LINUX
 const char* GetAnsiColorCode(Color color) {
   switch (color) {
-    case RED:
+    case COLOR_RED:
       return "1";
-    case GREEN:
+    case COLOR_GREEN:
       return "2";
     default:
       return NULL;

@@ -5,8 +5,7 @@
 
 namespace io {
 
-class FileCloseFunc {
-public:
+struct FileCloseFunc {
   void operator()(FILE* file) const;
 };
 

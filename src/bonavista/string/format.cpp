@@ -2,7 +2,7 @@
 
 #include <stdarg.h>
 #include "bonavista/logging/assert.h"
-#include "bonavista/memory/scoped_ptr.h"
+#include "bonavista/memory/scoped_array.h"
 
 namespace string {
 

@@ -2,16 +2,17 @@
 #define BONAVISTA_TESTING_TEST_CASE_H_
 
 #include <vector>
+#include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 #include "bonavista/testing/test_case_expect.h"
 
 namespace testing {
 
 class TestCase {
-public:
+ public:
   static uint RunAll();
 
-protected:
+ protected:
   static void AddTest(TestCase* test);
 
   TestCase();
@@ -20,7 +21,7 @@ protected:
 
   void set_succeeded(bool succeeded) { succeeded_ = succeeded; }
 
-private:
+ private:
   static std::vector<TestCase*>& GetTests();
   static uint GetNumTests(uint index);
   static bool RunTest(TestCase* test);
@@ -29,12 +30,11 @@ private:
   virtual void TearDown();
   virtual void Run()=0;
 
-  TestCase(const TestCase&);
-  void operator=(const TestCase&);
-
   const char* testCaseName_;
   const char* testName_;
   bool succeeded_;
+
+  DISALLOW_COPY_AND_ASSIGN(TestCase);
 };
 
 }  // namespace testing
@@ -46,7 +46,7 @@ private:
 
 #define TEST(testCaseName, testName) \
   class TEST_CLASS_NAME(testCaseName, testName) : public testCaseName { \
-  private: \
+   private: \
     TEST_CLASS_NAME(testCaseName, testName)() : testing::TestCase(#testCaseName, #testName) { \
       testing::TestCase::AddTest(this); \
     } \

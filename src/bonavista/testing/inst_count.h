@@ -1,31 +1,23 @@
 #ifndef BONAVISTA_TESTING_INSTANCE_COUNT_H_
 #define BONAVISTA_TESTING_INSTANCE_COUNT_H_
 
+#include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 
 namespace testing {
 
-template <typename T>
 class InstCount {
-public:
-  InstCount() {
-    ++inst_count_;
-  }
-  virtual ~InstCount() {
-    --inst_count_;
-  }
+ public:
+  InstCount();
+  ~InstCount();
 
   static uint inst_count() { return inst_count_; }
 
-private:
-  InstCount(const InstCount&);
-  void operator=(const InstCount&);
-
+ private:
   static uint inst_count_;
-};
 
-template <typename T>
-uint InstCount<T>::inst_count_ = 0;
+  DISALLOW_COPY_AND_ASSIGN(InstCount);
+};
 
 }  // namespace testing
 

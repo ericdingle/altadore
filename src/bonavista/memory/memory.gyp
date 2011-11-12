@@ -8,6 +8,7 @@
     'sources': [
       'ref_count.cpp',
       'ref_count.h',
+      'scoped_array.h',
       'scoped_ptr.h',
       'scoped_ref.cpp',
       'scoped_ref.h',
@@ -21,6 +22,7 @@
     ],
     'sources': [
       'ref_count_test.cpp',
+      'scoped_array_test.cpp',
       'scoped_ptr_test.cpp',
       'scoped_ref_test.cpp',
       '../testing/test_main.cpp',

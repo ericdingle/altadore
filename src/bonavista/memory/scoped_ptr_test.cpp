@@ -3,18 +3,14 @@
 #include "bonavista/testing/inst_count.h"
 #include "bonavista/testing/test_case.h"
 
-namespace {
-
-class AddFunc {
-public:
+struct AddFunc {
   void operator()(int* i) const {
     if (i)
       (*i)++;
   }
 };
 
-class SubFunc {
-public:
+struct SubFunc {
   void operator()(int* i) const {
     if (i)
       (*i)--;
@@ -23,12 +19,10 @@ public:
 
 typedef memory::scoped_ptr_base<int, AddFunc, SubFunc> TestScopedPtrBase;
 
-}
-
-TEST_CASE(ScopedPtrBase) {
+TEST_CASE(ScopedPtrBaseTest) {
 };
 
-TEST(ScopedPtrBase, ConstructorAndDestructor) {
+TEST(ScopedPtrBaseTest, ConstructorAndDestructor) {
   int i = 0;
   {
     TestScopedPtrBase ptr(&i);
@@ -38,7 +32,7 @@ TEST(ScopedPtrBase, ConstructorAndDestructor) {
 }
 
 
-TEST(ScopedPtrBase, Get) {
+TEST(ScopedPtrBaseTest, Get) {
   TestScopedPtrBase ptr1;
   EXPECT_NULL(ptr1.ptr());
 
@@ -47,7 +41,7 @@ TEST(ScopedPtrBase, Get) {
   EXPECT_EQ(ptr2.ptr(), &i);
 }
 
-TEST(ScopedPtrBase, Reset) {
+TEST(ScopedPtrBaseTest, Reset) {
   int i1 = 0;
   TestScopedPtrBase ptr(&i1);
   EXPECT_EQ(i1, 1);
@@ -58,7 +52,7 @@ TEST(ScopedPtrBase, Reset) {
   EXPECT_EQ(i2, 1);
 }
 
-TEST(ScopedPtrBase, Release) {
+TEST(ScopedPtrBaseTest, Release) {
   int i = 0;
   TestScopedPtrBase ptr(&i);
   int* ip = ptr.Release();
@@ -66,7 +60,7 @@ TEST(ScopedPtrBase, Release) {
   EXPECT_EQ(&i, ip);
 }
 
-TEST(ScopedPtrBase, Receive) {
+TEST(ScopedPtrBaseTest, Receive) {
   int i = 0;
   TestScopedPtrBase ptr;
   int** ipp = ptr.Receive();
@@ -75,42 +69,14 @@ TEST(ScopedPtrBase, Receive) {
   EXPECT_EQ(1, i);
 }
 
-namespace {
-
-class Dummy : public testing::InstCount<Dummy> {
-public:
-  Dummy() : testing::InstCount<Dummy>() {}
-  ~Dummy() {}
-};
-
-}
-
 TEST_CASE(ScopedPtrTest) {
 };
 
 TEST(ScopedPtrTest, ConstructorAndDestructor) {
-  EXPECT_EQ(Dummy::inst_count(), 0);
+  EXPECT_EQ(testing::InstCount::inst_count(), 0);
   {
-    memory::scoped_ptr<Dummy> ptr(new Dummy());
-    EXPECT_EQ(Dummy::inst_count(), 1);
+    memory::scoped_ptr<testing::InstCount> ptr(new testing::InstCount());
+    EXPECT_EQ(testing::InstCount::inst_count(), 1);
   }
-  EXPECT_EQ(Dummy::inst_count(), 0);
-}
-
-TEST_CASE(ScopedArrayTest) {
-};
-
-TEST(ScopedArrayTest, ConstructorAndDestructor) {
-  EXPECT_EQ(Dummy::inst_count(), 0);
-  {
-    memory::scoped_array<Dummy> array(new Dummy[5]);
-    EXPECT_EQ(Dummy::inst_count(), 5);
-  }
-  EXPECT_EQ(Dummy::inst_count(), 0);
-}
-
-TEST(ScopedArrayTest, IndexOperator) {
-  memory::scoped_array<int> array(new int[5]);
-  array[2] = 10;
-  EXPECT_EQ(array.ptr()[2], 10);
+  EXPECT_EQ(testing::InstCount::inst_count(), 0);
 }

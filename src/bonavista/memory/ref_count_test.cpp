@@ -6,13 +6,13 @@
 namespace {
 
 class Dummy : public memory::RefCount,
-              public testing::InstCount<Dummy> {
-public:
-  Dummy() : memory::RefCount(), testing::InstCount<Dummy>() {}
+              public testing::InstCount {
+ public:
+  Dummy() {}
   ~Dummy() {}
 };
 
-}
+}  // namespace
 
 TEST_CASE(RefCountTest) {
 };
