@@ -145,9 +145,9 @@ TEST(ParserTest, ParseInfixSymbol) {
 
 
 class TestMemPrefixSymbol : public PrefixSymbol,
-                            public testing::InstCount<TestMemPrefixSymbol> {
-public:
-  TestMemPrefixSymbol(const Token* token) : PrefixSymbol(token), testing::InstCount<TestMemPrefixSymbol>() {}
+                            public testing::InstCountT<TestMemPrefixSymbol> {
+ public:
+  TestMemPrefixSymbol(const Token* token) : PrefixSymbol(token) {}
 
   bool Parse(Parser* parser, SymbolRef* root) {
     *root = this;
@@ -156,11 +156,11 @@ public:
 };
 
 class TestMemInfixSymbol : public InfixSymbol,
-                           public testing::InstCount<TestMemInfixSymbol> {
-public:
+                           public testing::InstCountT<TestMemInfixSymbol> {
+ public:
   static const uint BINDING_POWER = 10;
 
-  TestMemInfixSymbol(const Token* token) : InfixSymbol(token), testing::InstCount<TestMemInfixSymbol>() {}
+  TestMemInfixSymbol(const Token* token) : InfixSymbol(token) {}
 
   bool Parse(Parser* parser, const Symbol* left, SymbolRef* root) {
     *root = this;
@@ -203,7 +203,7 @@ TEST(ParserTest, MemoryManagement) {
 }
 
 class ConsumePrefixSymbol : public PrefixSymbol {
-public:
+ public:
   ConsumePrefixSymbol(const Token* token) : PrefixSymbol(token) {}
 
   bool Parse(Parser* parser, SymbolRef* root) {
@@ -226,7 +226,7 @@ TEST(ParserTest, ConsumeTest) {
 }
 
 class PeekPrefixSymbol : public PrefixSymbol {
-public:
+ public:
   PeekPrefixSymbol(const Token* token) : PrefixSymbol(token) {}
 
   bool Parse(Parser* parser, SymbolRef* root) {
@@ -239,7 +239,7 @@ public:
 
   const Symbol* right() const { return right_.ptr(); }
 
-private:
+ private:
   SymbolRef right_;
 };
 
