@@ -42,24 +42,31 @@ uint TestCase::RunAll() {
     printf(" %d test(s) from %s\n\n", num_tests, tests[i-1]->testCaseName_);
   }
 
-  ColorPrintf(logging::COLOR_GREEN, kDivider);
-  printf("\n");
 
   if (failures.size() == 0) {
+    ColorPrintf(logging::COLOR_GREEN, kDivider);
+    printf("\n");
+
     ColorPrintf(logging::COLOR_GREEN, kPassed);
     printf(" " SIZE_T_FORMAT " test(s) from %u test case(s)\n", tests.size(), num_test_cases);
+
+    ColorPrintf(logging::COLOR_GREEN, kDivider);
+    printf("\n");
   } else {
+    ColorPrintf(logging::COLOR_RED, kDivider);
+    printf("\n");
+
     ColorPrintf(logging::COLOR_RED, kFailed);
     printf(" " SIZE_T_FORMAT " test(s)\n", failures.size());
 
     for (uint i = 0; i < failures.size(); ++i) {
       ColorPrintf(logging::COLOR_RED, kDivider);
-      printf(" %s.%s\n", tests[i]->testCaseName_, tests[i]->testName_);
+      printf(" %s.%s\n", failures[i]->testCaseName_, failures[i]->testName_);
     }
-  }
 
-  ColorPrintf(logging::COLOR_GREEN, kDivider);
-  printf("\n");
+    ColorPrintf(logging::COLOR_RED, kDivider);
+    printf("\n");
+  }
 
   return failures.size();
 }
