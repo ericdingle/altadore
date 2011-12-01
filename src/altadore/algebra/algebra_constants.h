@@ -1,0 +1,7 @@
+#ifndef ALTADORE_ALGEBRA_ALGEBRA_CONTANTS_H_
+#define ALTADORE_ALGEBRA_ALGEBRA_CONTANTS_H_
+
+extern const double PI;
+
+#endif
+
