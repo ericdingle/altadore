@@ -1,0 +1,25 @@
+{
+  'includes': [
+    'common.gypi',
+  ],
+  'targets': [{
+    'target_name': 'libs',
+    'type': 'none',
+    'dependencies': [
+      'io/io.gyp:io_lib',
+      'logging/logging.gyp:logging_lib',
+      'memory/memory.gyp:memory_lib',
+      'string/string.gyp:string_lib',
+      'testing/testing.gyp:testing_lib',
+    ],
+  }, {
+    'target_name': 'tests',
+    'type': 'none',
+    'dependencies': [
+      'io/io.gyp:io_test',
+      'memory/memory.gyp:memory_test',
+      'string/string.gyp:string_test',
+      'testing/testing.gyp:testing_test',
+    ],
+  }],
+}
