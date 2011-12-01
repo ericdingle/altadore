@@ -1,0 +1,7 @@
+Makefile
+*.mk
+*.Makefile
+
+out
+
+*.pyc
