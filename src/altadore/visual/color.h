@@ -1,8 +1,8 @@
 #ifndef ALTADORE_VISUAL_COLOR_H_
 #define ALTADORE_VISUAL_COLOR_H_
 
+#include "bonavista/base/types.h"
 #include "bonavista/memory/ref_count.h"
-#include "bonavista/types.h"
 
 class Color : public memory::RefCount {
 public:

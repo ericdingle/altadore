@@ -1,7 +1,7 @@
 #ifndef ALTADORE_ALGEBRA_VECTOR3_H_
 #define ALTADORE_ALGEBRA_VECTOR3_H_
 
-#include "bonavista/types.h"
+#include "bonavista/base/types.h"
 
 class Point3;
 
