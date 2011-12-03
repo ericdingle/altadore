@@ -3,6 +3,7 @@
 
 #include <string>
 #include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 
 class Token;
 
@@ -12,10 +13,10 @@ class Lexer {
   virtual ~Lexer();
 
   virtual bool GetToken(const std::string& input,
-                        int index,
-                        int* type,
+                        uint index,
+                        uint* type,
                         std::string* value,
-                        int* count,
+                        uint* count,
                         std::string* error) const =0;
 
  protected:

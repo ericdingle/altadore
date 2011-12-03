@@ -5,18 +5,18 @@ Token::Position::Position(uint line, uint column) {
   this->column = column;
 }
 
-Token::Token(int type, const std::string& value, const Position& position)
+Token::Token(uint type, const std::string& value, const Position& position)
     : type_(type), value_(value), position_(position) {
 }
 
 Token::~Token() {
 }
 
-bool Token::IsType(int type) const {
+bool Token::IsType(uint type) const {
   return type_ == type;
 }
 
-int Token::type() const {
+uint Token::type() const {
   return type_;
 }
 

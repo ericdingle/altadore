@@ -8,23 +8,23 @@
 class Token {
  public:
   struct Position {
-    Position(uint lint, uint column);
+    Position(uint line, uint column);
 
     uint line;
     uint column;
   };
 
-  Token(int type, const std::string& value, const Position& position);
+  Token(uint type, const std::string& value, const Position& position);
   ~Token();
 
-  bool IsType(int type) const;
+  bool IsType(uint type) const;
 
-  int type() const;
+  uint type() const;
   const std::string& value() const;
   const Position& position() const;
 
  private:
-  const int type_;
+  const uint type_;
   const std::string value_;
   const Position position_;
 

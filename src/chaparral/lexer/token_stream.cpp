@@ -44,9 +44,9 @@ bool TokenStream::GetNextToken(const Token** token) {
   }
 
   // Get the token.
-  int type;
+  uint type;
   std::string value;
-  int count;
+  uint count;
   if (!lexer_->GetToken(input_, index_, &type, &value, &count, &error_))
     return false;
 
