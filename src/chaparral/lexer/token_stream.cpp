@@ -3,10 +3,9 @@
 #include "bonavista/logging/assert.h"
 #include "chaparral/lexer/lexer.h"
 
-TokenStream::TokenStream(const Lexer* lexer, const char* input)
+TokenStream::TokenStream(const Lexer* lexer, const std::string& input)
     : lexer_(lexer), input_(input), index_(0), position_(1, 1) {
   DASSERT(lexer != NULL);
-  DASSERT(input != NULL);
 }
 
 TokenStream::~TokenStream() {

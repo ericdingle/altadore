@@ -1,6 +1,7 @@
 #ifndef CHAPARRAL_LEXER_TOKEN_STREAM_H_
 #define CHAPARRAL_LEXER_TOKEN_STREAM_H_
 
+#include <string>
 #include "bonavista/memory/scoped_ptr.h"
 #include "chaparral/lexer/token.h"
 
@@ -8,7 +9,7 @@ class Lexer;
 
 class TokenStream {
  public:
-  TokenStream(const Lexer* lexer, const char* input);
+  TokenStream(const Lexer* lexer, const std::string& input);
   ~TokenStream();
 
   bool GetNextToken(const Token** token);
