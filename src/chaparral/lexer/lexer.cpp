@@ -1,5 +1,7 @@
 #include "chaparral/lexer/lexer.h"
 
+const int Lexer::TYPE_END_OF_INPUT = -1;
+
 Lexer::Lexer() {
 }
 

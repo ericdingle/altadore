@@ -12,13 +12,13 @@ class TokenStream {
   ~TokenStream();
 
   bool GetNextToken(const Token** token);
-  bool PeekNextToken(const Token** token);
-  bool EndOfInput();
 
   const Token::Position& position() const;
   const std::string& error() const;
 
  private:
+  bool EndOfInput();
+
   const Lexer* const lexer_;
 
   const std::string input_;
@@ -26,8 +26,6 @@ class TokenStream {
 
   Token::Position position_;
   std::string error_;
-
-  memory::scoped_ptr<const Token> next_token_;
 
   DISALLOW_COPY_AND_ASSIGN(TokenStream);
 };

@@ -14,17 +14,17 @@ class Token {
     uint column;
   };
 
-  Token(uint type, const std::string& value, const Position& position);
+  Token(int type, const std::string& value, const Position& position);
   ~Token();
 
-  bool IsType(uint type) const;
+  bool IsType(int type) const;
 
-  uint type() const;
+  int type() const;
   const std::string& value() const;
   const Position& position() const;
 
  private:
-  const uint type_;
+  const int type_;
   const std::string value_;
   const Position position_;
 

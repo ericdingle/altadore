@@ -15,14 +15,14 @@ TokenStream::~TokenStream() {
 bool TokenStream::GetNextToken(const Token** token) {
   DASSERT(token != NULL);
 
-  // Return the next token if we already have it.
-  if (next_token_.ptr() != NULL) {
-    *token = next_token_.Release();
-    return true;
+  // We've given away the end of input token, so time to throw an error.
+  if (index_ > input_.length()) {
+    error_ = "Unexpected end of input.";
+    return false;
   }
 
   // Consume the white space.
-  while (!EndOfInput()) {
+  while (index_ < input_.length()) {
     const char& c = input_[index_];
     if (c <= ' ') {
       ++index_;
@@ -37,14 +37,15 @@ bool TokenStream::GetNextToken(const Token** token) {
     }
   }
 
-  // Make sure we're not at the end of the input.
-  if (EndOfInput()) {
-    error_ = "Unexpected end of input";
-    return false;
+  // If we've reached the end, we return the end of input token.
+  if (index_ == input_.length()) {
+    *token = new Token(Lexer::TYPE_END_OF_INPUT, "(end of input)", position_);
+    ++index_;
+    return true;
   }
 
-  // Get the token.
-  uint type;
+  // Call into the lexer to get the token.
+  int type;
   std::string value;
   uint count;
   if (!lexer_->GetToken(input_, index_, &type, &value, &count, &error_))
@@ -59,17 +60,8 @@ bool TokenStream::GetNextToken(const Token** token) {
   return true;
 }
 
-bool TokenStream::PeekNextToken(const Token** token) {
-  if (next_token_.ptr() == NULL)
-    if (!GetNextToken(next_token_.Receive()))
-      return false;
-
-  *token = next_token_.ptr();
-  return true;
-}
-
 bool TokenStream::EndOfInput() {
-  return index_ == input_.size() && next_token_.ptr() == NULL;
+  return index_ == input_.size();
 }
 
 const Token::Position& TokenStream::position() const {

@@ -9,12 +9,15 @@ class Token;
 
 class Lexer {
  public:
+  // Lexer token type for end of input.
+  static const int TYPE_END_OF_INPUT;
+
   Lexer();
   virtual ~Lexer();
 
   virtual bool GetToken(const std::string& input,
                         uint index,
-                        uint* type,
+                        int* type,
                         std::string* value,
                         uint* count,
                         std::string* error) const =0;
