@@ -12,14 +12,13 @@ class TokenStream {
   TokenStream(const Lexer* lexer, const std::string& input);
   ~TokenStream();
 
+  bool HasInput() const;
   bool GetNextToken(const Token** token);
 
   const Token::Position& position() const;
   const std::string& error() const;
 
  private:
-  bool EndOfInput();
-
   const Lexer* const lexer_;
 
   const std::string input_;

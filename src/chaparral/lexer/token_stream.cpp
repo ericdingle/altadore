@@ -4,11 +4,15 @@
 #include "chaparral/lexer/lexer.h"
 
 TokenStream::TokenStream(const Lexer* lexer, const std::string& input)
-    : lexer_(lexer), input_(input), index_(0), position_(1, 1) {
+    : lexer_(lexer), input_(input), index_(0) {
   DASSERT(lexer != NULL);
 }
 
 TokenStream::~TokenStream() {
+}
+
+bool TokenStream::HasInput() const {
+  return index_ < input_.length();
 }
 
 bool TokenStream::GetNextToken(const Token** token) {
@@ -57,10 +61,6 @@ bool TokenStream::GetNextToken(const Token** token) {
   position_.column += count;
 
   return true;
-}
-
-bool TokenStream::EndOfInput() {
-  return index_ == input_.size();
 }
 
 const Token::Position& TokenStream::position() const {

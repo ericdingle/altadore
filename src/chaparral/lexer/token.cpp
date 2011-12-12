@@ -1,8 +1,8 @@
 #include "chaparral/lexer/token.h"
 
-Token::Position::Position(uint line, uint column) {
-  this->line = line;
-  this->column = column;
+Token::Position::Position() {
+  line = 1;
+  column = 1;
 }
 
 Token::Token(int type, const std::string& value, const Position& position)

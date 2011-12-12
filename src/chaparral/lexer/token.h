@@ -8,7 +8,7 @@
 class Token {
  public:
   struct Position {
-    Position(uint line, uint column);
+    Position();
 
     uint line;
     uint column;
