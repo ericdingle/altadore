@@ -11,10 +11,6 @@ TokenStream::TokenStream(const Lexer* lexer, const std::string& input)
 TokenStream::~TokenStream() {
 }
 
-bool TokenStream::HasInput() const {
-  return index_ < input_.length();
-}
-
 bool TokenStream::GetNextToken(const Token** token) {
   DASSERT(token != NULL);
 

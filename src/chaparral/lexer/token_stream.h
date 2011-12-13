@@ -12,7 +12,6 @@ class TokenStream {
   TokenStream(const Lexer* lexer, const std::string& input);
   ~TokenStream();
 
-  bool HasInput() const;
   bool GetNextToken(const Token** token);
 
   const Token::Position& position() const;
