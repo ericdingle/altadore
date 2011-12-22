@@ -5,4 +5,7 @@
     ClassName(const ClassName&); \
     void operator=(const ClassName&);
 
+#define ARRAY_SIZE(arr) \
+    (sizeof(arr) / sizeof(arr[0]))
+
 #endif
