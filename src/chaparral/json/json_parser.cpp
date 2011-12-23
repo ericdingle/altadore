@@ -12,6 +12,9 @@ JsonParser::~JsonParser() {
 }
 
 bool JsonParser::Parse(TokenStream* token_stream, const ASTNode** root) {
+  DASSERT(token_stream != NULL);
+  DASSERT(root != NULL);
+
   std::vector<const ASTNode*> nodes;
   if (!Parse(token_stream, &nodes))
     return false;
@@ -30,6 +33,9 @@ uint JsonParser::GetBindingPower(int type) const {
 }
 
 bool JsonParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
+  DASSERT(token != NULL);
+  DASSERT(root != NULL);
+
   if (token->IsType(JsonLexer::TYPE_LEFT_BRACE))
     return ParseObject(token, root);
   else if (token->IsType(JsonLexer::TYPE_LEFT_BRACKET))
@@ -51,6 +57,10 @@ bool JsonParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
 
 bool JsonParser::ParseInfixToken(const Token* token, const ASTNode* left,
                                  const ASTNode** root) {
+  DASSERT(token != NULL);
+  DASSERT(left != NULL);
+  DASSERT(root != NULL);
+
   memory::scoped_ptr<const Token> token_deleter(token);
   memory::scoped_ptr<const ASTNode> left_deleter(left);
 
@@ -59,36 +69,45 @@ bool JsonParser::ParseInfixToken(const Token* token, const ASTNode* left,
 }
 
 bool JsonParser::ParseObject(const Token* token, const ASTNode** root) {
+  // Implements:
+  //  object -> '{' pairs '}'
+  //  pair -> string ':' value
+  //  pairs -> pair more_pairs | E
+  //  more_pairs -> ',' pair more_pairs | E
+  DASSERT(token != NULL);
+  DASSERT(root != NULL);
+
   memory::scoped_ptr<ASTNode> node(new ASTNode(token));
 
-  while (true) {
-    memory::scoped_ptr<const ASTNode> key;
-    if (!ParseExpression(0, key.Receive()))
-      return false;
+  if (!look_ahead_token_->IsType(JsonLexer::TYPE_RIGHT_BRACE)) {
+    while (true) {
+      memory::scoped_ptr<const ASTNode> key;
+      if (!ParseExpression(0, key.Receive()))
+        return false;
 
-    if (!key->token()->IsType(JsonLexer::TYPE_STRING)) {
-      position_ = token->position();
-      error_ = string::Format("Expecting string but found %s",
-                              token->value().c_str());
-      return false;
+      if (!key->token()->IsType(JsonLexer::TYPE_STRING)) {
+        position_ = token->position();
+        error_ = string::Format("Expecting string but found %s",
+                                token->value().c_str());
+        return false;
+      }
+
+      node->AddChild(key.Release());
+
+      if (!ConsumeToken(JsonLexer::TYPE_COLON))
+        return false;
+
+      memory::scoped_ptr<const ASTNode> value;
+      if (!ParseExpression(0, value.Receive()))
+        return false;
+
+      node->AddChild(value.Release());
+
+      if (!look_ahead_token_->IsType(JsonLexer::TYPE_COMMA))
+        break;
+
+      ASSERT(ConsumeToken(JsonLexer::TYPE_COMMA));
     }
-
-    node->AddChild(key.Release());
-
-    if (!ConsumeToken(JsonLexer::TYPE_COLON))
-      return false;
-
-    memory::scoped_ptr<const ASTNode> value;
-    if (!ParseExpression(0, value.Receive()))
-      return false;
-
-    node->AddChild(value.Release());
-
-    if (!look_ahead_token_->IsType(JsonLexer::TYPE_COMMA))
-      break;
-
-    if (!ConsumeToken(JsonLexer::TYPE_COMMA))
-      return false;
   }
 
   if (!ConsumeToken(JsonLexer::TYPE_RIGHT_BRACE))
@@ -99,20 +118,28 @@ bool JsonParser::ParseObject(const Token* token, const ASTNode** root) {
 }
 
 bool JsonParser::ParseArray(const Token* token, const ASTNode** root) {
+  // Implements:
+  //   array -> '[' values ']'
+  //   values -> value more_values | E
+  //   more_values -> ',' value more_values | E
+  DASSERT(token != NULL);
+  DASSERT(root != NULL);
+
   memory::scoped_ptr<ASTNode> node(new ASTNode(token));
 
-  while (true) {
-    memory::scoped_ptr<const ASTNode> value;
-    if (!ParseExpression(0, value.Receive()))
-      return false;
+  if (!look_ahead_token_->IsType(JsonLexer::TYPE_RIGHT_BRACKET)) {
+    while (true) {
+      memory::scoped_ptr<const ASTNode> value;
+      if (!ParseExpression(0, value.Receive()))
+        return false;
 
-    node->AddChild(value.Release());
+      node->AddChild(value.Release());
 
-    if (!look_ahead_token_->IsType(JsonLexer::TYPE_COMMA))
-      break;
+      if (!look_ahead_token_->IsType(JsonLexer::TYPE_COMMA))
+        break;
 
-    if (!ConsumeToken(JsonLexer::TYPE_COMMA))
-      return false;
+      ASSERT(ConsumeToken(JsonLexer::TYPE_COMMA));
+    }
   }
 
   if (!ConsumeToken(JsonLexer::TYPE_RIGHT_BRACKET))

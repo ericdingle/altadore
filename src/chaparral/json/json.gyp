@@ -34,6 +34,7 @@
     ],
     'sources': [
       'json_lexer_test.cpp',
+      'json_parser_test.cpp',
       '../../bonavista/testing/test_main.cpp',
     ],
   }],

@@ -16,6 +16,8 @@ bool Parser::Parse(TokenStream* token_stream,
                    std::vector<const ASTNode*>* nodes) {
   DASSERT(token_stream != NULL);
 
+  position_ = Token::Position();
+  error_.clear();
   token_stream_ = token_stream;
 
   bool result = Parse(nodes);
