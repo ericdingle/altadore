@@ -12,15 +12,16 @@ class TokenStream;
 
 class Parser {
  public:
-  Parser(TokenStream* token_stream);
+  Parser();
   virtual ~Parser();
 
-  bool Parse(ASTNode* root);
+  bool Parse(TokenStream* token_stream, ASTNode* root);
 
   const Token::Position& position() const;
   const std::string& error() const;
 
  protected:
+  bool Parse(ASTNode* root);
   bool GetNextToken(const Token** token);
   bool ParseExpression(uint binding_power, const ASTNode** root);
   bool ConsumeToken(int type);
@@ -38,7 +39,7 @@ class Parser {
   std::string error_;
 
  private:
-  TokenStream* const token_stream_;
+  TokenStream* token_stream_;
 
   DISALLOW_COPY_AND_ASSIGN(Parser);
 };

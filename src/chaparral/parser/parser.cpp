@@ -6,11 +6,25 @@
 #include "chaparral/lexer/token_stream.h"
 #include "chaparral/parser/ast_node.h"
 
-Parser::Parser(TokenStream* token_stream) : token_stream_(token_stream) {
-  DASSERT(token_stream != NULL);
+Parser::Parser() {
 }
 
 Parser::~Parser() {
+}
+
+bool Parser::Parse(TokenStream* token_stream, ASTNode* root) {
+  DASSERT(token_stream != NULL);
+  token_stream_ = token_stream;
+  return Parse(root);
+  token_stream_ = NULL;
+}
+
+const Token::Position& Parser::position() const {
+  return position_;
+}
+
+const std::string& Parser::error() const {
+  return error_;
 }
 
 bool Parser::Parse(ASTNode* root) {
@@ -31,14 +45,6 @@ bool Parser::Parse(ASTNode* root) {
   }
 
   return true;
-}
-
-const Token::Position& Parser::position() const {
-  return position_;
-}
-
-const std::string& Parser::error() const {
-  return error_;
 }
 
 bool Parser::GetNextToken(const Token** token) {

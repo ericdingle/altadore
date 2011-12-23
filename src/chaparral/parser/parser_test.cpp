@@ -37,9 +37,6 @@ class TestLexer : public Lexer {
 
 class TestParser : public Parser {
  public:
-  TestParser(TokenStream* token_stream) : Parser(token_stream) {
-  }
-
   virtual uint GetBindingPower(int type) const {
     if (type == TestLexer::TYPE_PLUS)
         return 10;
@@ -85,37 +82,31 @@ class TestParser : public Parser {
 };
 
 TEST_CASE(ParserTest) {
+ protected:
+  TestLexer lexer_;
+  TestParser parser_;
 };
 
 TEST(ParserTest, Empty) {
-  TestLexer lexer;
-  TokenStream stream(&lexer, "");
-
-  TestParser parser(&stream);
+  TokenStream stream(&lexer_, "");
   ASTNode root(NULL);
-  EXPECT_TRUE(parser.Parse(&root));
+  EXPECT_TRUE(parser_.Parse(&stream, &root));
   EXPECT_EQ(root.children().size(), 0);
 }
 
 TEST(ParserTest, BadToken) {
-  TestLexer lexer;
-  TokenStream stream(&lexer, "a");
-
-  TestParser parser(&stream);
+  TokenStream stream(&lexer_, "a");
   ASTNode root(NULL);
-  EXPECT_FALSE(parser.Parse(&root));
-  EXPECT_EQ(parser.position().line, 1);
-  EXPECT_EQ(parser.position().column, 1);
-  EXPECT_FALSE(parser.error().empty());
+  EXPECT_FALSE(parser_.Parse(&stream, &root));
+  EXPECT_EQ(parser_.position().line, 1);
+  EXPECT_EQ(parser_.position().column, 1);
+  EXPECT_FALSE(parser_.error().empty());
 }
 
 TEST(ParserTest, Prefix) {
-  TestLexer lexer;
-  TokenStream stream(&lexer, "1");
-
-  TestParser parser(&stream);
+  TokenStream stream(&lexer_, "1");
   ASTNode root(NULL);
-  EXPECT_TRUE(parser.Parse(&root));
+  EXPECT_TRUE(parser_.Parse(&stream, &root));
   EXPECT_EQ(root.children().size(), 1);
 
   const ASTNode* node = root.children()[0];
@@ -124,24 +115,18 @@ TEST(ParserTest, Prefix) {
 }
 
 TEST(ParserTest, PrefixError) {
-  TestLexer lexer;
-  TokenStream stream(&lexer, "+");
-
-  TestParser parser(&stream);
+  TokenStream stream(&lexer_, "+");
   ASTNode root(NULL);
-  EXPECT_FALSE(parser.Parse(&root));
-  EXPECT_EQ(parser.position().line, 1);
-  EXPECT_EQ(parser.position().column, 1);
-  EXPECT_FALSE(parser.error().empty());
+  EXPECT_FALSE(parser_.Parse(&stream, &root));
+  EXPECT_EQ(parser_.position().line, 1);
+  EXPECT_EQ(parser_.position().column, 1);
+  EXPECT_FALSE(parser_.error().empty());
 }
 
 TEST(ParserTest, Infix) {
-  TestLexer lexer;
-  TokenStream stream(&lexer, "1+2");
-
-  TestParser parser(&stream);
+  TokenStream stream(&lexer_, "1+2");
   ASTNode root(NULL);
-  EXPECT_TRUE(parser.Parse(&root));
+  EXPECT_TRUE(parser_.Parse(&stream, &root));
   EXPECT_EQ(root.children().size(), 1);
 
   const ASTNode* node = root.children()[0];
@@ -160,24 +145,18 @@ TEST(ParserTest, Infix) {
 }
 
 TEST(ParserTest, InfixError) {
-  TestLexer lexer;
-  TokenStream stream(&lexer, "1+");
-
-  TestParser parser(&stream);
+  TokenStream stream(&lexer_, "1+");
   ASTNode root(NULL);
-  EXPECT_FALSE(parser.Parse(&root));
-  EXPECT_EQ(parser.position().line, 1);
-  EXPECT_EQ(parser.position().column, 3);
-  EXPECT_FALSE(parser.error().empty());
+  EXPECT_FALSE(parser_.Parse(&stream, &root));
+  EXPECT_EQ(parser_.position().line, 1);
+  EXPECT_EQ(parser_.position().column, 3);
+  EXPECT_FALSE(parser_.error().empty());
 }
 
 TEST(ParserTest, ConsumeToken) {
-  TestLexer lexer;
-  TokenStream stream(&lexer, "01");
-
-  TestParser parser(&stream);
+  TokenStream stream(&lexer_, "01");
   ASTNode root(NULL);
-  EXPECT_TRUE(parser.Parse(&root));
+  EXPECT_TRUE(parser_.Parse(&stream, &root));
   EXPECT_EQ(root.children().size(), 1);
 
   const ASTNode* node = root.children()[0];
@@ -187,13 +166,10 @@ TEST(ParserTest, ConsumeToken) {
 }
 
 TEST(ParserTest, ConsumeTokenError) {
-  TestLexer lexer;
-  TokenStream stream(&lexer, "0");
-
-  TestParser parser(&stream);
+  TokenStream stream(&lexer_, "0");
   ASTNode root(NULL);
-  EXPECT_FALSE(parser.Parse(&root));
-  EXPECT_EQ(parser.position().line, 1);
-  EXPECT_EQ(parser.position().column, 2);
-  EXPECT_FALSE(parser.error().empty());
+  EXPECT_FALSE(parser_.Parse(&stream, &root));
+  EXPECT_EQ(parser_.position().line, 1);
+  EXPECT_EQ(parser_.position().column, 2);
+  EXPECT_FALSE(parser_.error().empty());
 }
