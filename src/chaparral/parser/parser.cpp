@@ -15,9 +15,15 @@ Parser::~Parser() {
 bool Parser::Parse(TokenStream* token_stream,
                    std::vector<const ASTNode*>* nodes) {
   DASSERT(token_stream != NULL);
+
   token_stream_ = token_stream;
-  return Parse(nodes);
+
+  bool result = Parse(nodes);
+
+  look_ahead_token_.Reset(NULL);
   token_stream_ = NULL;
+
+  return result;
 }
 
 const Token::Position& Parser::position() const {
@@ -30,6 +36,7 @@ const std::string& Parser::error() const {
 
 bool Parser::Parse(std::vector<const ASTNode*>* nodes) {
   DASSERT(nodes != NULL);
+  nodes->clear();
 
   // Advance look ahead to the first token.
   memory::scoped_ptr<const Token> token;
@@ -58,6 +65,7 @@ bool Parser::GetNextToken(const Token** token) {
     error_ = token_stream_->error();
     return false;
   }
+  DASSERT(look_ahead_token_.ptr() != NULL);
 
   return true;
 }

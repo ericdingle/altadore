@@ -172,3 +172,13 @@ TEST(ParserTest, ConsumeTokenError) {
   EXPECT_EQ(parser_.position().column, 2);
   EXPECT_FALSE(parser_.error().empty());
 }
+
+TEST(ParserTest, MultipleRuns) {
+  TokenStream stream1(&lexer_, "1");
+  EXPECT_TRUE(parser_.Parse(&stream1, &nodes_));
+  EXPECT_EQ(nodes_.size(), 1);
+
+  TokenStream stream2(&lexer_, "2");
+  EXPECT_TRUE(parser_.Parse(&stream2, &nodes_));
+  EXPECT_EQ(nodes_.size(), 1);
+}
