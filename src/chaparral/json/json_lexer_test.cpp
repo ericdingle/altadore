@@ -17,8 +17,9 @@ TEST(JsonLexerTest, Operators) {
   uint count = 0;
   std::string error;
 
-  const char* inputs[] = { ",", "{", "}", "[", "]" };
-  const int types[] = { JsonLexer::TYPE_COMMA,
+  const char* inputs[] = { ":", ",", "{", "}", "[", "]" };
+  const int types[] = { JsonLexer::TYPE_COLON,
+                        JsonLexer::TYPE_COMMA,
                         JsonLexer::TYPE_LEFT_BRACE,
                         JsonLexer::TYPE_RIGHT_BRACE,
                         JsonLexer::TYPE_LEFT_BRACKET,

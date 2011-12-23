@@ -10,6 +10,7 @@ class JsonLexer : public Lexer {
   ~JsonLexer();
 
   enum Type {
+    TYPE_COLON,
     TYPE_COMMA,
     TYPE_FALSE,
     TYPE_LEFT_BRACE,

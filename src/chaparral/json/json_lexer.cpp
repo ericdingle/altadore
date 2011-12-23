@@ -23,7 +23,9 @@ bool JsonLexer::GetToken(const std::string& input,
     return GetStringToken(input, index, type, value, count, error);
 
   int t = -1;
-  if (c == ',')
+  if (c == ':')
+    t = TYPE_COLON;
+  else if (c == ',')
     t = TYPE_COMMA;
   else if (c == '{')
     t = TYPE_LEFT_BRACE;
