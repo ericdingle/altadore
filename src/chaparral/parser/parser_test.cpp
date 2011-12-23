@@ -82,22 +82,27 @@ class TestParser : public Parser {
 };
 
 TEST_CASE(ParserTest) {
+ public:
+  virtual void TearDown() {
+    for (uint i = 0; i < nodes_.size(); ++i)
+      delete nodes_[i];
+  }
+
  protected:
   TestLexer lexer_;
   TestParser parser_;
+  std::vector<const ASTNode*> nodes_;
 };
 
 TEST(ParserTest, Empty) {
   TokenStream stream(&lexer_, "");
-  ASTNode root(NULL);
-  EXPECT_TRUE(parser_.Parse(&stream, &root));
-  EXPECT_EQ(root.children().size(), 0);
+  EXPECT_TRUE(parser_.Parse(&stream, &nodes_));
+  EXPECT_EQ(nodes_.size(), 0);
 }
 
 TEST(ParserTest, BadToken) {
   TokenStream stream(&lexer_, "a");
-  ASTNode root(NULL);
-  EXPECT_FALSE(parser_.Parse(&stream, &root));
+  EXPECT_FALSE(parser_.Parse(&stream, &nodes_));
   EXPECT_EQ(parser_.position().line, 1);
   EXPECT_EQ(parser_.position().column, 1);
   EXPECT_FALSE(parser_.error().empty());
@@ -105,19 +110,17 @@ TEST(ParserTest, BadToken) {
 
 TEST(ParserTest, Prefix) {
   TokenStream stream(&lexer_, "1");
-  ASTNode root(NULL);
-  EXPECT_TRUE(parser_.Parse(&stream, &root));
-  EXPECT_EQ(root.children().size(), 1);
+  EXPECT_TRUE(parser_.Parse(&stream, &nodes_));
+  EXPECT_EQ(nodes_.size(), 1);
 
-  const ASTNode* node = root.children()[0];
+  const ASTNode* node = nodes_[0];
   EXPECT_TRUE(node->token()->IsType(TestLexer::TYPE_DIGIT));
   EXPECT_EQ(node->children().size(), 0);
 }
 
 TEST(ParserTest, PrefixError) {
   TokenStream stream(&lexer_, "+");
-  ASTNode root(NULL);
-  EXPECT_FALSE(parser_.Parse(&stream, &root));
+  EXPECT_FALSE(parser_.Parse(&stream, &nodes_));
   EXPECT_EQ(parser_.position().line, 1);
   EXPECT_EQ(parser_.position().column, 1);
   EXPECT_FALSE(parser_.error().empty());
@@ -125,11 +128,10 @@ TEST(ParserTest, PrefixError) {
 
 TEST(ParserTest, Infix) {
   TokenStream stream(&lexer_, "1+2");
-  ASTNode root(NULL);
-  EXPECT_TRUE(parser_.Parse(&stream, &root));
-  EXPECT_EQ(root.children().size(), 1);
+  EXPECT_TRUE(parser_.Parse(&stream, &nodes_));
+  EXPECT_EQ(nodes_.size(), 1);
 
-  const ASTNode* node = root.children()[0];
+  const ASTNode* node = nodes_[0];
   EXPECT_TRUE(node->token()->IsType(TestLexer::TYPE_PLUS));
   EXPECT_EQ(node->children().size(), 2);
 
@@ -146,8 +148,7 @@ TEST(ParserTest, Infix) {
 
 TEST(ParserTest, InfixError) {
   TokenStream stream(&lexer_, "1+");
-  ASTNode root(NULL);
-  EXPECT_FALSE(parser_.Parse(&stream, &root));
+  EXPECT_FALSE(parser_.Parse(&stream, &nodes_));
   EXPECT_EQ(parser_.position().line, 1);
   EXPECT_EQ(parser_.position().column, 3);
   EXPECT_FALSE(parser_.error().empty());
@@ -155,11 +156,10 @@ TEST(ParserTest, InfixError) {
 
 TEST(ParserTest, ConsumeToken) {
   TokenStream stream(&lexer_, "01");
-  ASTNode root(NULL);
-  EXPECT_TRUE(parser_.Parse(&stream, &root));
-  EXPECT_EQ(root.children().size(), 1);
+  EXPECT_TRUE(parser_.Parse(&stream, &nodes_));
+  EXPECT_EQ(nodes_.size(), 1);
 
-  const ASTNode* node = root.children()[0];
+  const ASTNode* node = nodes_[0];
   EXPECT_TRUE(node->token()->IsType(TestLexer::TYPE_DIGIT));
   EXPECT_EQ(node->token()->value(), "0");
   EXPECT_EQ(node->children().size(), 0);
@@ -167,8 +167,7 @@ TEST(ParserTest, ConsumeToken) {
 
 TEST(ParserTest, ConsumeTokenError) {
   TokenStream stream(&lexer_, "0");
-  ASTNode root(NULL);
-  EXPECT_FALSE(parser_.Parse(&stream, &root));
+  EXPECT_FALSE(parser_.Parse(&stream, &nodes_));
   EXPECT_EQ(parser_.position().line, 1);
   EXPECT_EQ(parser_.position().column, 2);
   EXPECT_FALSE(parser_.error().empty());

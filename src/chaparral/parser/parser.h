@@ -2,6 +2,7 @@
 #define CHAPARRAL_PARSER_PARSER_H_
 
 #include <string>
+#include <vector>
 #include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 #include "bonavista/memory/scoped_ptr.h"
@@ -15,13 +16,14 @@ class Parser {
   Parser();
   virtual ~Parser();
 
-  bool Parse(TokenStream* token_stream, ASTNode* root);
+  virtual bool Parse(TokenStream* token_stream,
+                     std::vector<const ASTNode*>* nodes);
 
   const Token::Position& position() const;
   const std::string& error() const;
 
  protected:
-  bool Parse(ASTNode* root);
+  bool Parse(std::vector<const ASTNode*>* nodes);
   bool GetNextToken(const Token** token);
   bool ParseExpression(uint binding_power, const ASTNode** root);
   bool ConsumeToken(int type);

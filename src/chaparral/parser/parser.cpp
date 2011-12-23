@@ -12,10 +12,11 @@ Parser::Parser() {
 Parser::~Parser() {
 }
 
-bool Parser::Parse(TokenStream* token_stream, ASTNode* root) {
+bool Parser::Parse(TokenStream* token_stream,
+                   std::vector<const ASTNode*>* nodes) {
   DASSERT(token_stream != NULL);
   token_stream_ = token_stream;
-  return Parse(root);
+  return Parse(nodes);
   token_stream_ = NULL;
 }
 
@@ -27,8 +28,8 @@ const std::string& Parser::error() const {
   return error_;
 }
 
-bool Parser::Parse(ASTNode* root) {
-  DASSERT(root != NULL);
+bool Parser::Parse(std::vector<const ASTNode*>* nodes) {
+  DASSERT(nodes != NULL);
 
   // Advance look ahead to the first token.
   memory::scoped_ptr<const Token> token;
@@ -41,7 +42,7 @@ bool Parser::Parse(ASTNode* root) {
     memory::scoped_ptr<const ASTNode> node;
     if (!ParseExpression(0, node.Receive()))
       return false;
-    root->AddChild(node.Release());
+    nodes->push_back(node.Release());
   }
 
   return true;
