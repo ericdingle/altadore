@@ -166,7 +166,7 @@ bool JsonLexer::GetStringToken(const std::string& input,
     }
 
     if (c < ' ') {
-      *error = "Unexpected control character";
+      *error = "Unterminated string";
       return false;
     }
 

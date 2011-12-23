@@ -16,8 +16,7 @@ class Parser {
   Parser();
   virtual ~Parser();
 
-  virtual bool Parse(TokenStream* token_stream,
-                     std::vector<const ASTNode*>* nodes);
+  bool Parse(TokenStream* token_stream, std::vector<const ASTNode*>* nodes);
 
   const Token::Position& position() const;
   const std::string& error() const;
