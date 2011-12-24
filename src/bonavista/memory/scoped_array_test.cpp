@@ -21,3 +21,11 @@ TEST(ScopedArrayTest, IndexOperator) {
   EXPECT_EQ(array[2], 10);
   EXPECT_EQ(array.ptr()[2], 10);
 }
+
+TEST(ScopedArrayTest, ConstIndexOperator) {
+  int* i = new int[5];
+  i[2] = 10;
+
+  const memory::scoped_array<int> array(i);
+  EXPECT_EQ(array[2], 10);
+}

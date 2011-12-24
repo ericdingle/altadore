@@ -1,11 +1,11 @@
 #include "bonavista/io/scoped_file.h"
 
-#include "bonavista/base/macros.h"
 #include "bonavista/io/io.h"
 #include "bonavista/testing/test_case.h"
+#include "bonavista/util/macros.h"
 
 TEST_CASE(ScopedFileTest) {
-protected:
+ protected:
   void SetUp() {
     file_ = io::OpenFile("test.tmp", "w+b");
   }

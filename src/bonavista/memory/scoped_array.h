@@ -16,11 +16,17 @@ template <typename T>
 class scoped_array : public scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> > {
  public:
   explicit scoped_array(T* ptr=NULL) : scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> >(ptr) {}
-  ~scoped_array() {}
+  virtual ~scoped_array() {}
 
   T& operator[](uint index) {
     T* ptr = scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> >::ptr();
-    DASSERT(ptr != NULL);
+    ASSERT(ptr);
+    return ptr[index];
+  }
+
+  const T& operator[](uint index) const {
+    T* ptr = scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> >::ptr();
+    ASSERT(ptr);
     return ptr[index];
   }
 

@@ -1,12 +1,11 @@
 #include "bonavista/testing/test_case.h"
 
 TEST_CASE(TestCaseTest) {
-public:
+ protected:
   void SetUp() {
     a_ = 0;
   }
 
-protected:
   int a_;
 };
 

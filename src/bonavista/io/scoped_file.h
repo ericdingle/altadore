@@ -1,6 +1,7 @@
 #ifndef BONAVISTA_IO_SCOPED_FILE_H_
 #define BONAVISTA_IO_SCOPED_FILE_H_
 
+#include <stdio.h>
 #include "bonavista/memory/scoped_ptr.h"
 
 namespace io {
