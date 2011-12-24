@@ -1,4 +1,4 @@
-#include "bonavista/memory/scoped_ref.h"
+#include "bonavista/memory/scoped_refptr.h"
 
 #include "bonavista/testing/inst_count.h"
 #include "bonavista/testing/test_case.h"
@@ -18,12 +18,12 @@ TEST_CASE(ScopedRefTest) {
 TEST(ScopedRefTest, ConstructorAndDestructor) {
   EXPECT_EQ(Dummy::inst_count(), 0);
   {
-    memory::scoped_ref<Dummy> ref(new Dummy());
+    memory::scoped_refptr<Dummy> ref(new Dummy());
     EXPECT_EQ(ref->ref_count(), 1);
     EXPECT_EQ(Dummy::inst_count(), 1);
 
     {
-      memory::scoped_ref<Dummy>ref2(ref);
+      memory::scoped_refptr<Dummy>ref2(ref);
       EXPECT_EQ(ref->ref_count(), 2);
       EXPECT_EQ(Dummy::inst_count(), 1);
     }
@@ -35,30 +35,30 @@ TEST(ScopedRefTest, ConstructorAndDestructor) {
 }
 
 TEST(ScopedRefTest, ConstCopyConstructor) {
-  memory::scoped_ref<Dummy> ref1;
-  memory::scoped_ref<const Dummy> ref2(ref1);
+  memory::scoped_refptr<Dummy> ref1;
+  memory::scoped_refptr<const Dummy> ref2(ref1);
   EXPECT_EQ(Dummy::inst_count(), 0);
 
-  memory::scoped_ref<Dummy> ref3(new Dummy());
+  memory::scoped_refptr<Dummy> ref3(new Dummy());
   EXPECT_EQ(ref3->ref_count(), 1);
   EXPECT_EQ(Dummy::inst_count(), 1);
 
-  memory::scoped_ref<const Dummy> ref4(ref3);
+  memory::scoped_refptr<const Dummy> ref4(ref3);
   EXPECT_EQ(ref3->ref_count(), 2);
   EXPECT_EQ(Dummy::inst_count(), 1);
 }
 
 TEST(ScopedRefTest, AssignmentOperator) {
-  memory::scoped_ref<Dummy> ref1;
-  memory::scoped_ref<Dummy> ref2;
+  memory::scoped_refptr<Dummy> ref1;
+  memory::scoped_refptr<Dummy> ref2;
   ref2 = ref1;
   EXPECT_EQ(Dummy::inst_count(), 0);
 
-  memory::scoped_ref<Dummy> ref3(new Dummy());
+  memory::scoped_refptr<Dummy> ref3(new Dummy());
   EXPECT_EQ(ref3->ref_count(), 1);
   EXPECT_EQ(Dummy::inst_count(), 1);
 
-  memory::scoped_ref<Dummy> ref4;
+  memory::scoped_refptr<Dummy> ref4;
   ref4 = ref3;
   EXPECT_EQ(ref3->ref_count(), 2);
   EXPECT_EQ(Dummy::inst_count(), 1);
@@ -72,18 +72,18 @@ TEST(ScopedRefTest, AssignmentOperator) {
 }
 
 TEST(ScopedRefTest, Vector) {
-  std::vector<memory::scoped_ref<Dummy> > dummies;
+  std::vector<memory::scoped_refptr<Dummy> > dummies;
 
-  memory::scoped_ref<Dummy> ref1(new Dummy());
+  memory::scoped_refptr<Dummy> ref1(new Dummy());
   EXPECT_EQ(ref1->ref_count(), 1);
 
   dummies.push_back(ref1);
   EXPECT_EQ(ref1->ref_count(), 2);
 
-  memory::scoped_ref<Dummy> ref2(new Dummy());
+  memory::scoped_refptr<Dummy> ref2(new Dummy());
   EXPECT_EQ(ref2->ref_count(), 1);
 
-  dummies.push_back(memory::scoped_ref<Dummy>(ref2));
+  dummies.push_back(memory::scoped_refptr<Dummy>(ref2));
   EXPECT_EQ(ref1->ref_count(), 2);
   EXPECT_EQ(ref2->ref_count(), 2);
 }
