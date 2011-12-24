@@ -1,0 +1,105 @@
+#include "chaparral/calc/calc_parser.h"
+
+#include "bonavista/string/format.h"
+#include "bonavista/testing/test_case.h"
+#include "chaparral/lexer/token_stream.h"
+#include "chaparral/calc/calc_lexer.h"
+#include "chaparral/parser/ast_node.h"
+
+TEST_CASE(CalcParserTest) {
+ protected:
+  CalcLexer lexer_;
+  CalcParser parser_;
+
+  memory::scoped_ptr<const ASTNode> root_;
+};
+
+TEST(CalcParserTest, ParseEmpty) {
+  TokenStream stream(&lexer_, "");
+  EXPECT_FALSE(parser_.Parse(&stream, root_.Receive()));
+  EXPECT_FALSE(parser_.error().empty());
+}
+
+TEST(CalcParserTest, ParseUnknown) {
+  TokenStream stream(&lexer_, "b");
+  EXPECT_FALSE(parser_.Parse(&stream, root_.Receive()));
+  EXPECT_FALSE(parser_.error().empty());
+}
+
+TEST(CalcParserTest, ParseNumber) {
+  TokenStream stream(&lexer_, "1");
+  EXPECT_TRUE(parser_.Parse(&stream, root_.Receive()));
+  EXPECT_TRUE(root_->token()->IsType(CalcLexer::TYPE_NUMBER));
+}
+
+TEST(CalcParserTest, ParseParenthesis) {
+  TokenStream stream(&lexer_, "(1)");
+  EXPECT_TRUE(parser_.Parse(&stream, root_.Receive()));
+  EXPECT_TRUE(root_->token()->IsType(CalcLexer::TYPE_NUMBER));
+}
+
+TEST(CalcParserTest, ParseParenthesisError) {
+  const char* inputs[] = { "()", "(1", "(+)" };
+  for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
+    TokenStream stream(&lexer_, inputs[i]);
+    EXPECT_FALSE(parser_.Parse(&stream, root_.Receive()));
+    EXPECT_FALSE(parser_.error().empty());
+  }
+}
+
+TEST(CalcParserTest, ParseOperator) {
+  const char ops[] = { '*', '-', '+', '/' };
+  const int types[] = { CalcLexer::TYPE_ASTERISK,
+                        CalcLexer::TYPE_MINUS,
+                        CalcLexer::TYPE_PLUS,
+                        CalcLexer::TYPE_SLASH };
+
+  for (uint i = 0; i < ARRAY_SIZE(ops); ++i) {
+    std::string input = string::Format("1%c2", ops[i]);
+    TokenStream stream(&lexer_, input);
+    EXPECT_TRUE(parser_.Parse(&stream, root_.Receive()));
+
+    EXPECT_EQ(root_->token()->type(), types[i]);
+    EXPECT_EQ(root_->children().size(), 2);
+
+    EXPECT_EQ(root_->children()[0]->token()->type(), CalcLexer::TYPE_NUMBER);
+    EXPECT_EQ(root_->children()[0]->token()->value(), "1");
+
+    EXPECT_EQ(root_->children()[1]->token()->type(), CalcLexer::TYPE_NUMBER);
+    EXPECT_EQ(root_->children()[1]->token()->value(), "2");
+  }
+}
+
+TEST(CalcParserTest, ParseOperatorError) {
+  TokenStream stream(&lexer_, "1+*");
+  EXPECT_FALSE(parser_.Parse(&stream, root_.Receive()));
+  EXPECT_FALSE(parser_.error().empty());
+}
+
+TEST(CalcParserTest, OperatorPrecedence) {
+  const char* inputs[] = { "1+2-3",
+                           "1-2+3",
+                           "1*2/3",
+                           "1/2*3",
+                           "1*2+3",
+                           "1-2/3",
+                           "1*(2+3)" };
+  const int types[] = { CalcLexer::TYPE_MINUS,
+                        CalcLexer::TYPE_PLUS,
+                        CalcLexer::TYPE_SLASH,
+                        CalcLexer::TYPE_ASTERISK,
+                        CalcLexer::TYPE_PLUS,
+                        CalcLexer::TYPE_MINUS,
+                        CalcLexer::TYPE_ASTERISK };
+  for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
+    TokenStream stream(&lexer_, inputs[i]);
+    EXPECT_TRUE(parser_.Parse(&stream, root_.Receive()));
+    EXPECT_EQ(root_->token()->type(), types[i]);
+  }
+}
+
+TEST(CalcParserTest, ParseMultipleExpressions) {
+  TokenStream stream(&lexer_, "1 2");
+  EXPECT_FALSE(parser_.Parse(&stream, root_.Receive()));
+  EXPECT_FALSE(parser_.error().empty());
+}

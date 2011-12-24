@@ -33,6 +33,7 @@
     ],
     'sources': [
       'calc_lexer_test.cpp',
+      'calc_parser_test.cpp',
       '../../bonavista/testing/test_main.cpp',
     ],
   }],
