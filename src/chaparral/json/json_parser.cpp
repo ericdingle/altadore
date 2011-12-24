@@ -63,7 +63,7 @@ bool JsonParser::ParseInfixToken(const Token* token, const ASTNode* left,
   memory::scoped_ptr<const Token> token_deleter(token);
   memory::scoped_ptr<const ASTNode> left_deleter(left);
 
-  position_ token->position();
+  position_ = token->position();
   error_ = string::Format("Unexpected token: %s", token->value().c_str());
   return false;
 }
