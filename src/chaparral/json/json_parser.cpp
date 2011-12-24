@@ -35,17 +35,19 @@ bool JsonParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
   ASSERT(token);
   ASSERT(root);
 
+  memory::scoped_ptr<const Token> token_holder(token);
+
   if (token->IsType(JsonLexer::TYPE_LEFT_BRACE))
-    return ParseObject(token, root);
+    return ParseObject(token_holder.Release(), root);
   else if (token->IsType(JsonLexer::TYPE_LEFT_BRACKET))
-    return ParseArray(token, root);
+    return ParseArray(token_holder.Release(), root);
 
   if (token->IsType(JsonLexer::TYPE_FALSE) ||
       token->IsType(JsonLexer::TYPE_NULL) ||
       token->IsType(JsonLexer::TYPE_NUMBER) ||
       token->IsType(JsonLexer::TYPE_STRING) ||
       token->IsType(JsonLexer::TYPE_TRUE)) {
-    *root = new ASTNode(token);
+    *root = new ASTNode(token_holder.Release());
     return true;
   }
 
@@ -61,6 +63,7 @@ bool JsonParser::ParseInfixToken(const Token* token, const ASTNode* left,
   memory::scoped_ptr<const Token> token_deleter(token);
   memory::scoped_ptr<const ASTNode> left_deleter(left);
 
+  position_ token->position();
   error_ = string::Format("Unexpected token: %s", token->value().c_str());
   return false;
 }

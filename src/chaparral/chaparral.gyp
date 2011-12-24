@@ -13,6 +13,7 @@
     'target_name': 'libs',
     'type': 'none',
     'dependencies': [
+      'calc/calc.gyp:calc_lib',
       'execute/execute.gyp:execute_lib',
       'json/json.gyp:json_lib',
       'lexer/lexer.gyp:lexer_lib',
@@ -25,6 +26,7 @@
     'target_name': 'tests',
     'type': 'none',
     'dependencies': [
+      'calc/calc.gyp:calc_test',
       'execute/execute.gyp:execute_test',
       'json/json.gyp:json_test',
       'lexer/lexer.gyp:lexer_test',

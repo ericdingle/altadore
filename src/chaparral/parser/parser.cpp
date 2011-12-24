@@ -6,7 +6,7 @@
 #include "chaparral/lexer/token_stream.h"
 #include "chaparral/parser/ast_node.h"
 
-Parser::Parser() {
+Parser::Parser() : token_stream_(NULL) {
 }
 
 Parser::~Parser() {

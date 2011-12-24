@@ -3,33 +3,37 @@
     '../../bonavista/common.gypi',
   ],
   'targets': [{
+    'target_name': 'calc_lib',
+    'type': 'static_library',
+    'dependencies': [
+      '../lexer/lexer.gyp:lexer_lib',
+      '../parser/parser.gyp:parser_lib',
+    ],
+    'sources': [
+      'calc_lexer.cpp',
+      'calc_lexer.h',
+      'calc_parser.cpp',
+      'calc_parser.h',
+    ],
+  }, {
     'target_name': 'calc',
     'type': 'executable',
     'dependencies': [
-      '../execute/execute.gyp:execute_lib',
+      'calc_lib',
     ],
     'sources': [
-      'add_operator.cpp',
-      'add_operator.h',
-      'binary_operator.cpp',
-      'binary_operator.h',
-      'calc_parser.cpp',
-      'calc_parser.h',
-      'div_operator.cpp',
-      'div_operator.h',
       'main.cpp',
-      'minus_operator.cpp',
-      'minus_operator.h',
-      'mul_operator.cpp',
-      'mul_operator.h',
-      'paren_operator.cpp',
-      'paren_operator.h',
-      'plus_operator.cpp',
-      'plus_operator.h',
-      'sub_operator.cpp',
-      'sub_operator.h',
-      'unary_operator.cpp',
-      'unary_operator.h',
+    ],
+  }, {
+    'target_name': 'calc_test',
+    'type': 'executable',
+    'dependencies': [
+      'calc_lib',
+      '../../bonavista/testing/testing.gyp:testing_lib',
+    ],
+    'sources': [
+      'calc_lexer_test.cpp',
+      '../../bonavista/testing/test_main.cpp',
     ],
   }],
 }

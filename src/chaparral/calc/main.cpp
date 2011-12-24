@@ -2,48 +2,36 @@
 #include <stdio.h>
 #include <string>
 #include <string.h>
+#include "chaparral/calc/calc_lexer.h"
 #include "chaparral/calc/calc_parser.h"
-#include "chaparral/execute/executer.h"
-#include "chaparral/token/token_stream.h"
+#include "chaparral/lexer/token_stream.h"
+#include "chaparral/parser/ast_node.h"
 
 namespace {
 
-const char* INPUT_PREFIX = "calc > ";
+const char* kInputPrefix = "calc > ";
 
 }  // namespace
 
 int main() {
+  CalcLexer lexer;
   CalcParser parser;
 
   while (true) {
-    printf("%s", INPUT_PREFIX);
+    printf("%s", kInputPrefix);
     std::string input;
     getline(std::cin, input);
     if (input.empty())
       break;
 
-    TokenStream token_stream(input.c_str());
-    SymbolRef symbol;
-    if (!parser.Parse(&token_stream, &symbol)) {
-      int offset = static_cast<int>(strlen(INPUT_PREFIX) + parser.error_location().column);
+    TokenStream token_stream(&lexer, input);
+    memory::scoped_ptr<const ASTNode> root;
+    if (!parser.Parse(&token_stream, root.Receive())) {
+      int offset = static_cast<int>(strlen(kInputPrefix) + parser.position().column);
       printf("%*s\n", offset, "^");
-      printf("Parse error: %s.\n", parser.error_message().c_str());
+      printf("Parse error: %s.\n", parser.error().c_str());
       continue;
     }
-
-    if (!token_stream.EndOfInput()) {
-      printf("Input error: garbage at end of input.\n");
-      continue;
-    }
-
-    Executer executer;
-    memory::scoped_refptr<Value> result;
-    if (!executer.Execute(symbol.ptr(), &result)) {
-      printf("Execute error: %s\n", executer.error_message().c_str());
-      continue;
-    }
-
-    printf("Result: %s\n", result->ToString().c_str());
   }
 
   return 0;
