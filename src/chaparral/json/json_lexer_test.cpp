@@ -5,18 +5,17 @@
 
 
 TEST_CASE(JsonLexerTest) {
+ protected:
+  JsonLexer lexer_;
+
+  std::string input_;
+  int type_;
+  std::string value_;
+  uint count_;
+  std::string error_;
 };
 
 TEST(JsonLexerTest, Operators) {
-  JsonLexer lexer;
-
-  std::string input = "";
-  const uint index = 0;
-  int type = -1;
-  std::string value;
-  uint count = 0;
-  std::string error;
-
   const char* inputs[] = { ":", ",", "{", "}", "[", "]" };
   const int types[] = { JsonLexer::TYPE_COLON,
                         JsonLexer::TYPE_COMMA,
@@ -26,56 +25,38 @@ TEST(JsonLexerTest, Operators) {
                         JsonLexer::TYPE_RIGHT_BRACKET };
 
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
-    input = inputs[i];
-    EXPECT_TRUE(lexer.GetToken(input, index, &type, &value, &count, &error));
-    EXPECT_EQ(type, types[i]);
-    EXPECT_EQ(value, input);
-    EXPECT_EQ(count, 1);
+    input_ = inputs[i];
+    EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+    EXPECT_EQ(type_, types[i]);
+    EXPECT_EQ(value_, input_);
+    EXPECT_EQ(count_, 1);
   }
 
-  input = ".";
-  EXPECT_FALSE(lexer.GetToken(input, index, &type, &value, &count, &error));
-  EXPECT_FALSE(error.empty());
+  input_ = ".";
+  EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+  EXPECT_FALSE(error_.empty());
 }
 
 TEST(JsonLexerTest, Keywords) {
-  JsonLexer lexer;
-
-  std::string input = "";
-  const uint index = 0;
-  int type = -1;
-  std::string value;
-  uint count = 0;
-  std::string error;
-
   const char* inputs[] = { "false", "null", "true" };
   const int types[] = { JsonLexer::TYPE_FALSE,
                         JsonLexer::TYPE_NULL,
                         JsonLexer::TYPE_TRUE };
 
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
-    input = inputs[i];
-    EXPECT_TRUE(lexer.GetToken(input, index, &type, &value, &count, &error));
-    EXPECT_EQ(type, types[i]);
-    EXPECT_EQ(value, input);
-    EXPECT_EQ(count, input.length());
+    input_ = inputs[i];
+    EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+    EXPECT_EQ(type_, types[i]);
+    EXPECT_EQ(value_, input_);
+    EXPECT_EQ(count_, input_.length());
   }
 
-  input = "blah";
-  EXPECT_FALSE(lexer.GetToken(input, index, &type, &value, &count, &error));
-  EXPECT_FALSE(error.empty());
+  input_ = "blah";
+  EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+  EXPECT_FALSE(error_.empty());
 }
 
 TEST(JsonLexerTest, Numbers) {
-  JsonLexer lexer;
-
-  std::string input = "";
-  const uint index = 0;
-  int type = -1;
-  std::string value;
-  uint count = 0;
-  std::string error;
-
   const char* inputs[] = {
     "0", "-0", "1", "-1", "12", "123",
     "0.1", "-0.1", "12.3", "12.34",
@@ -83,33 +64,24 @@ TEST(JsonLexerTest, Numbers) {
   };
 
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
-    input = inputs[i];
-    EXPECT_TRUE(lexer.GetToken(input, index, &type, &value, &count, &error));
-    EXPECT_EQ(type, JsonLexer::TYPE_NUMBER);
-    EXPECT_EQ(value, input);
-    EXPECT_EQ(count, input.length());
+    input_ = inputs[i];
+    EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+    EXPECT_EQ(type_, JsonLexer::TYPE_NUMBER);
+    EXPECT_EQ(value_, input_);
+    EXPECT_EQ(count_, input_.length());
   }
 
   const char* bad_inputs[] = { "-", "01", "1.", "23e", "35E+" };
 
   for (uint i = 0; i < ARRAY_SIZE(bad_inputs); ++i) {
-    input = bad_inputs[i];
-    error.clear();
-    EXPECT_FALSE(lexer.GetToken(input, index, &type, &value, &count, &error));
-    EXPECT_FALSE(error.empty());
+    input_ = bad_inputs[i];
+    error_.clear();
+    EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+    EXPECT_FALSE(error_.empty());
   }
 }
 
 TEST(JsonLexerTest, Strings) {
-  JsonLexer lexer;
-
-  std::string input = "";
-  const uint index = 0;
-  int type = -1;
-  std::string value;
-  uint count = 0;
-  std::string error;
-
   const char* inputs[] = {
     "\"test\"",
     "\"asdf jkl;\"",
@@ -138,11 +110,11 @@ TEST(JsonLexerTest, Strings) {
   };
 
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
-    input = inputs[i];
-    EXPECT_TRUE(lexer.GetToken(input, index, &type, &value, &count, &error));
-    EXPECT_EQ(type, JsonLexer::TYPE_STRING);
-    EXPECT_EQ(value, values[i]);
-    EXPECT_EQ(count, input.length());
+    input_ = inputs[i];
+    EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+    EXPECT_EQ(type_, JsonLexer::TYPE_STRING);
+    EXPECT_EQ(value_, values[i]);
+    EXPECT_EQ(count_, input_.length());
   }
 
   const char* bad_inputs[] = {
@@ -155,9 +127,9 @@ TEST(JsonLexerTest, Strings) {
   };
 
   for (uint i = 0; i < ARRAY_SIZE(bad_inputs); ++i) {
-    input = bad_inputs[i];
-    error.clear();
-    EXPECT_FALSE(lexer.GetToken(input, index, &type, &value, &count, &error));
-    EXPECT_FALSE(error.empty());
+    input_ = bad_inputs[i];
+    error_.clear();
+    EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+    EXPECT_FALSE(error_.empty());
   }
 }
