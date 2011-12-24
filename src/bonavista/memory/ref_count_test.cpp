@@ -7,9 +7,6 @@ namespace {
 
 class Dummy : public memory::RefCount,
               public testing::InstCount {
- public:
-  Dummy() {}
-  ~Dummy() {}
 };
 
 }  // namespace

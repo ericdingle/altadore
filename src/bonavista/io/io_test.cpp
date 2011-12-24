@@ -5,7 +5,7 @@
 #include "bonavista/testing/test_case.h"
 
 TEST_CASE(IoTest) {
-protected:
+ protected:
   void TearDown() {
     remove("test.tmp");
   }

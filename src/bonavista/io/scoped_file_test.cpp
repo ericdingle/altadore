@@ -5,7 +5,7 @@
 #include "bonavista/testing/test_case.h"
 
 TEST_CASE(ScopedFileTest) {
-protected:
+ protected:
   void SetUp() {
     file_ = io::OpenFile("test.tmp", "w+b");
   }

@@ -19,7 +19,7 @@ template <typename T>
 class scoped_ref : public scoped_ptr_base<T, AddRefFunc, ReleaseFunc> {
  public:
   scoped_ref(T* ptr=NULL) : scoped_ptr_base<T, AddRefFunc, ReleaseFunc>(ptr) {}
-  ~scoped_ref() {}
+  virtual ~scoped_ref() {}
 
   scoped_ref(const scoped_ref& r) : scoped_ptr_base<T, AddRefFunc, ReleaseFunc>(r.ptr()) {}
   template <typename U>
