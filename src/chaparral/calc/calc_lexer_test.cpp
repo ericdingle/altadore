@@ -15,7 +15,13 @@ TEST_CASE(CalcLexerTest) {
   std::string error_;
 };
 
-TEST(CalcLexerTest, Operators) {
+TEST(CalcLexerTest, TokenizeUnknown) {
+  input_ = ".";
+  EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+  EXPECT_FALSE(error_.empty());
+}
+
+TEST(CalcLexerTest, TokenizeOperator) {
   const char* inputs[] = { "*", "(", "-", "+", ")", "/" };
   const int types[] = { CalcLexer::TYPE_ASTERISK,
                         CalcLexer::TYPE_LEFT_PARENTHESIS,
@@ -31,13 +37,9 @@ TEST(CalcLexerTest, Operators) {
     EXPECT_EQ(value_, input_);
     EXPECT_EQ(count_, 1);
   }
-
-  input_ = ".";
-  EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-  EXPECT_FALSE(error_.empty());
 }
 
-TEST(CalcLexerTest, Numbers) {
+TEST(CalcLexerTest, TokenizeNumber) {
   const char* inputs[] = {
     "0", "1", "12", "123",
     "0.1", "12.3", "12.34",
@@ -50,11 +52,13 @@ TEST(CalcLexerTest, Numbers) {
     EXPECT_EQ(value_, input_);
     EXPECT_EQ(count_, input_.length());
   }
+}
 
-  const char* bad_inputs[] = { "01", "1." };
+TEST(CalcLexerTest, TokenizeNumberError) {
+  const char* inputs[] = { "01", "1." };
 
-  for (uint i = 0; i < ARRAY_SIZE(bad_inputs); ++i) {
-    input_ = bad_inputs[i];
+  for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
+    input_ = inputs[i];
     error_.clear();
     EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
     EXPECT_FALSE(error_.empty());
