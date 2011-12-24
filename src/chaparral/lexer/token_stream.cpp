@@ -5,14 +5,14 @@
 
 TokenStream::TokenStream(const Lexer* lexer, const std::string& input)
     : lexer_(lexer), input_(input), index_(0) {
-  DASSERT(lexer != NULL);
+  ASSERT(lexer);
 }
 
 TokenStream::~TokenStream() {
 }
 
 bool TokenStream::GetNextToken(const Token** token) {
-  DASSERT(token != NULL);
+  ASSERT(token);
 
   // We've given away the end of input token, so time to throw an error.
   if (index_ > input_.length()) {

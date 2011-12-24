@@ -19,10 +19,9 @@ class TestLexer : public Lexer {
                         std::string* value,
                         uint* count,
                         std::string* error) const {
-    DASSERT(type != NULL);
-    DASSERT(value != NULL);
-    DASSERT(count != NULL);
-    DASSERT(error != NULL);
+    ASSERT(type);
+    ASSERT(value);
+    ASSERT(count);
 
     *type = TYPE_CHAR;
     *value = input[index];

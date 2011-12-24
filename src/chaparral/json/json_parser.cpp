@@ -12,8 +12,7 @@ JsonParser::~JsonParser() {
 }
 
 bool JsonParser::Parse(TokenStream* token_stream, const ASTNode** root) {
-  DASSERT(token_stream != NULL);
-  DASSERT(root != NULL);
+  ASSERT(root);
 
   std::vector<const ASTNode*> nodes;
   if (!Parse(token_stream, &nodes))
@@ -33,8 +32,8 @@ uint JsonParser::GetBindingPower(int type) const {
 }
 
 bool JsonParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
-  DASSERT(token != NULL);
-  DASSERT(root != NULL);
+  ASSERT(token);
+  ASSERT(root);
 
   if (token->IsType(JsonLexer::TYPE_LEFT_BRACE))
     return ParseObject(token, root);
@@ -57,9 +56,7 @@ bool JsonParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
 
 bool JsonParser::ParseInfixToken(const Token* token, const ASTNode* left,
                                  const ASTNode** root) {
-  DASSERT(token != NULL);
-  DASSERT(left != NULL);
-  DASSERT(root != NULL);
+  ASSERT(token);
 
   memory::scoped_ptr<const Token> token_deleter(token);
   memory::scoped_ptr<const ASTNode> left_deleter(left);
@@ -74,8 +71,7 @@ bool JsonParser::ParseObject(const Token* token, const ASTNode** root) {
   //  pair -> string ':' value
   //  pairs -> pair more_pairs | E
   //  more_pairs -> ',' pair more_pairs | E
-  DASSERT(token != NULL);
-  DASSERT(root != NULL);
+  ASSERT(root);
 
   memory::scoped_ptr<ASTNode> node(new ASTNode(token));
 
@@ -122,8 +118,7 @@ bool JsonParser::ParseArray(const Token* token, const ASTNode** root) {
   //   array -> '[' values ']'
   //   values -> value more_values | E
   //   more_values -> ',' value more_values | E
-  DASSERT(token != NULL);
-  DASSERT(root != NULL);
+  ASSERT(root);
 
   memory::scoped_ptr<ASTNode> node(new ASTNode(token));
 
