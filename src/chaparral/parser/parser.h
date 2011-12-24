@@ -3,9 +3,9 @@
 
 #include <string>
 #include <vector>
-#include "bonavista/base/macros.h"
-#include "bonavista/base/types.h"
 #include "bonavista/memory/scoped_ptr.h"
+#include "bonavista/util/macros.h"
+#include "bonavista/util/types.h"
 #include "chaparral/lexer/token.h"
 
 class ASTNode;

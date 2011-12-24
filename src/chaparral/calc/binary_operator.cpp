@@ -4,7 +4,7 @@
 #include "chaparral/parse/parser.h"
 #include "chaparral/value/number_value.h"
 
-using memory::scoped_ref;
+using memory::scoped_refptr;
 
 BinaryOperator::BinaryOperator(const Token* token, uint binding_power) : InfixSymbol(token), binding_power_(binding_power) {
 }
@@ -24,8 +24,8 @@ bool BinaryOperator::Parse(Parser* parser, const Symbol* left, SymbolRef* root) 
   return true;
 }
 
-bool BinaryOperator::Execute(Executer* executer, scoped_ref<Value>* result) const {
-  scoped_ref<Value> value;
+bool BinaryOperator::Execute(Executer* executer, scoped_refptr<Value>* result) const {
+  scoped_refptr<Value> value;
   if (!executer->Execute(left_.ptr(), &value))
     return false;
   NumberValue* num_val = dynamic_cast<NumberValue*>(value.ptr());

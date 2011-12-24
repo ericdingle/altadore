@@ -37,7 +37,7 @@ int main() {
     }
 
     Executer executer;
-    memory::scoped_ref<Value> result;
+    memory::scoped_refptr<Value> result;
     if (!executer.Execute(symbol.ptr(), &result)) {
       printf("Execute error: %s\n", executer.error_message().c_str());
       continue;

@@ -14,7 +14,7 @@ class TestExpression : public Expression, public Symbol {
 public:
   TestExpression(bool b) : Symbol(new Token(Token::OPERATOR, "+", 1, 1)), b_(b) {}
 
-  bool Execute(Executer* executer, memory::scoped_ref<Value>* result) const {
+  bool Execute(Executer* executer, memory::scoped_refptr<Value>* result) const {
     if (b_)
       *result = new NumberValue(5);
     return b_;
@@ -34,7 +34,7 @@ public:
 
 protected:
   Executer executer_;
-  memory::scoped_ref<Value> result_;
+  memory::scoped_refptr<Value> result_;
 };
 
 TEST(ExecuterTest, ExecuteIdentifier) {

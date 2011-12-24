@@ -22,6 +22,6 @@ private:
   void operator=(const InfixSymbol&);
 };
 
-typedef memory::scoped_ref<InfixSymbol> InfixSymbolRef;
+typedef memory::scoped_refptr<InfixSymbol> InfixSymbolRef;
 
 #endif

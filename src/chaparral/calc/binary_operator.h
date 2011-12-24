@@ -10,7 +10,7 @@ public:
   virtual ~BinaryOperator();
 
   bool Parse(Parser* parser, const Symbol* left, SymbolRef* root);
-  bool Execute(Executer* executer, memory::scoped_ref<Value>* result) const;
+  bool Execute(Executer* executer, memory::scoped_refptr<Value>* result) const;
 
 protected:
   virtual double Execute(double left, double right) const=0;

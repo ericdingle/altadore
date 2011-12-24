@@ -2,7 +2,7 @@
 #define CHAPARRAL_EXECUTE_EXECUTER_H_
 
 #include <string>
-#include "bonavista/memory/scoped_ref.h"
+#include "bonavista/memory/scoped_refptr.h"
 #include "chaparral/parse/symbol.h"
 #include "chaparral/token/token.h"
 #include "chaparral/value/map_value.h"
@@ -12,7 +12,7 @@ public:
   Executer();
   ~Executer();
 
-  bool Execute(const Symbol* symbol, memory::scoped_ref<Value>* result);
+  bool Execute(const Symbol* symbol, memory::scoped_refptr<Value>* result);
   bool Execute(const SymbolRefList& symbols);
 
   const MapValue& context() { return context_; }
@@ -23,7 +23,7 @@ private:
   Executer(const Executer&);
   void operator=(const Executer);
 
-  bool ExecuteSimpleSymbol(const Symbol* symbol, memory::scoped_ref<Value>* result) const;
+  bool ExecuteSimpleSymbol(const Symbol* symbol, memory::scoped_refptr<Value>* result) const;
 
   MapValue context_;
   std::string error_message_;

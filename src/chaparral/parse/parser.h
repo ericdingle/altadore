@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "bonavista/base/types.h"
+#include "bonavista/util/types.h"
 #include "chaparral/parse/infix_symbol.h"
 #include "chaparral/parse/prefix_symbol.h"
 #include "chaparral/parse/symbol.h"

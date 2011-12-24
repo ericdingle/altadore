@@ -6,7 +6,7 @@ MapValue::MapValue() : Value() {
 MapValue::~MapValue() {
 }
 
-memory::scoped_ref<Value> MapValue::Get(std::string name) const {
+memory::scoped_refptr<Value> MapValue::Get(std::string name) const {
   ValueMap::const_iterator iter = value_map_.find(name);
   if (iter != value_map_.end()) {
     return iter->second;

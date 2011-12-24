@@ -2,7 +2,7 @@
 #define CHAPARRAL_TOKEN_TOKEN_H_
 
 #include <string>
-#include "bonavista/base/types.h"
+#include "bonavista/util/types.h"
 
 class Token {
 public:

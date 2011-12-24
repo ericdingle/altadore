@@ -10,7 +10,7 @@ public:
   ~UnaryOperator();
 
   bool Parse(Parser* parser, SymbolRef* root);
-  bool Execute(Executer* executer, memory::scoped_ref<Value>* result) const;
+  bool Execute(Executer* executer, memory::scoped_refptr<Value>* result) const;
 
 protected:
   virtual double Execute(double right) const=0;

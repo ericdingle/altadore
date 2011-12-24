@@ -22,6 +22,6 @@ private:
   void operator=(const PrefixSymbol&);
 };
 
-typedef memory::scoped_ref<PrefixSymbol> PrefixSymbolRef;
+typedef memory::scoped_refptr<PrefixSymbol> PrefixSymbolRef;
 
 #endif

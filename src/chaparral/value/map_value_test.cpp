@@ -9,11 +9,11 @@ TEST_CASE(MapValueTest) {
 TEST(MapValueTest, GetAndSet) {
   MapValue map;
 
-  memory::scoped_ref<Value> value = map.Get("num");
+  memory::scoped_refptr<Value> value = map.Get("num");
   EXPECT_NULL(value.ptr());
 
   {
-    memory::scoped_ref<Value> num_val = new NumberValue(5);
+    memory::scoped_refptr<Value> num_val = new NumberValue(5);
     map.Set("num", num_val.ptr());
   }
 

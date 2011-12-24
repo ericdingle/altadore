@@ -1,7 +1,7 @@
 #include "chaparral/execute/executer.h"
 
-#include "bonavista/base/types.h"
 #include "bonavista/string/format.h"
+#include "bonavista/util/types.h"
 #include "chaparral/execute/expression.h"
 #include "chaparral/parse/identifier_symbol.h"
 #include "chaparral/parse/number_symbol.h"
@@ -15,7 +15,7 @@ Executer::Executer() {
 Executer::~Executer() {
 }
 
-bool Executer::Execute(const Symbol* symbol, memory::scoped_ref<Value>* result) {
+bool Executer::Execute(const Symbol* symbol, memory::scoped_refptr<Value>* result) {
   if (ExecuteSimpleSymbol(symbol, result))
     return true;
 
@@ -34,7 +34,7 @@ bool Executer::Execute(const Symbol* symbol, memory::scoped_ref<Value>* result) 
 
 bool Executer::Execute(const SymbolRefList& symbols) {
   for (uint i = 0; i < symbols.size(); ++i) {
-    memory::scoped_ref<Value> result;
+    memory::scoped_refptr<Value> result;
     if (!Execute(symbols[i].ptr(), &result))
       return false;
   }
@@ -42,7 +42,7 @@ bool Executer::Execute(const SymbolRefList& symbols) {
   return true;
 }
 
-bool Executer::ExecuteSimpleSymbol(const Symbol* symbol, memory::scoped_ref<Value>* result) const {
+bool Executer::ExecuteSimpleSymbol(const Symbol* symbol, memory::scoped_refptr<Value>* result) const {
   if (dynamic_cast<const IdentifierSymbol*>(symbol) != NULL) {
     *result = context_.Get(symbol->value());
     return true;

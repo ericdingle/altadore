@@ -82,13 +82,12 @@ class TestParser : public Parser {
 };
 
 TEST_CASE(ParserTest) {
- public:
+ protected:
   virtual void TearDown() {
     for (uint i = 0; i < nodes_.size(); ++i)
       delete nodes_[i];
   }
 
- protected:
   TestLexer lexer_;
   TestParser parser_;
   std::vector<const ASTNode*> nodes_;

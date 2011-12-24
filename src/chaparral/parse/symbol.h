@@ -5,7 +5,7 @@
 #include <vector>
 #include "bonavista/memory/ref_count.h"
 #include "bonavista/memory/scoped_ptr.h"
-#include "bonavista/memory/scoped_ref.h"
+#include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/string/format.h"
 #include "chaparral/token/token.h"
 
@@ -26,7 +26,7 @@ private:
   memory::scoped_ptr<const Token> token_;
 };
 
-typedef memory::scoped_ref<const Symbol> SymbolRef;
+typedef memory::scoped_refptr<const Symbol> SymbolRef;
 typedef std::vector<SymbolRef> SymbolRefList;
 
 #define SYMBOL_PARSE_ASSERT(cond, symbol, msg, ...) \

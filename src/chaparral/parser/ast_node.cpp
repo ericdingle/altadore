@@ -1,6 +1,6 @@
 #include "chaparral/parser/ast_node.h"
 
-#include "bonavista/base/types.h"
+#include "bonavista/util/types.h"
 #include "chaparral/lexer/token.h"
 
 ASTNode::ASTNode(const Token* token) : token_(token) {

@@ -1,6 +1,6 @@
 #include "chaparral/json/json_lexer.h"
 
-#include "bonavista/base/macros.h"
+#include "bonavista/util/macros.h"
 #include "bonavista/testing/test_case.h"
 
 

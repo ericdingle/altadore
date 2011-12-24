@@ -2,8 +2,8 @@
 #define CHAPARRAL_LEXER_TOKEN_H_
 
 #include <string>
-#include "bonavista/base/macros.h"
-#include "bonavista/base/types.h"
+#include "bonavista/util/macros.h"
+#include "bonavista/util/types.h"
 
 class Token {
  public:
