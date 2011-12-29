@@ -2,12 +2,16 @@
 #define CHAPARRAL_VALUE_VALUE_H_
 
 #include <string>
+#include "bonavista/memory/ref_count.h"
 #include "bonavista/util/macros.h"
 
-class Value {
+class MapValue;
+
+class Value : public memory::RefCount {
  public:
   enum Type {
     TYPE_BOOLEAN,
+    TYPE_MAP,
     TYPE_NULL,
     TYPE_NUMBER,
     TYPE_STRING
@@ -20,6 +24,7 @@ class Value {
   bool IsType(Type type) const;
 
   virtual bool GetAsBoolean(bool* value) const;
+  virtual bool GetAsMap(MapValue** value);
   virtual bool GetAsNumber(double* value) const;
   virtual bool GetAsString(std::string* value) const;
 

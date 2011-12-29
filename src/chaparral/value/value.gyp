@@ -12,6 +12,8 @@
     'sources': [
       'boolean_value.cpp',
       'boolean_value.h',
+      'map_value.cpp',
+      'map_value.h',
       'number_value.cpp',
       'number_value.h',
       'string_value.cpp',
@@ -28,6 +30,7 @@
     ],
     'sources': [
       'boolean_value_test.cpp',
+      'map_value_test.cpp',
       'number_value_test.cpp',
       'string_value_test.cpp',
       'value_test.cpp',

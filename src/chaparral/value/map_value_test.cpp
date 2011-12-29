@@ -6,27 +6,28 @@
 TEST_CASE(MapValueTest) {
 };
 
+TEST(MapValueTest, GetAsMap) {
+  MapValue map;
+  MapValue* map_ptr;
+  EXPECT_TRUE(map.GetAsMap(&map_ptr));
+  EXPECT_EQ(&map, map_ptr);
+}
+
 TEST(MapValueTest, GetAndSet) {
   MapValue map;
 
-  memory::scoped_refptr<Value> value = map.Get("num");
-  EXPECT_NULL(value.ptr());
+  memory::scoped_refptr<Value> value;
+  EXPECT_FALSE(map.Get("num", value.Receive()));
 
   {
     memory::scoped_refptr<Value> num_val = new NumberValue(5);
     map.Set("num", num_val.ptr());
   }
 
-  value = map.Get("num");
-  EXPECT_NOT_NULL(value.ptr());
+  EXPECT_TRUE(map.Get("num", value.Receive()));
   EXPECT_EQ(value->ref_count(), 2);
 
-  NumberValue* num_val = dynamic_cast<NumberValue*>(value.ptr());
-  EXPECT_NOT_NULL(num_val);
-  EXPECT_EQ(num_val->Get(), 5);
-}
-
-TEST(MapValueTest, ToString) {
-  MapValue map;
-  EXPECT_EQ(map.ToString(), "Map");
+  double d;
+  EXPECT_TRUE(value->GetAsNumber(&d));
+  EXPECT_EQ(d, 5);
 }

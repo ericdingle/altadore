@@ -18,6 +18,10 @@ bool Value::GetAsBoolean(bool* value) const {
   return false;
 }
 
+bool Value::GetAsMap(MapValue** value) {
+  return false;
+}
+
 bool Value::GetAsNumber(double* value) const {
   return false;
 }
