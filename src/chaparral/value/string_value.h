@@ -1,21 +1,20 @@
-#ifndef CHAPARRAL_VALUE_STRING_VALUE_
-#define CHAPARRAL_VALUE_STRING_VALUE_
+#ifndef CHAPARRAL_VALUE_STRING_VALUE_H_
+#define CHAPARRAL_VALUE_STRING_VALUE_H_
 
+#include "bonavista/util/macros.h"
 #include "chaparral/value/value.h"
 
 class StringValue : public Value {
-public:
-  StringValue(std::string str="");
-  ~StringValue();
+ public:
+  StringValue(const std::string& str);
+  virtual ~StringValue();
 
-  std::string Get() const;
-  std::string ToString() const;
+  virtual bool GetAsString(std::string* value) const;
 
-private:
-  StringValue(const StringValue&);
-  void operator=(const StringValue&);
-
+ private:
   std::string str_;
+
+  DISALLOW_COPY_AND_ASSIGN(StringValue);
 };
 
 #endif

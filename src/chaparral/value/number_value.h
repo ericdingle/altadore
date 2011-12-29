@@ -1,21 +1,20 @@
-#ifndef CHAPARRAL_VALUE_NUMBER_VALUE_
-#define CHAPARRAL_VALUE_NUMBER_VALUE_
+#ifndef CHAPARRAL_VALUE_NUMBER_VALUE_H_
+#define CHAPARRAL_VALUE_NUMBER_VALUE_H_
 
+#include "bonavista/util/macros.h"
 #include "chaparral/value/value.h"
 
 class NumberValue : public Value {
-public:
-  NumberValue(double d=0.0);
-  ~NumberValue();
+ public:
+  NumberValue(double d);
+  virtual ~NumberValue();
 
-  double Get() const;
-  std::string ToString() const;
+  virtual bool GetAsNumber(double* value) const;
 
-private:
-  NumberValue(const NumberValue&);
-  void operator=(const NumberValue&);
-
+ private:
   double d_;
+
+  DISALLOW_COPY_AND_ASSIGN(NumberValue);
 };
 
 #endif

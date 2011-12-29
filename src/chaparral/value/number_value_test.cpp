@@ -5,23 +5,9 @@
 TEST_CASE(NumberValueTest) {
 };
 
-TEST(NumberValueTest, Constructor) {
-  NumberValue value;
-  EXPECT_EQ(value.Get(), 0.0);
-}
-
-TEST(NumberValueTest, Get) {
+TEST(NumberValueTest, GetAsNumber) {
   NumberValue value(5.0);
-  EXPECT_EQ(value.Get(), 5.0);
-}
-
-TEST(NumberValueTest, ToString) {
-  NumberValue value(5);
-  EXPECT_EQ(value.ToString(), "5");
-
-  NumberValue value2(5.5);
-  EXPECT_EQ(value2.ToString(), "5.5");
-
-  NumberValue value3(3.14159);
-  EXPECT_EQ(value3.ToString(), "3.14159");
+  double d;
+  EXPECT_TRUE(value.GetAsNumber(&d));
+  EXPECT_EQ(d, 5.0);
 }

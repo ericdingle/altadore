@@ -1,17 +1,15 @@
 #include "chaparral/value/string_value.h"
 
-#include "bonavista/string/format.h"
+#include "bonavista/logging/assert.h"
 
-StringValue::StringValue(std::string str) : Value(), str_(str) {
+StringValue::StringValue(const std::string& str) : Value(Value::TYPE_STRING), str_(str) {
 }
 
 StringValue::~StringValue() {
 }
 
-std::string StringValue::Get() const {
-  return str_;
-}
-
-std::string StringValue::ToString() const {
-  return string::Format("\"%s\"", str_.c_str());
+bool StringValue::GetAsString(std::string* value) const {
+  ASSERT(value);
+  *value = str_;
+  return true;
 }

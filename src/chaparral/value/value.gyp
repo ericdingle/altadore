@@ -10,8 +10,8 @@
       '../../bonavista/string/string.gyp:string_lib',
     ],
     'sources': [
-      'map_value.cpp',
-      'map_value.h',
+      'boolean_value.cpp',
+      'boolean_value.h',
       'number_value.cpp',
       'number_value.h',
       'string_value.cpp',
@@ -27,9 +27,10 @@
       '../../bonavista/testing/testing.gyp:testing_lib',
     ],
     'sources': [
-      'map_value_test.cpp',
+      'boolean_value_test.cpp',
       'number_value_test.cpp',
       'string_value_test.cpp',
+      'value_test.cpp',
       '../../bonavista/testing/test_main.cpp',
     ],
   }],

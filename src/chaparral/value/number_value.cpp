@@ -1,17 +1,15 @@
 #include "chaparral/value/number_value.h"
 
-#include "bonavista/string/format.h"
+#include "bonavista/logging/assert.h"
 
-NumberValue::NumberValue(double d) : Value(), d_(d) {
+NumberValue::NumberValue(double d) : Value(Value::TYPE_NUMBER), d_(d) {
 }
 
 NumberValue::~NumberValue() {
 }
 
-double NumberValue::Get() const {
-  return d_;
-}
-
-std::string NumberValue::ToString() const {
-  return string::Format("%g", d_);
+bool NumberValue::GetAsNumber(double* value) const {
+  ASSERT(value);
+  *value = d_;
+  return true;
 }
