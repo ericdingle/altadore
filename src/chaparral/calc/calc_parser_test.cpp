@@ -105,8 +105,13 @@ TEST(CalcParserTest, OperatorPrecedence) {
 }
 
 TEST(CalcParserTest, ParseMultipleExpressions) {
-  TokenStream stream(&lexer_, "1 2");
-  CalcParser parser(&stream);
-  EXPECT_FALSE(parser.Parse(root_.Receive()));
-  EXPECT_FALSE(parser.error().empty());
+  TokenStream stream1(&lexer_, "1 2");
+  CalcParser parser1(&stream1);
+  EXPECT_FALSE(parser1.Parse(root_.Receive()));
+  EXPECT_FALSE(parser1.error().empty());
+
+  TokenStream stream2(&lexer_, "1 a");
+  CalcParser parser2(&stream2);
+  EXPECT_FALSE(parser2.Parse(root_.Receive()));
+  EXPECT_FALSE(parser2.error().empty());
 }
