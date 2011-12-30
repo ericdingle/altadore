@@ -13,16 +13,17 @@ class TokenStream;
 
 class Parser {
  public:
-  Parser();
+  Parser(TokenStream* token_stream);
   virtual ~Parser();
 
-  bool Parse(TokenStream* token_stream, std::vector<const ASTNode*>* nodes);
+  virtual bool Parse(const ASTNode** root);
 
   const Token::Position& position() const;
   const std::string& error() const;
 
  protected:
-  bool Parse(std::vector<const ASTNode*>* nodes);
+  bool Init();
+
   bool GetNextToken(const Token** token);
   bool ParseExpression(uint binding_power, const ASTNode** root);
   bool ConsumeToken(int type);

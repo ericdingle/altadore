@@ -15,7 +15,6 @@ const char* kInputPrefix = "calc > ";
 
 int main() {
   CalcLexer lexer;
-  CalcParser parser;
 
   while (true) {
     printf("%s", kInputPrefix);
@@ -24,9 +23,10 @@ int main() {
     if (input.empty())
       break;
 
-    TokenStream token_stream(&lexer, input);
+    TokenStream stream(&lexer, input);
+    CalcParser parser(&stream);
     memory::scoped_ptr<const ASTNode> root;
-    if (!parser.Parse(&token_stream, root.Receive())) {
+    if (!parser.Parse(root.Receive())) {
       int offset = static_cast<int>(strlen(kInputPrefix) + parser.position().column);
       printf("%*s\n", offset, "^");
       printf("Parse error: %s.\n", parser.error().c_str());

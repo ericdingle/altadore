@@ -5,14 +5,12 @@
 
 class JsonParser : public Parser {
  public:
-  JsonParser();
+  JsonParser(TokenStream* token_stream);
   virtual ~JsonParser();
 
-  bool Parse(TokenStream* token_stream, const ASTNode** root);
+  virtual bool Parse(const ASTNode** root);
 
  protected:
-  using Parser::Parse;
-
   virtual uint GetBindingPower(int type) const;
   virtual bool ParsePrefixToken(const Token* token, const ASTNode** root);
   virtual bool ParseInfixToken(const Token* token, const ASTNode* left,

@@ -37,6 +37,9 @@ class TestLexer : public Lexer {
 
 class TestParser : public Parser {
  public:
+  TestParser(TokenStream* token_stream) : Parser(token_stream) {
+  }
+
   virtual uint GetBindingPower(int type) const {
     if (type == TestLexer::TYPE_PLUS)
         return 10;
@@ -83,101 +86,114 @@ class TestParser : public Parser {
 
 TEST_CASE(ParserTest) {
  protected:
-  virtual void TearDown() {
-    for (uint i = 0; i < nodes_.size(); ++i)
-      delete nodes_[i];
-  }
-
   TestLexer lexer_;
-  TestParser parser_;
-  std::vector<const ASTNode*> nodes_;
+  memory::scoped_ptr<const ASTNode> root_;
 };
 
 TEST(ParserTest, Empty) {
   TokenStream stream(&lexer_, "");
-  EXPECT_TRUE(parser_.Parse(&stream, &nodes_));
-  EXPECT_EQ(nodes_.size(), 0);
+  TestParser parser(&stream);
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NULL(root_.ptr());
 }
 
 TEST(ParserTest, BadToken) {
   TokenStream stream(&lexer_, "a");
-  EXPECT_FALSE(parser_.Parse(&stream, &nodes_));
-  EXPECT_EQ(parser_.position().line, 1);
-  EXPECT_EQ(parser_.position().column, 1);
-  EXPECT_FALSE(parser_.error().empty());
+  TestParser parser(&stream);
+  EXPECT_FALSE(parser.Parse(root_.Receive()));
+  EXPECT_EQ(parser.position().line, 1);
+  EXPECT_EQ(parser.position().column, 1);
+  EXPECT_FALSE(parser.error().empty());
 }
 
 TEST(ParserTest, Prefix) {
   TokenStream stream(&lexer_, "1");
-  EXPECT_TRUE(parser_.Parse(&stream, &nodes_));
-  EXPECT_EQ(nodes_.size(), 1);
+  TestParser parser(&stream);
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NOT_NULL(root_.ptr());
+  EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_DIGIT));
+  EXPECT_EQ(root_->children().size(), 0);
 
-  const ASTNode* node = nodes_[0];
-  EXPECT_TRUE(node->token()->IsType(TestLexer::TYPE_DIGIT));
-  EXPECT_EQ(node->children().size(), 0);
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NULL(root_.ptr());
 }
 
 TEST(ParserTest, PrefixError) {
   TokenStream stream(&lexer_, "+");
-  EXPECT_FALSE(parser_.Parse(&stream, &nodes_));
-  EXPECT_EQ(parser_.position().line, 1);
-  EXPECT_EQ(parser_.position().column, 1);
-  EXPECT_FALSE(parser_.error().empty());
+  TestParser parser(&stream);
+  EXPECT_FALSE(parser.Parse(root_.Receive()));
+  EXPECT_EQ(parser.position().line, 1);
+  EXPECT_EQ(parser.position().column, 1);
+  EXPECT_FALSE(parser.error().empty());
 }
 
 TEST(ParserTest, Infix) {
   TokenStream stream(&lexer_, "1+2");
-  EXPECT_TRUE(parser_.Parse(&stream, &nodes_));
-  EXPECT_EQ(nodes_.size(), 1);
+  TestParser parser(&stream);
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NOT_NULL(root_.ptr());
+  EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_PLUS));
+  EXPECT_EQ(root_->children().size(), 2);
 
-  const ASTNode* node = nodes_[0];
-  EXPECT_TRUE(node->token()->IsType(TestLexer::TYPE_PLUS));
-  EXPECT_EQ(node->children().size(), 2);
-
-  const ASTNode* child = node->children()[0];
+  const ASTNode* child = root_->children()[0];
   EXPECT_TRUE(child->token()->IsType(TestLexer::TYPE_DIGIT));
   EXPECT_EQ(child->token()->value(), "1");
   EXPECT_EQ(child->children().size(), 0);
 
-  child = node->children()[1];
+  child = root_->children()[1];
   EXPECT_TRUE(child->token()->IsType(TestLexer::TYPE_DIGIT));
   EXPECT_EQ(child->token()->value(), "2");
   EXPECT_EQ(child->children().size(), 0);
+
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NULL(root_.ptr());
 }
 
 TEST(ParserTest, InfixError) {
   TokenStream stream(&lexer_, "1+");
-  EXPECT_FALSE(parser_.Parse(&stream, &nodes_));
-  EXPECT_EQ(parser_.position().line, 1);
-  EXPECT_EQ(parser_.position().column, 3);
-  EXPECT_FALSE(parser_.error().empty());
+  TestParser parser(&stream);
+  EXPECT_FALSE(parser.Parse(root_.Receive()));
+  EXPECT_EQ(parser.position().line, 1);
+  EXPECT_EQ(parser.position().column, 3);
+  EXPECT_FALSE(parser.error().empty());
 }
 
 TEST(ParserTest, ConsumeToken) {
   TokenStream stream(&lexer_, "01");
-  EXPECT_TRUE(parser_.Parse(&stream, &nodes_));
-  EXPECT_EQ(nodes_.size(), 1);
+  TestParser parser(&stream);
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NOT_NULL(root_.ptr());
+  EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_DIGIT));
+  EXPECT_EQ(root_->token()->value(), "0");
+  EXPECT_EQ(root_->children().size(), 0);
 
-  const ASTNode* node = nodes_[0];
-  EXPECT_TRUE(node->token()->IsType(TestLexer::TYPE_DIGIT));
-  EXPECT_EQ(node->token()->value(), "0");
-  EXPECT_EQ(node->children().size(), 0);
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NULL(root_.ptr());
 }
 
 TEST(ParserTest, ConsumeTokenError) {
   TokenStream stream(&lexer_, "0");
-  EXPECT_FALSE(parser_.Parse(&stream, &nodes_));
-  EXPECT_EQ(parser_.position().line, 1);
-  EXPECT_EQ(parser_.position().column, 2);
-  EXPECT_FALSE(parser_.error().empty());
+  TestParser parser(&stream);
+  EXPECT_FALSE(parser.Parse(root_.Receive()));
+  EXPECT_EQ(parser.position().line, 1);
+  EXPECT_EQ(parser.position().column, 2);
+  EXPECT_FALSE(parser.error().empty());
 }
 
-TEST(ParserTest, MultipleRuns) {
-  TokenStream stream1(&lexer_, "1");
-  EXPECT_TRUE(parser_.Parse(&stream1, &nodes_));
-  EXPECT_EQ(nodes_.size(), 1);
+TEST(ParserTest, ParseMultiple) {
+  TokenStream stream(&lexer_, "1 1 1");
+  TestParser parser(&stream);
 
-  TokenStream stream2(&lexer_, "2");
-  EXPECT_TRUE(parser_.Parse(&stream2, &nodes_));
-  EXPECT_EQ(nodes_.size(), 1);
+  for (uint i = 0; i < 3; ++i) {
+    EXPECT_TRUE(parser.Parse(root_.Receive()));
+    EXPECT_NOT_NULL(root_.ptr());
+    EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_DIGIT));
+    EXPECT_EQ(root_->children().size(), 0);
+  }
+
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NULL(root_.ptr());
+
+  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_NULL(root_.ptr());
 }

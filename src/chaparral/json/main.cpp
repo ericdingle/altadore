@@ -21,10 +21,11 @@ int main(int argc, char* argv[]) {
   }
 
   JsonLexer lexer;
-  TokenStream token_stream(&lexer, buffer.c_str());
+  TokenStream stream(&lexer, buffer.c_str());
+
+  JsonParser parser(&stream);
   memory::scoped_ptr<const ASTNode> root;
-  JsonParser parser;
-  if (!parser.Parse(&token_stream, root.Receive())) {
+  if (!parser.Parse(root.Receive())) {
     printf("Error: %s at line %d, column %d\n", parser.error().c_str(),
            parser.position().line, parser.position().column);
     return 1;

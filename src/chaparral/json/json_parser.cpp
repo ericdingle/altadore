@@ -5,25 +5,30 @@
 #include "chaparral/json/json_lexer.h"
 #include "chaparral/parser/ast_node.h"
 
-JsonParser::JsonParser() {
+JsonParser::JsonParser(TokenStream* token_stream) : Parser(token_stream) {
 }
 
 JsonParser::~JsonParser() {
 }
 
-bool JsonParser::Parse(TokenStream* token_stream, const ASTNode** root) {
+bool JsonParser::Parse(const ASTNode** root) {
   ASSERT(root);
 
-  std::vector<const ASTNode*> nodes;
-  if (!Parse(token_stream, &nodes))
+  memory::scoped_ptr<const ASTNode> node;
+  if (!Parser::Parse(node.Receive()))
     return false;
-
-  if (nodes.size() != 1) {
-    error_ = "Encountered more than one expression";
+  if (!node.ptr()) {
+    error_ = "Input is empty.";
     return false;
   }
 
-  *root = nodes[0];
+  memory::scoped_ptr<const ASTNode> dummy;
+  if (!Parser::Parse(dummy.Receive()) || dummy.ptr()) {
+    error_ = "Encountered more than one expression.";
+    return false;
+  }
+
+  *root = node.Release();
   return true;
 }
 

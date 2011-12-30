@@ -6,27 +6,32 @@
 #include "chaparral/lexer/token_stream.h"
 #include "chaparral/parser/ast_node.h"
 
-Parser::Parser() : token_stream_(NULL) {
+Parser::Parser(TokenStream* token_stream) : token_stream_(token_stream) {
+  ASSERT(token_stream);
 }
 
 Parser::~Parser() {
 }
 
-bool Parser::Parse(TokenStream* token_stream,
-                   std::vector<const ASTNode*>* nodes) {
-  ASSERT(token_stream);
-  ASSERT(!token_stream_);
+bool Parser::Parse(const ASTNode** root) {
+  ASSERT(root);
 
-  position_ = Token::Position();
-  error_.clear();
-  token_stream_ = token_stream;
+  if (!Init())
+    return false;
 
-  bool result = Parse(nodes);
+  // Check for end of input.
+  if (look_ahead_token_->IsType(Lexer::TYPE_END_OF_INPUT)) {
+    *root = NULL;
+    return true;
+  }
 
-  look_ahead_token_.Reset(NULL);
-  token_stream_ = NULL;
+  // Parse expression.
+  memory::scoped_ptr<const ASTNode> node;
+  if (!ParseExpression(0, node.Receive()))
+    return false;
 
-  return result;
+  *root = node.Release();
+  return true;
 }
 
 const Token::Position& Parser::position() const {
@@ -37,25 +42,13 @@ const std::string& Parser::error() const {
   return error_;
 }
 
-bool Parser::Parse(std::vector<const ASTNode*>* nodes) {
-  ASSERT(nodes);
-  nodes->clear();
+bool Parser::Init() {
+  if (look_ahead_token_.ptr())
+    return true;
 
-  // Advance look ahead to the first token.
+  // Advance the look ahead token to the first token.
   memory::scoped_ptr<const Token> token;
-  if (!GetNextToken(token.Receive()))
-    return false;
-  DASSERT(!token.ptr());
-
-  // Parse expressions.
-  while (!look_ahead_token_->IsType(Lexer::TYPE_END_OF_INPUT)) {
-    memory::scoped_ptr<const ASTNode> node;
-    if (!ParseExpression(0, node.Receive()))
-      return false;
-    nodes->push_back(node.Release());
-  }
-
-  return true;
+  return GetNextToken(token.Receive());
 }
 
 bool Parser::GetNextToken(const Token** token) {
