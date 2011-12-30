@@ -14,12 +14,6 @@ TokenStream::~TokenStream() {
 bool TokenStream::GetNextToken(const Token** token) {
   ASSERT(token);
 
-  // We've given away the end of input token, so time to throw an error.
-  if (index_ > input_.length()) {
-    error_ = "Unexpected end of input.";
-    return false;
-  }
-
   // Consume the white space.
   while (index_ < input_.length()) {
     const char& c = input_[index_];
@@ -36,10 +30,9 @@ bool TokenStream::GetNextToken(const Token** token) {
     }
   }
 
-  // If we've reached the end, we return the end of input token.
+  // If we've reached the end, we return an end of input token.
   if (index_ == input_.length()) {
     *token = new Token(Lexer::TYPE_END_OF_INPUT, "(end of input)", position_);
-    ++index_;
     return true;
   }
 

@@ -71,6 +71,9 @@ TEST(TokenStreamTest, GetNextToken) {
   EXPECT_EQ(token->position().line, 2);
   EXPECT_EQ(token->position().column, 5);
 
-  EXPECT_FALSE(token_stream.GetNextToken(token.Receive()));
-  EXPECT_FALSE(token_stream.error().empty());
+  EXPECT_TRUE(token_stream.GetNextToken(token.Receive()));
+  EXPECT_TRUE(token->IsType(TestLexer::TYPE_END_OF_INPUT));
+  EXPECT_EQ(token->value(), "(end of input)");
+  EXPECT_EQ(token->position().line, 2);
+  EXPECT_EQ(token->position().column, 5);
 }
