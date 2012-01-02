@@ -28,7 +28,7 @@ class Parser {
   bool ParseExpression(uint binding_power, const ASTNode** root);
   bool ConsumeToken(int type);
 
-  virtual uint GetBindingPower(int type) const =0;
+  virtual uint GetBindingPower(int type) const;
   // |token| is owned by the callee.
   virtual bool ParsePrefixToken(const Token* token, const ASTNode** root) =0;
   // |token| and |left| are owned by the callee.

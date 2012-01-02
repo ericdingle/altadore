@@ -32,10 +32,6 @@ bool JsonParser::Parse(const ASTNode** root) {
   return true;
 }
 
-uint JsonParser::GetBindingPower(int type) const {
-  return 0;
-}
-
 bool JsonParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
   ASSERT(token);
   ASSERT(root);

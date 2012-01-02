@@ -105,3 +105,7 @@ bool Parser::ConsumeToken(int type) {
 
   return true;
 }
+
+uint Parser::GetBindingPower(int type) const {
+  return 0;
+}
