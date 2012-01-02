@@ -12,8 +12,6 @@ class JsonParser : public Parser {
 
  protected:
   virtual bool ParsePrefixToken(const Token* token, const ASTNode** root);
-  virtual bool ParseInfixToken(const Token* token, const ASTNode* left,
-                               const ASTNode** root);
 
  private:
   bool ParseObject(const Token* token, const ASTNode** root);

@@ -40,6 +40,7 @@ class TestParser : public Parser {
   TestParser(TokenStream* token_stream) : Parser(token_stream) {
   }
 
+ protected:
   virtual uint GetBindingPower(int type) const {
     if (type == TestLexer::TYPE_PLUS)
         return 10;

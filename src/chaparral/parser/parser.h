@@ -33,7 +33,7 @@ class Parser {
   virtual bool ParsePrefixToken(const Token* token, const ASTNode** root) =0;
   // |token| and |left| are owned by the callee.
   virtual bool ParseInfixToken(const Token* token, const ASTNode* left,
-                               const ASTNode** root) =0;
+                               const ASTNode** root);
 
   memory::scoped_ptr<const Token> look_ahead_token_;
 
