@@ -87,51 +87,49 @@ class TestParser : public Parser {
 
 TEST_CASE(ParserTest) {
  protected:
+  void Init(const char* input) {
+    stream_.Reset(new TokenStream(&lexer_, input));
+    parser_.Reset(new TestParser(stream_.ptr()));
+  }
+
   TestLexer lexer_;
+  memory::scoped_ptr<TokenStream> stream_;
+  memory::scoped_ptr<Parser> parser_;
   memory::scoped_ptr<const ASTNode> root_;
 };
 
 TEST(ParserTest, Empty) {
-  TokenStream stream(&lexer_, "");
-  TestParser parser(&stream);
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  Init("");
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NULL(root_.ptr());
 }
 
 TEST(ParserTest, BadToken) {
-  TokenStream stream(&lexer_, "a");
-  TestParser parser(&stream);
-  EXPECT_FALSE(parser.Parse(root_.Receive()));
-  EXPECT_EQ(parser.position().line, 1);
-  EXPECT_EQ(parser.position().column, 1);
-  EXPECT_FALSE(parser.error().empty());
+  Init("a");
+  EXPECT_FALSE(parser_->Parse(root_.Receive()));
+  EXPECT_FALSE(parser_->error().empty());
 }
 
 TEST(ParserTest, Prefix) {
-  TokenStream stream(&lexer_, "1");
-  TestParser parser(&stream);
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  Init("1");
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NOT_NULL(root_.ptr());
   EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_DIGIT));
   EXPECT_EQ(root_->children().size(), 0);
 
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NULL(root_.ptr());
 }
 
 TEST(ParserTest, PrefixError) {
-  TokenStream stream(&lexer_, "+");
-  TestParser parser(&stream);
-  EXPECT_FALSE(parser.Parse(root_.Receive()));
-  EXPECT_EQ(parser.position().line, 1);
-  EXPECT_EQ(parser.position().column, 1);
-  EXPECT_FALSE(parser.error().empty());
+  Init("+");
+  EXPECT_FALSE(parser_->Parse(root_.Receive()));
+  EXPECT_FALSE(parser_->error().empty());
 }
 
 TEST(ParserTest, Infix) {
-  TokenStream stream(&lexer_, "1+2");
-  TestParser parser(&stream);
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  Init("1+2");
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NOT_NULL(root_.ptr());
   EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_PLUS));
   EXPECT_EQ(root_->children().size(), 2);
@@ -146,55 +144,49 @@ TEST(ParserTest, Infix) {
   EXPECT_EQ(child->token()->value(), "2");
   EXPECT_EQ(child->children().size(), 0);
 
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NULL(root_.ptr());
 }
 
 TEST(ParserTest, InfixError) {
-  TokenStream stream(&lexer_, "1+");
-  TestParser parser(&stream);
-  EXPECT_FALSE(parser.Parse(root_.Receive()));
-  EXPECT_EQ(parser.position().line, 1);
-  EXPECT_EQ(parser.position().column, 3);
-  EXPECT_FALSE(parser.error().empty());
+  Init("1+");
+  EXPECT_FALSE(parser_->Parse(root_.Receive()));
+  EXPECT_FALSE(parser_->error().empty());
 }
 
 TEST(ParserTest, ConsumeToken) {
-  TokenStream stream(&lexer_, "01");
-  TestParser parser(&stream);
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  Init("01");
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NOT_NULL(root_.ptr());
   EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_DIGIT));
   EXPECT_EQ(root_->token()->value(), "0");
   EXPECT_EQ(root_->children().size(), 0);
 
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NULL(root_.ptr());
 }
 
 TEST(ParserTest, ConsumeTokenError) {
-  TokenStream stream(&lexer_, "0");
-  TestParser parser(&stream);
-  EXPECT_FALSE(parser.Parse(root_.Receive()));
-  EXPECT_EQ(parser.position().line, 1);
-  EXPECT_EQ(parser.position().column, 2);
-  EXPECT_FALSE(parser.error().empty());
+  Init("0");
+  EXPECT_FALSE(parser_->Parse(root_.Receive()));
+  EXPECT_EQ(parser_->position().line, 1);
+  EXPECT_EQ(parser_->position().column, 2);
+  EXPECT_FALSE(parser_->error().empty());
 }
 
 TEST(ParserTest, ParseMultiple) {
-  TokenStream stream(&lexer_, "1 1 1");
-  TestParser parser(&stream);
+  Init("1 1 1");
 
   for (uint i = 0; i < 3; ++i) {
-    EXPECT_TRUE(parser.Parse(root_.Receive()));
+    EXPECT_TRUE(parser_->Parse(root_.Receive()));
     EXPECT_NOT_NULL(root_.ptr());
     EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_DIGIT));
     EXPECT_EQ(root_->children().size(), 0);
   }
 
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NULL(root_.ptr());
 
-  EXPECT_TRUE(parser.Parse(root_.Receive()));
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NULL(root_.ptr());
 }
