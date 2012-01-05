@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Copyright (c) 2011 Google Inc. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -397,7 +395,7 @@ class TestGypMake(TestGypBase):
       result.append(chdir)
     configuration = self.configuration_dirname()
     result.extend(['out', configuration])
-    if type == self.STATIC_LIB:
+    if type == self.STATIC_LIB and sys.platform != 'darwin':
       result.append('obj.target')
     elif type == self.SHARED_LIB and sys.platform != 'darwin':
       result.append('lib.target')
@@ -451,6 +449,11 @@ class TestGypNinja(TestGypBase):
   def run_built_executable(self, name, *args, **kw):
     # Enclosing the name in a list avoids prepending the original dir.
     program = [self.built_file_path(name, type=self.EXECUTABLE, **kw)]
+    if sys.platform == 'darwin':
+      libdir = os.path.join('out', 'Default', 'lib')
+      if self.configuration:
+        libdir = os.path.join('out', self.configuration, 'lib')
+      os.environ['DYLD_LIBRARY_PATH'] = libdir
     return self.run(program=program, *args, **kw)
 
   def built_file_path(self, name, type=None, **kw):
@@ -460,9 +463,10 @@ class TestGypNinja(TestGypBase):
       result.append(chdir)
     result.append('out')
     result.append(self.configuration_dirname())
-    if type in (self.STATIC_LIB,):
-      result.append('obj')
-    elif type in (self.SHARED_LIB,):
+    if type == self.STATIC_LIB:
+      if sys.platform != 'darwin':
+        result.append('obj')
+    elif type == self.SHARED_LIB:
       result.append('lib')
     subdir = kw.get('subdir')
     if subdir:
@@ -471,11 +475,13 @@ class TestGypNinja(TestGypBase):
     return self.workpath(*result)
 
   def up_to_date(self, gyp_file, target=None, **kw):
-    # TODO: Ninja prints "up to date" when the target is up to date,
-    # but it prints nothing if there are aliases in place.
-    # Once that bug in Ninja is fixed, add:
-    #   kw['stdout'] = "ninja: nothing to do"
-    return self.build(gyp_file, target, **kw)
+    result = self.build(gyp_file, target, **kw)
+    if not result:
+      stdout = self.stdout()
+      if 'ninja: no work to do' not in stdout:
+        self.report_not_up_to_date()
+        self.fail_test()
+    return result
 
 
 class TestGypMSVS(TestGypBase):
@@ -574,7 +580,7 @@ class TestGypMSVS(TestGypBase):
     'C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 10.0\VC\BIN\1033\CLUI.DLL'
     was modified at 02/21/2011 17:03:30, which is newer than '' which was
     modified at 01/01/0001 00:00:00.
-    
+
     The workaround is to specify a workdir when instantiating the test, e.g.
     test = TestGyp.TestGyp(workdir='workarea')
     """

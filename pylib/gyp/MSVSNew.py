@@ -1,6 +1,4 @@
-#!/usr/bin/python2.4
-
-# Copyright (c) 2009 Google Inc. All rights reserved.
+# Copyright (c) 2011 Google Inc. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -62,7 +60,7 @@ def MakeGuid(name, seed='msvs_new'):
 #------------------------------------------------------------------------------
 
 
-class MSVSFolder:
+class MSVSFolder(object):
   """Folder in a Visual Studio project or solution."""
 
   def __init__(self, path, name = None, entries = None,
@@ -103,7 +101,7 @@ class MSVSFolder:
 #------------------------------------------------------------------------------
 
 
-class MSVSProject:
+class MSVSProject(object):
   """Visual Studio project."""
 
   def __init__(self, path, name = None, dependencies = None, guid = None,
@@ -248,10 +246,13 @@ class MSVSSolution:
     sln_root = os.path.split(self.path)[0]
     for e in all_entries:
       relative_path = gyp.common.RelativePath(e.path, sln_root)
+      # msbuild does not accept an empty folder_name.
+      # use '.' in case relative_path is empty.
+      folder_name = relative_path.replace('/', '\\') or '.'
       f.write('Project("%s") = "%s", "%s", "%s"\r\n' % (
           e.entry_type_guid,          # Entry type GUID
           e.name,                     # Folder name
-          relative_path.replace('/', '\\'),  # Folder name (again)
+          folder_name,                # Folder name (again)
           e.get_guid(),               # Entry GUID
       ))
 
