@@ -6,10 +6,13 @@
     'target_name': 'calc_lib',
     'type': 'static_library',
     'dependencies': [
+      '../executer/executer.gyp:executer_lib',
       '../lexer/lexer.gyp:lexer_lib',
       '../parser/parser.gyp:parser_lib',
     ],
     'sources': [
+      'calc_executer.cpp',
+      'calc_executer.h',
       'calc_lexer.cpp',
       'calc_lexer.h',
       'calc_parser.cpp',

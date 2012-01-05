@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <string>
 #include <string.h>
+#include "chaparral/calc/calc_executer.h"
 #include "chaparral/calc/calc_lexer.h"
 #include "chaparral/calc/calc_parser.h"
 #include "chaparral/lexer/token_stream.h"
-#include "chaparral/parser/ast_node.h"
 
 namespace {
 
@@ -25,13 +25,16 @@ int main() {
 
     TokenStream stream(&lexer, input);
     CalcParser parser(&stream);
-    memory::scoped_ptr<const ASTNode> root;
-    if (!parser.Parse(root.Receive())) {
+    CalcExecuter executer(&parser);
+    double result = 0;
+    if (!executer.ExecuteT(&result)) {
       int offset = static_cast<int>(strlen(kInputPrefix) + parser.position().column);
       printf("%*s\n", offset, "^");
-      printf("Parse error: %s.\n", parser.error().c_str());
+      printf("Error: %s.\n", parser.error().c_str());
       continue;
     }
+
+    printf("%f\n", result);
   }
 
   return 0;
