@@ -1,8 +1,5 @@
 #include "chaparral/executer/executer.h"
 
-#include "bonavista/memory/scoped_ptr.h"
-#include "chaparral/executer/variant.h"
-#include "chaparral/parser/ast_node.h"
 #include "chaparral/parser/parser.h"
 
 Executer::Executer(Parser* parser) : parser_(parser) {

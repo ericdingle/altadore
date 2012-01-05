@@ -106,6 +106,13 @@ TEST(ExecuterTest, Execute) {
   EXPECT_EQ(i, 5);
 }
 
+TEST(ExecuterTest, ExecuteT) {
+  Init("5");
+  uint i = 0;
+  EXPECT_TRUE(executer_->ExecuteT(&i));
+  EXPECT_EQ(i, 5);
+}
+
 TEST(ExecuterTest, ExecuteError) {
   Init("9");
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
