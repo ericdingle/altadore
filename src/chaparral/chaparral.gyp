@@ -18,7 +18,6 @@
       'json/json.gyp:json_lib',
       'lexer/lexer.gyp:lexer_lib',
       'parser/parser.gyp:parser_lib',
-      'value/value.gyp:value_lib',
     ],
   }, {
     'target_name': 'tests',
@@ -29,7 +28,6 @@
       'json/json.gyp:json_test',
       'lexer/lexer.gyp:lexer_test',
       'parser/parser.gyp:parser_test',
-      'value/value.gyp:value_test',
     ],
   }],
 }
