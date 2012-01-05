@@ -2,13 +2,13 @@
 
 #include "bonavista/string/format.h"
 #include "bonavista/testing/test_case.h"
-#include "chaparral/lexer/token_stream.h"
 #include "chaparral/calc/calc_lexer.h"
+#include "chaparral/lexer/token_stream.h"
 #include "chaparral/parser/ast_node.h"
 
 TEST_CASE(CalcParserTest) {
  protected:
-  virtual void Init(const char* input) {
+  void Init(const char* input) {
     stream_.Reset(new TokenStream(&lexer_, input));
     parser_.Reset(new CalcParser(stream_.ptr()));
   }
@@ -21,8 +21,8 @@ TEST_CASE(CalcParserTest) {
 
 TEST(CalcParserTest, ParseEmpty) {
   Init("");
-  EXPECT_FALSE(parser_->Parse(root_.Receive()));
-  EXPECT_FALSE(parser_->error().empty());
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
+  EXPECT_NULL(root_.ptr());
 }
 
 TEST(CalcParserTest, ParseUnknown) {
@@ -105,10 +105,10 @@ TEST(CalcParserTest, OperatorPrecedence) {
 
 TEST(CalcParserTest, ParseMultipleExpressions) {
   Init("1 2");
-  EXPECT_FALSE(parser_->Parse(root_.Receive()));
-  EXPECT_FALSE(parser_->error().empty());
 
-  Init("1 a");
-  EXPECT_FALSE(parser_->Parse(root_.Receive()));
-  EXPECT_FALSE(parser_->error().empty());
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
+  EXPECT_TRUE(root_->token()->IsType(CalcLexer::TYPE_NUMBER));
+
+  EXPECT_TRUE(parser_->Parse(root_.Receive()));
+  EXPECT_TRUE(root_->token()->IsType(CalcLexer::TYPE_NUMBER));
 }

@@ -11,27 +11,6 @@ CalcParser::CalcParser(TokenStream* token_stream) : Parser(token_stream) {
 CalcParser::~CalcParser() {
 }
 
-bool CalcParser::Parse(const ASTNode** root) {
-  ASSERT(root);
-
-  memory::scoped_ptr<const ASTNode> node;
-  if (!Parser::Parse(node.Receive()))
-    return false;
-  if (!node.ptr()) {
-    error_ = "Input is empty.";
-    return false;
-  }
-
-  memory::scoped_ptr<const ASTNode> dummy;
-  if (!Parser::Parse(dummy.Receive()) || dummy.ptr()) {
-    error_ = "Encountered more than one expression.";
-    return false;
-  }
-
-  *root = node.Release();
-  return true;
-}
-
 uint CalcParser::GetBindingPower(int type) const {
   switch (type) {
     case CalcLexer::TYPE_ASTERISK:
