@@ -1,5 +1,6 @@
 #include "chaparral/calc/calc_executer.h"
 
+#include "bonavista/logging/assert.h"
 #include "bonavista/string/format.h"
 #include "chaparral/calc/calc_lexer.h"
 #include "chaparral/parser/ast_node.h"
@@ -19,12 +20,10 @@ bool CalcExecuter::ExecuteASTNode(const ASTNode* node, const Variant** var) {
       node->token()->IsType(CalcLexer::TYPE_PLUS) ||
       node->token()->IsType(CalcLexer::TYPE_SLASH)) {
     double left = 0;
-    if (!ExecuteASTNodeT(node->children()[0], &left))
-      return false;
+    ASSERT(ExecuteASTNodeT(node->children()[0], &left));
 
     double right = 0;
-    if (!ExecuteASTNodeT(node->children()[1], &right))
-      return false;
+    ASSERT(ExecuteASTNodeT(node->children()[1], &right));
 
     double result = 0;
     if (node->token()->IsType(CalcLexer::TYPE_ASTERISK))
@@ -46,8 +45,6 @@ bool CalcExecuter::ExecuteASTNode(const ASTNode* node, const Variant** var) {
     return true;
   }
 
-  position_ = node->token()->position();
-  error_ = string::Format("Unexpected token: %s",
-                          node->token()->value().c_str());
-  return false;
+  // This should never happen.
+  ASSERT(false);
 }

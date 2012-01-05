@@ -35,6 +35,7 @@
       '../../bonavista/testing/testing.gyp:testing_lib',
     ],
     'sources': [
+      'calc_executer_test.cpp',
       'calc_lexer_test.cpp',
       'calc_parser_test.cpp',
       '../../bonavista/testing/test_main.cpp',

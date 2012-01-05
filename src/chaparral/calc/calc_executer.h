@@ -12,6 +12,7 @@ class CalcExecuter : public Executer {
  protected:
   virtual bool ExecuteASTNode(const ASTNode* node, const Variant** var);
 
+ private:
   DISALLOW_COPY_AND_ASSIGN(CalcExecuter);
 };
 
