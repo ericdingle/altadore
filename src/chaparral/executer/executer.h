@@ -43,7 +43,7 @@ bool Executer::ExecuteT(T* out) {
   if (!Execute(var.Receive()))
     return false;
 
-  if (!var->Get(out)) {
+  if (!var.ptr() || !var->Get(out)) {
     error_ = "Unexpected result type";
     return false;
   }
@@ -57,7 +57,7 @@ bool Executer::ExecuteASTNodeT(const ASTNode* node, T* out) {
   if (!ExecuteASTNode(node, var.Receive()))
     return false;
 
-  if (!var->Get(out)) {
+  if (!var.ptr() || !var->Get(out)) {
     position_ = node->token()->position();
     error_ = "Unexpected result type";
     return false;

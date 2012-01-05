@@ -106,6 +106,12 @@ TEST(ExecuterTest, Execute) {
   EXPECT_EQ(i, 5);
 }
 
+TEST(ExecuterTest, ExecuteError) {
+  Init("9");
+  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->error().empty());
+}
+
 TEST(ExecuterTest, ExecuteT) {
   Init("5");
   uint i = 0;
@@ -113,8 +119,18 @@ TEST(ExecuterTest, ExecuteT) {
   EXPECT_EQ(i, 5);
 }
 
-TEST(ExecuterTest, ExecuteError) {
+TEST(ExecuterTest, ExecuteTError) {
+  uint i = 0;
+  Init("");
+  EXPECT_FALSE(executer_->ExecuteT(&i));
+  EXPECT_FALSE(executer_->error().empty());
+
   Init("9");
-  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->ExecuteT(&i));
+  EXPECT_FALSE(executer_->error().empty());
+
+  double d = 0;
+  Init("5");
+  EXPECT_FALSE(executer_->ExecuteT(&d));
   EXPECT_FALSE(executer_->error().empty());
 }
