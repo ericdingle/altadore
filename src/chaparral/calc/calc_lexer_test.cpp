@@ -3,7 +3,6 @@
 #include "bonavista/util/macros.h"
 #include "bonavista/testing/test_case.h"
 
-
 TEST_CASE(CalcLexerTest) {
  protected:
   CalcLexer lexer_;
