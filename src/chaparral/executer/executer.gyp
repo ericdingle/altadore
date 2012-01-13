@@ -19,6 +19,7 @@
     'type': 'executable',
     'dependencies': [
       'executer_lib',
+      '../../bonavista/memory/memory.gyp:memory_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
     ],
     'sources': [

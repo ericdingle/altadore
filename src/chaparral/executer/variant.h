@@ -2,7 +2,9 @@
 #define CHAPARRAL_EXECUTER_VARIANT_H_
 
 #include "bonavista/logging/assert.h"
+#include "bonavista/memory/ref_count.h"
 #include "bonavista/memory/scoped_ptr.h"
+#include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
 
 class Variant {
@@ -16,11 +18,27 @@ class Variant {
     ASSERT(out);
 
     const Data<T>* data = dynamic_cast<const Data<T>*>(data_.ptr());
-    if (!data)
-      return false;
+    if (data) {
+      *out = data->value;
+      return true;
+    }
 
-    *out = data->value;
-    return true;
+    return false;
+  }
+
+  template <typename T>
+  bool Get(T** out) const {
+    ASSERT(out);
+
+    const Data<memory::scoped_refptr<T> >* ref_data =
+        dynamic_cast<const Data<memory::scoped_refptr<T> >*>(data_.ptr());
+    if (ref_data) {
+      ref_data->value->AddRef();
+      *out = ref_data->value.ptr();
+      return true;
+    }
+
+    return false;
   }
 
  private:
