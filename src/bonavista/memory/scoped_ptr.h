@@ -1,9 +1,9 @@
 #ifndef BONAVISTA_MEMORY_SCOPED_PTR_H_
 #define BONAVISTA_MEMORY_SCOPED_PTR_H_
 
-#include "bonavista/base/macros.h"
-#include "bonavista/base/types.h"
 #include "bonavista/logging/assert.h"
+#include "bonavista/util/macros.h"
+#include "bonavista/util/types.h"
 
 namespace memory {
 
@@ -18,7 +18,7 @@ class scoped_ptr_base {
   }
 
   T* operator->() const {
-    DASSERT(ptr_ != NULL);
+    ASSERT(ptr_ != NULL);
     return ptr_;
   }
 
@@ -71,7 +71,7 @@ template <typename T>
 class scoped_ptr : public scoped_ptr_base<T, VoidFunc, DeletePtrFunc<T> > {
  public:
   explicit scoped_ptr(T* ptr=NULL) : scoped_ptr_base<T, VoidFunc, DeletePtrFunc<T> >(ptr) {}
-  ~scoped_ptr() {}
+  virtual ~scoped_ptr() {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(scoped_ptr);

@@ -1,4 +1,4 @@
-#include "bonavista/memory/scoped_ref.h"
+#include "bonavista/memory/scoped_refptr.h"
 
 #include "bonavista/memory/ref_count.h"
 

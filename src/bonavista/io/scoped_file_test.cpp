@@ -2,9 +2,10 @@
 
 #include "bonavista/io/io.h"
 #include "bonavista/testing/test_case.h"
+#include "bonavista/util/macros.h"
 
 TEST_CASE(ScopedFileTest) {
-protected:
+ protected:
   void SetUp() {
     file_ = io::OpenFile("test.tmp", "w+b");
   }
@@ -24,10 +25,10 @@ TEST(ScopedFileTest, ConstructorAndDestructor) {
     EXPECT_EQ(fwrite(bytes, sizeof(int), 4, file_), 4);
 
     EXPECT_EQ(fseek(file_, 0, SEEK_SET), 0);
-    int buffer[4];
+    int buffer[ARRAY_SIZE(bytes)];
     EXPECT_EQ(fread(&buffer, sizeof(int), 4, file_), 4);
 
-    for (int i = 0; i < 4; ++i) {
+    for (uint i = 0; i < ARRAY_SIZE(bytes); ++i) {
       EXPECT_EQ(buffer[i], bytes[i]);
     };
   }

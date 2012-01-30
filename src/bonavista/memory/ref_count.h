@@ -1,8 +1,8 @@
 #ifndef BONAVISTA_MEMORY_REF_COUNT_H_
 #define BONAVISTA_MEMORY_REF_COUNT_H_
 
-#include "bonavista/base/macros.h"
-#include "bonavista/base/types.h"
+#include "bonavista/util/macros.h"
+#include "bonavista/util/types.h"
 
 namespace memory {
 
