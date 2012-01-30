@@ -5,9 +5,10 @@
 #include "altadore/shader/light.h"
 #include "bonavista/memory/ref_count.h"
 #include "bonavista/memory/scoped_refptr.h"
+#include "bonavista/util/macros.h"
 
 class LightVector : public memory::RefCount {
-public:
+ public:
   LightVector();
   ~LightVector();
 
@@ -15,11 +16,10 @@ public:
 
   const std::vector<memory::scoped_refptr<const Light> >& lights() const { return lights_; }
 
-private:
-  LightVector(const LightVector&);
-  void operator=(const LightVector&);
-
+ private:
   std::vector<memory::scoped_refptr<const Light> > lights_;
+
+  DISALLOW_COPY_AND_ASSIGN(LightVector);
 };
 
 #endif

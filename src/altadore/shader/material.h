@@ -4,9 +4,10 @@
 #include "altadore/shader/color.h"
 #include "bonavista/memory/ref_count.h"
 #include "bonavista/memory/scoped_refptr.h"
+#include "bonavista/util/macros.h"
 
 class Material : public memory::RefCount {
-public:
+ public:
   Material(const Color* color, double shininess, double reflectivity);
   ~Material();
 
@@ -14,13 +15,12 @@ public:
   double shininess() const { return shininess_; }
   double reflectivity() const { return reflectivity_; }
 
-private:
-  Material(const Material&);
-  void operator=(const Material&);
+ private:
+  const memory::scoped_refptr<const Color> color_;
+  const double shininess_;
+  const double reflectivity_;
 
-  memory::scoped_refptr<const Color> color_;
-  double shininess_;
-  double reflectivity_;
+  DISALLOW_COPY_AND_ASSIGN(Material);
 };
 
 #endif

@@ -5,7 +5,7 @@
 #include "bonavista/util/types.h"
 
 class Color : public memory::RefCount {
-public:
+ public:
   Color();
   Color(double r, double g, double b);
   ~Color();
@@ -23,14 +23,14 @@ public:
   double g() const { return g_; }
   double b() const { return b_; }
 
-private:
-  void operator=(const Color&);
-
+ private:
   void Saturate();
 
   double r_;
   double g_;
   double b_;
+
+  void operator=(const Color&);
 };
 
 #endif
