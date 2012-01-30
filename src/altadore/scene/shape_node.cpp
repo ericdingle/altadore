@@ -2,10 +2,11 @@
 
 #include "altadore/shape/shape.h"
 #include "altadore/visual/material.h"
+#include "bonavista/logging/assert.h"
 
 ShapeNode::ShapeNode(const Shape* shape, const Material* material) : SceneNode(), shape_(shape), material_(material) {
-  DASSERT(shape != NULL);
-  DASSERT(material != NULL);
+  ASSERT(shape);
+  ASSERT(material);
 }
 
 ShapeNode::~ShapeNode() {
@@ -20,9 +21,8 @@ void ShapeNode::CalculateTransforms(const Matrix4& parent_transform) {
 bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
   Point3 origin = transform_inverse_ * ray.origin();
   Vector3 direction = transform_inverse_ * ray.direction();
-  Ray ray2(origin, direction);
 
-  if (!shape_->FindIntersection(ray2, t, point, normal))
+  if (!shape_->FindIntersection(Ray(origin, direction), t, point, normal))
     return false;
 
   *point = transform_ * *point;
@@ -35,7 +35,5 @@ bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vecto
 bool ShapeNode::HasIntersection(const Ray& ray) const {
   Point3 origin = transform_inverse_ * ray.origin();
   Vector3 direction = transform_inverse_ * ray.direction();
-  Ray ray2(origin, direction);
-
-  return shape_->HasIntersection(ray2);
+  return shape_->HasIntersection(Ray(origin, direction));
 }

@@ -3,12 +3,13 @@
 
 #include "altadore/algebra/ray.h"
 #include "bonavista/memory/ref_count.h"
+#include "bonavista/util/macros.h"
 
 class Material;
 class Matrix4;
 
 class SceneNode : public memory::RefCount {
-public:
+ public:
   SceneNode();
   virtual ~SceneNode();
 
@@ -16,9 +17,8 @@ public:
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const =0;
   virtual bool HasIntersection(const Ray& ray) const =0;
 
-private:
-  SceneNode(const SceneNode&);
-  void operator=(const SceneNode&);
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SceneNode);
 };
 
 #endif

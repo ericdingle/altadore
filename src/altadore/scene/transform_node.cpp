@@ -9,7 +9,7 @@ TransformNode::~TransformNode() {
 }
 
 void TransformNode::AddChild(SceneNode* child) {
-  DASSERT(child != NULL);
+  ASSERT(child);
   children_.push_back(child);
 }
 

@@ -5,9 +5,10 @@
 #include "altadore/algebra/matrix4.h"
 #include "altadore/scene/scene_node.h"
 #include "bonavista/memory/scoped_refptr.h"
+#include "bonavista/util/macros.h"
 
 class TransformNode : public SceneNode {
-public:
+ public:
   TransformNode();
   ~TransformNode();
 
@@ -22,16 +23,15 @@ public:
   bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const;
   bool HasIntersection(const Ray& ray) const;
 
-protected:
+ protected:
   const std::vector<memory::scoped_refptr<SceneNode> >& children() { return children_; }
   const Matrix4& transform() { return transform_; }
 
-private:
-  TransformNode(const TransformNode&);
-  void operator=(const TransformNode&);
-
+ private:
   std::vector<memory::scoped_refptr<SceneNode> > children_;
   Matrix4 transform_;
+
+  DISALLOW_COPY_AND_ASSIGN(TransformNode);
 };
 
 #endif

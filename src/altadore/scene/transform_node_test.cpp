@@ -5,25 +5,27 @@
 namespace {
 
 class TestSceneNode : public SceneNode {
-public:
+ public:
   TestSceneNode(bool intersection) : intersection_(intersection) {
   }
 
   void CalculateTransforms(const Matrix4& parent_transform) {
     transform_ = parent_transform;
   }
+
   bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
     *material = reinterpret_cast<const Material*>(1);
     *t = t_val--;
     return intersection_;
   }
+
   bool HasIntersection(const Ray& ray) const {
     return intersection_;
   }
 
   const Matrix4& transform() { return transform_; }
 
-private:
+ private:
   static double t_val;
 
   Matrix4 transform_;
@@ -33,7 +35,7 @@ private:
 double TestSceneNode::t_val = 10;
 
 class TestTransformNode : public TransformNode {
-public:
+ public:
   using TransformNode::children;
   using TransformNode::transform;
 };

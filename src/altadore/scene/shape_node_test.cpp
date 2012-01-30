@@ -8,7 +8,7 @@
 namespace {
 
 class TestShape : public Shape {
-public:
+ public:
   TestShape(bool intersection) : intersection_(intersection) {
   }
 
@@ -18,16 +18,17 @@ public:
     *normal = ray.direction();
     return intersection_;
   }
+
   bool HasIntersection(const Ray& ray) const {
     return intersection_;
   }
 
-private:
+ private:
   bool intersection_;
 };
 
 class TestShapeNode : public ShapeNode {
-public:
+ public:
   TestShapeNode(const Shape* shape, const Material* material) : ShapeNode(shape, material) {
   }
 
@@ -39,7 +40,7 @@ public:
 }  // namespace
 
 TEST_CASE(ShapeNodeTest) {
-protected:
+ protected:
   void SetUp() {
     material_.Reset(new Material(new Color(), 1, 1));
   }

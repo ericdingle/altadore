@@ -4,11 +4,12 @@
 #include "altadore/algebra/matrix4.h"
 #include "altadore/scene/scene_node.h"
 #include "bonavista/memory/scoped_refptr.h"
+#include "bonavista/util/macros.h"
 
 class Shape;
 
 class ShapeNode : public SceneNode {
-public:
+ public:
   ShapeNode(const Shape* shape, const Material* material);
   ~ShapeNode();
 
@@ -16,21 +17,20 @@ public:
   bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const;
   bool HasIntersection(const Ray& ray) const;
 
-protected:
+ protected:
   const Matrix4& transform() const { return transform_; }
   const Matrix4& transform_inverse() const { return transform_inverse_; }
   const Matrix4& transform_inverse_transpose() const { return transform_inverse_transpose_; }
 
-private:
-  ShapeNode(const ShapeNode&);
-  void operator=(const ShapeNode&);
-
+ private:
   Matrix4 transform_;
   Matrix4 transform_inverse_;
   Matrix4 transform_inverse_transpose_;
 
-  memory::scoped_refptr<const Shape> shape_;
-  memory::scoped_refptr<const Material> material_;
+  const memory::scoped_refptr<const Shape> shape_;
+  const memory::scoped_refptr<const Material> material_;
+
+  DISALLOW_COPY_AND_ASSIGN(ShapeNode);
 };
 
 #endif
