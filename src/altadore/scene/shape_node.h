@@ -11,11 +11,11 @@ class Shape;
 class ShapeNode : public SceneNode {
  public:
   ShapeNode(const Shape* shape, const Material* material);
-  ~ShapeNode();
+  virtual ~ShapeNode();
 
-  void CalculateTransforms(const Matrix4& parent_transform);
-  bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const;
-  bool HasIntersection(const Ray& ray) const;
+  virtual void CalculateTransforms(const Matrix4& parent_transform);
+  virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const;
+  virtual bool HasIntersection(const Ray& ray) const;
 
  protected:
   const Matrix4& transform() const { return transform_; }
