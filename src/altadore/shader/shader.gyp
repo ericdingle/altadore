@@ -3,7 +3,7 @@
     '../../bonavista/common.gypi',
   ],
   'targets': [{
-    'target_name': 'visual_lib',
+    'target_name': 'shader_lib',
     'type': 'static_library',
     'dependencies': [
       '../algebra/algebra.gyp:algebra_lib',
@@ -20,10 +20,10 @@
       'material.h',
     ],
   }, {
-    'target_name': 'visual_test',
+    'target_name': 'shader_test',
     'type': 'executable',
     'dependencies': [
-      'visual_lib',
+      'shader_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
     ],
     'sources': [

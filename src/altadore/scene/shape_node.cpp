@@ -1,7 +1,7 @@
 #include "altadore/scene/shape_node.h"
 
+#include "altadore/shader/material.h"
 #include "altadore/shape/shape.h"
-#include "altadore/visual/material.h"
 #include "bonavista/logging/assert.h"
 
 ShapeNode::ShapeNode(const Shape* shape, const Material* material) : SceneNode(), shape_(shape), material_(material) {

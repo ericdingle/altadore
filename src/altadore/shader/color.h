@@ -1,5 +1,5 @@
-#ifndef ALTADORE_VISUAL_COLOR_H_
-#define ALTADORE_VISUAL_COLOR_H_
+#ifndef ALTADORE_SHADER_COLOR_H_
+#define ALTADORE_SHADER_COLOR_H_
 
 #include "bonavista/memory/ref_count.h"
 #include "bonavista/util/types.h"

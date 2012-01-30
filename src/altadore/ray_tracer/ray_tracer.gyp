@@ -8,7 +8,7 @@
     'dependencies': [
       '../image/image.gyp:image_lib',
       '../scene/scene.gyp:scene_lib',
-      '../visual/visual.gyp:visual_lib',
+      '../shader/shader.gyp:shader_lib',
     ],
     'sources': [
       'ray_tracer.cpp',

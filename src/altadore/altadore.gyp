@@ -19,8 +19,8 @@
       'image/image.gyp:image_lib',
       'ray_tracer/ray_tracer.gyp:ray_tracer_lib',
       'scene/scene.gyp:scene_lib',
+      'shader/shader.gyp:shader_lib',
       'shape/shape.gyp:shape_lib',
-      'visual/visual.gyp:visual_lib',
     ],
   }, {
     'target_name': 'tests',
@@ -30,8 +30,8 @@
       'image/image.gyp:image_test',
       'ray_tracer/ray_tracer.gyp:ray_tracer_test',
       'scene/scene.gyp:scene_test',
+      'shader/shader.gyp:shader_test',
       'shape/shape.gyp:shape_test',
-      'visual/visual.gyp:visual_test',
     ],
   }],
 }

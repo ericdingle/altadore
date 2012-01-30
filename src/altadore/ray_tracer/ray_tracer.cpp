@@ -5,7 +5,7 @@
 #include "altadore/algebra/matrix4.h"
 #include "altadore/image/bitmap.h"
 #include "altadore/ray_tracer/ray_tracer_constants.h"
-#include "altadore/visual/material.h"
+#include "altadore/shader/material.h"
 
 RayTracer::RayTracer(const TransformNode* root, const LightVector* lights) : root_(root), lights_(lights) {
   ASSERT(root);

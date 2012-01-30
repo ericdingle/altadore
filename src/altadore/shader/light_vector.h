@@ -1,8 +1,8 @@
-#ifndef ALTADORE_VISUAL_LIGHT_VECTOR_H_
-#define ALTADORE_VISUAL_LIGHT_VECTOR_H_
+#ifndef ALTADORE_SHADER_LIGHT_VECTOR_H_
+#define ALTADORE_SHADER_LIGHT_VECTOR_H_
 
 #include <vector>
-#include "altadore/visual/light.h"
+#include "altadore/shader/light.h"
 #include "bonavista/memory/ref_count.h"
 #include "bonavista/memory/scoped_refptr.h"
 

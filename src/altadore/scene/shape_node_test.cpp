@@ -1,8 +1,8 @@
 #include "altadore/scene/shape_node.h"
 
 #include "altadore/shape/shape.h"
-#include "altadore/visual/color.h"
-#include "altadore/visual/material.h"
+#include "altadore/shader/color.h"
+#include "altadore/shader/material.h"
 #include "bonavista/testing/test_case.h"
 
 namespace {

@@ -2,7 +2,7 @@
 #define ALTADORE_RAY_TRACER_RAY_TRACER_H_
 
 #include "altadore/scene/transform_node.h"
-#include "altadore/visual/light_vector.h"
+#include "altadore/shader/light_vector.h"
 #include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
 

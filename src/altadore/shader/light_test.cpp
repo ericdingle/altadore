@@ -1,4 +1,4 @@
-#include "altadore/visual/light.h"
+#include "altadore/shader/light.h"
 
 #include "bonavista/testing/test_case.h"
 

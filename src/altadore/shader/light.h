@@ -1,8 +1,8 @@
-#ifndef ALTADORE_VISUAL_LIGHT_H_
-#define ALTADORE_VISUAL_LIGHT_H_
+#ifndef ALTADORE_SHADER_LIGHT_H_
+#define ALTADORE_SHADER_LIGHT_H_
 
 #include "altadore/algebra/point3.h"
-#include "altadore/visual/color.h"
+#include "altadore/shader/color.h"
 #include "bonavista/memory/ref_count.h"
 #include "bonavista/memory/scoped_refptr.h"
 

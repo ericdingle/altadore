@@ -1,7 +1,7 @@
-#ifndef ALTADORE_VISUAL_MATERIAL_H_
-#define ALTADORE_VISUAL_MATERIAL_H_
+#ifndef ALTADORE_SHADER_MATERIAL_H_
+#define ALTADORE_SHADER_MATERIAL_H_
 
-#include "altadore/visual/color.h"
+#include "altadore/shader/color.h"
 #include "bonavista/memory/ref_count.h"
 #include "bonavista/memory/scoped_refptr.h"
 

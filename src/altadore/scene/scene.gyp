@@ -6,8 +6,8 @@
     'target_name': 'scene_lib',
     'type': 'static_library',
     'dependencies': [
+      '../shader/shader.gyp:shader_lib',
       '../shape/shape.gyp:shape_lib',
-      '../visual/visual.gyp:visual_lib',
     ],
     'sources': [
       'scene_node.cpp',

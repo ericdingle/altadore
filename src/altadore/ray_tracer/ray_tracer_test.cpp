@@ -1,6 +1,6 @@
 #include "altadore/ray_tracer/ray_tracer.h"
 
-#include "altadore/visual/material.h"
+#include "altadore/shader/material.h"
 #include "bonavista/testing/test_case.h"
 
 namespace {
