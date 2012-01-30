@@ -7,7 +7,7 @@ class Point3;
 class Vector3;
 
 class Matrix4 {
-public:
+ public:
   static Matrix4 GetRotation(char axis, double angle);
   static Matrix4 GetScaling(double s);
   static Matrix4 GetScaling(double x, double y, double z);
@@ -29,7 +29,7 @@ public:
 
   bool operator==(const Matrix4& m) const;
 
-private:
+ private:
   double m_[4][4];
 };
 

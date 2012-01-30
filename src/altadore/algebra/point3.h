@@ -7,7 +7,7 @@
 class Vector3;
 
 class Point3 : public memory::RefCount {
-public:
+ public:
   Point3();
   Point3(double x, double y, double z);
   virtual ~Point3();
@@ -23,7 +23,7 @@ public:
 
   bool operator==(const Point3& p) const;
 
-private:
+ private:
   double p_[3];
 };
 

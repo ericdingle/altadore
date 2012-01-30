@@ -3,9 +3,10 @@
 
 #include "altadore/algebra/point3.h"
 #include "altadore/algebra/vector3.h"
+#include "bonavista/util/macros.h"
 
 class Ray {
-public:
+ public:
   Ray(const Point3& origin, const Vector3& direction);
   ~Ray();
 
@@ -13,12 +14,11 @@ public:
   const Vector3& direction() const { return direction_; }
   void set_direction(const Vector3& direction) { direction_ = direction; }
 
-private:
-  Ray(const Ray&);
-  void operator=(const Ray&);
-
+ private:
   const Point3 origin_;
   Vector3 direction_;
+
+  DISALLOW_COPY_AND_ASSIGN(Ray);
 };
 
 #endif

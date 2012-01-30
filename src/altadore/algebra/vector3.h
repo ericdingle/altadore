@@ -6,7 +6,7 @@
 class Point3;
 
 class Vector3 {
-public:
+ public:
   Vector3();
   Vector3(double x, double y, double z);
   virtual ~Vector3();
@@ -31,7 +31,7 @@ public:
 
   bool operator==(const Vector3& v) const;
 
-private:
+ private:
   double v_[3];
 };
 
