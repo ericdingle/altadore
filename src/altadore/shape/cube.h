@@ -2,18 +2,18 @@
 #define ALTADORE_SHAPE_CUBE_H_
 
 #include "altadore/shape/shape.h"
+#include "bonavista/util/macros.h"
 
 class Cube : public Shape {
-public:
+ public:
   Cube();
-  ~Cube();
+  virtual ~Cube();
 
-  bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const;
-  bool HasIntersection(const Ray& ray) const;
+  virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const;
+  virtual bool HasIntersection(const Ray& ray) const;
 
-private:
-  Cube(const Cube&);
-  void operator=(const Cube&);
+ private:
+  DISALLOW_COPY_AND_ASSIGN(Cube);
 };
 
 #endif

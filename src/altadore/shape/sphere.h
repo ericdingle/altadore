@@ -2,18 +2,18 @@
 #define ALTADORE_SHAPE_SPHERE_H_
 
 #include "altadore/shape/shape.h"
+#include "bonavista/util/macros.h"
 
 class Sphere : public Shape {
-public:
+ public:
   Sphere();
-  ~Sphere();
+  virtual ~Sphere();
 
-  bool FindIntersection(const Ray& r, double* t, Point3* point, Vector3* normal) const;
-  bool HasIntersection(const Ray& ray) const;
+  virtual bool FindIntersection(const Ray& r, double* t, Point3* point, Vector3* normal) const;
+  virtual bool HasIntersection(const Ray& ray) const;
 
-private:
-  Sphere(const Sphere&);
-  void operator=(const Sphere& s);
+ private:
+  DISALLOW_COPY_AND_ASSIGN(Sphere);
 };
 
 #endif

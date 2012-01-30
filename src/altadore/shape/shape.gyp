@@ -28,7 +28,6 @@
     ],
     'sources': [
       'cube_test.cpp',
-      'shape_test.cpp',
       'sphere_test.cpp',
       '../../bonavista/testing/test_main.cpp',
     ],

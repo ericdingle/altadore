@@ -1,6 +1,6 @@
 #include "altadore/shape/sphere.h"
 
-#include <cmath>
+#include <math.h>
 #include "altadore/algebra/ray.h"
 #include "altadore/shape/shape_constants.h"
 
@@ -88,7 +88,7 @@ bool Sphere::HasIntersection(const Ray& ray) const {
   double t = -direction.Dot(Vector3(origin)) / direction.Dot(direction);
   if (t < EPSILON)
     return false;
-  
+
   // Use Vector3's dot method to calculate the squared length.
   Vector3 point(origin + direction * t);
   return point.Dot(point) <= 1;
