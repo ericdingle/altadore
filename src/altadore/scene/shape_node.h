@@ -3,7 +3,7 @@
 
 #include "altadore/algebra/matrix4.h"
 #include "altadore/scene/scene_node.h"
-#include "bonavista/memory/scoped_ref.h"
+#include "bonavista/memory/scoped_refptr.h"
 
 class Shape;
 
@@ -29,8 +29,8 @@ private:
   Matrix4 transform_inverse_;
   Matrix4 transform_inverse_transpose_;
 
-  memory::scoped_ref<const Shape> shape_;
-  memory::scoped_ref<const Material> material_;
+  memory::scoped_refptr<const Shape> shape_;
+  memory::scoped_refptr<const Material> material_;
 };
 
 #endif

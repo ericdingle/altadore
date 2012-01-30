@@ -3,7 +3,7 @@
 
 #include "altadore/visual/color.h"
 #include "bonavista/memory/ref_count.h"
-#include "bonavista/memory/scoped_ref.h"
+#include "bonavista/memory/scoped_refptr.h"
 
 class Material : public memory::RefCount {
 public:
@@ -18,7 +18,7 @@ private:
   Material(const Material&);
   void operator=(const Material&);
 
-  memory::scoped_ref<const Color> color_;
+  memory::scoped_refptr<const Color> color_;
   double shininess_;
   double reflectivity_;
 };

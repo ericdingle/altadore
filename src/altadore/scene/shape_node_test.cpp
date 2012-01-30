@@ -44,7 +44,7 @@ protected:
     material_.Reset(new Material(new Color(), 1, 1));
   }
 
-  memory::scoped_ref<Material> material_;
+  memory::scoped_refptr<Material> material_;
 };
 
 TEST(ShapeNodeTest, CalcTransforms) {

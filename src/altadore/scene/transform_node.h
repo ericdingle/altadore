@@ -4,7 +4,7 @@
 #include <vector>
 #include "altadore/algebra/matrix4.h"
 #include "altadore/scene/scene_node.h"
-#include "bonavista/memory/scoped_ref.h"
+#include "bonavista/memory/scoped_refptr.h"
 
 class TransformNode : public SceneNode {
 public:
@@ -23,14 +23,14 @@ public:
   bool HasIntersection(const Ray& ray) const;
 
 protected:
-  const std::vector<memory::scoped_ref<SceneNode> >& children() { return children_; }
+  const std::vector<memory::scoped_refptr<SceneNode> >& children() { return children_; }
   const Matrix4& transform() { return transform_; }
 
 private:
   TransformNode(const TransformNode&);
   void operator=(const TransformNode&);
 
-  std::vector<memory::scoped_ref<SceneNode> > children_;
+  std::vector<memory::scoped_refptr<SceneNode> > children_;
   Matrix4 transform_;
 };
 

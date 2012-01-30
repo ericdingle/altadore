@@ -4,7 +4,7 @@
 #include "altadore/algebra/point3.h"
 #include "altadore/visual/color.h"
 #include "bonavista/memory/ref_count.h"
-#include "bonavista/memory/scoped_ref.h"
+#include "bonavista/memory/scoped_refptr.h"
 
 class Light : public memory::RefCount {
 public:
@@ -18,8 +18,8 @@ private:
   Light(const Light&);
   void operator=(const Light&);
 
-  memory::scoped_ref<const Point3> position_;
-  memory::scoped_ref<const Color> color_;
+  memory::scoped_refptr<const Point3> position_;
+  memory::scoped_refptr<const Color> color_;
 };
 
 #endif

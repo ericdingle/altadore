@@ -3,6 +3,7 @@
 
 #include "altadore/scene/transform_node.h"
 #include "altadore/visual/light_vector.h"
+#include "bonavista/memory/scoped_refptr.h"
 
 class RayTracer {
 public:
@@ -20,8 +21,8 @@ private:
   RayTracer(const RayTracer&);
   void operator=(const RayTracer&);
 
-  memory::scoped_ref<const TransformNode> root_;
-  memory::scoped_ref<const LightVector> lights_;
+  memory::scoped_refptr<const TransformNode> root_;
+  memory::scoped_refptr<const LightVector> lights_;
 };
 
 #endif

@@ -1,8 +1,8 @@
 #ifndef ALTADORE_IMAGE_BITMAP_H_
 #define ALTADORE_IMAGE_BITMAP_H_
 
-#include "bonavista/base/types.h"
 #include "bonavista/memory/scoped_array.h"
+#include "bonavista/util/types.h"
 
 class Bitmap {
 public:
