@@ -8,8 +8,8 @@
 #include "altadore/visual/material.h"
 
 RayTracer::RayTracer(const TransformNode* root, const LightVector* lights) : root_(root), lights_(lights) {
-  DASSERT(root != NULL);
-  DASSERT(lights != NULL);
+  ASSERT(root);
+  ASSERT(lights);
 }
 
 RayTracer::~RayTracer() {
@@ -33,7 +33,7 @@ bool RayTracer::Render(const char* fileName, int width, int height, bool anti_al
   Matrix4 s = Matrix4::GetScaling(h/height, h/height, 1);
 
   // Calculate the bitmap point to world matrix.
-  Matrix4 p2w = s*m;
+  Matrix4 p2w = s * m;
 
   Point3 origin(0, 0, 1);
   Ray ray(origin, Vector3());
@@ -69,7 +69,7 @@ Color RayTracer::GetColor(const Ray& ray) {
   if (!root_->FindIntersection(ray, &t, &point, &normal, &material))
     return Color();
 
-  DASSERT(material != NULL);
+  DASSERT(material);
   double reflectivity = material->reflectivity();
   double absorptivity = 1 - reflectivity;
 

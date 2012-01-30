@@ -7,12 +7,13 @@ namespace {
 
 class TestSceneNode : public SceneNode {
 public:
-  TestSceneNode(bool find_intersection, bool has_intersection, const Material* material=NULL)
+  TestSceneNode(bool find_intersection, bool has_intersection, const Material* material)
       : find_intersection_(find_intersection), has_intersection_(has_intersection), material_(material) {
   }
 
   void CalculateTransforms(const Matrix4& parent_transform) {
   }
+
   bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
     if (find_intersection_) {
       *material = material_;
@@ -22,13 +23,14 @@ public:
 
     return false;
   }
+
   bool HasIntersection(const Ray& ray) const {
     return has_intersection_;
   }
 
 private:
   mutable bool find_intersection_;
-  bool has_intersection_;
+  const bool has_intersection_;
   const Material* material_;
 };
 
@@ -73,7 +75,7 @@ TEST(RayTracerTest, GetColor) {
 }
 
 TEST(RayTracerTest, GetColorNoIntersection) {
-  root_->AddChild(new TestSceneNode(false, false));
+  root_->AddChild(new TestSceneNode(false, false, NULL));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
   Color color = ray_tracer.GetColor(ray_);
@@ -81,7 +83,7 @@ TEST(RayTracerTest, GetColorNoIntersection) {
 }
 
 TEST(RayTracerTest, GetAbsorbedColor) {
-  root_->AddChild(new TestSceneNode(false, false));
+  root_->AddChild(new TestSceneNode(false, false, NULL));
   lights_->AddLight(new Light(new Point3(1.0, 0.0, 0.0), new Color(0.4, 0.4, 0.4)));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
@@ -92,7 +94,7 @@ TEST(RayTracerTest, GetAbsorbedColor) {
 }
 
 TEST(RayTracerTest, GetAbsorbedColorNoLights) {
-  root_->AddChild(new TestSceneNode(false, false));
+  root_->AddChild(new TestSceneNode(false, false, NULL));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
   memory::scoped_refptr<Material> material(new Material(new Color(0.5, 0.5, 0.5), 0, 0));
@@ -101,7 +103,7 @@ TEST(RayTracerTest, GetAbsorbedColorNoLights) {
 }
 
 TEST(RayTracerTest, GetAbsorbedColorShadows) {
-  root_->AddChild(new TestSceneNode(false, true));
+  root_->AddChild(new TestSceneNode(false, true, NULL));
   lights_->AddLight(new Light(new Point3(), new Color(1.0, 1.0, 1.0)));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
@@ -111,7 +113,7 @@ TEST(RayTracerTest, GetAbsorbedColorShadows) {
 }
 
 TEST(RayTracerTest, GetReflectedColor) {
-  root_->AddChild(new TestSceneNode(false, false));
+  root_->AddChild(new TestSceneNode(false, false, NULL));
   lights_->AddLight(new Light(new Point3(-1.0, 0.0, 0.0), new Color(0.4, 0.4, 0.4)));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
@@ -124,7 +126,7 @@ TEST(RayTracerTest, GetReflectedColor) {
 }
 
 TEST(RayTracerTest, GetReflectedColorNoLights) {
-  root_->AddChild(new TestSceneNode(false, false));
+  root_->AddChild(new TestSceneNode(false, false, NULL));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
   memory::scoped_refptr<Material> material(new Material(new Color(), 10, 0));
@@ -133,7 +135,7 @@ TEST(RayTracerTest, GetReflectedColorNoLights) {
 }
 
 TEST(RayTracerTest, GetReflectedColorShadows) {
-  root_->AddChild(new TestSceneNode(false, true));
+  root_->AddChild(new TestSceneNode(false, true, NULL));
   lights_->AddLight(new Light(new Point3(), new Color(1.0, 1.0, 1.0)));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
