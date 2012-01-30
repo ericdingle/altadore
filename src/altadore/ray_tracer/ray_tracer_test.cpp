@@ -6,7 +6,7 @@
 namespace {
 
 class TestSceneNode : public SceneNode {
-public:
+ public:
   TestSceneNode(bool find_intersection, bool has_intersection, const Material* material)
       : find_intersection_(find_intersection), has_intersection_(has_intersection), material_(material) {
   }
@@ -28,14 +28,14 @@ public:
     return has_intersection_;
   }
 
-private:
+ private:
   mutable bool find_intersection_;
   const bool has_intersection_;
   const Material* material_;
 };
 
 class TestRayTracer : public RayTracer {
-public:
+ public:
   TestRayTracer(const TransformNode* root, const LightVector* lights) : RayTracer(root, lights) {
   }
 
@@ -47,16 +47,16 @@ public:
 }  // namespace
 
 TEST_CASE(RayTracerTest) {
-public:
+ public:
   RayTracerTest() : ray_(point_, normal_) {
   }
 
+ protected:
   void SetUp() {
     root_.Reset(new TransformNode());
     lights_.Reset(new LightVector());
   }
 
-protected:
   memory::scoped_refptr<TransformNode> root_;
   memory::scoped_refptr<LightVector> lights_;
 
