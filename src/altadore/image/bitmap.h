@@ -2,10 +2,11 @@
 #define ALTADORE_IMAGE_BITMAP_H_
 
 #include "bonavista/memory/scoped_array.h"
+#include "bonavista/util/macros.h"
 #include "bonavista/util/types.h"
 
 class Bitmap {
-public:
+ public:
   struct Color {
     Color() {
       r = g = b = 0;
@@ -24,7 +25,7 @@ public:
   void AntiAlias();
   bool Save(const char* file_name) const;
 
-protected:
+ protected:
   struct HeaderMagic {
     HeaderMagic() {
       magic[0] = 'B';
@@ -76,15 +77,12 @@ protected:
   uint height() const { return height_; }
   Color* data() const { return data_.ptr(); }
 
-private:
-  Bitmap(const Bitmap&);
-  void operator=(const Bitmap&);
-
-  uint DWORDAlign(uint size);
-
+ private:
   uint width_;
   uint height_;
   memory::scoped_array<Color> data_;
+
+  DISALLOW_COPY_AND_ASSIGN(Bitmap);
 };
 
 #endif
