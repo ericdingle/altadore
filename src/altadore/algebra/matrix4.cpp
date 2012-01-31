@@ -9,8 +9,8 @@
 
 Matrix4 Matrix4::GetRotation(char axis, double angle) {
   Matrix4 ret;
-  double c = cos(angle * PI/180);
-  double s = sin(angle * PI/180);
+  double c = cos(angle * kPi/180);
+  double s = sin(angle * kPi/180);
 
   switch (axis) {
     case 'x':
