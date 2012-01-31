@@ -3,10 +3,15 @@
 #include <math.h>
 #include "altadore/algebra/ray.h"
 #include "altadore/shape/shape_constants.h"
+#include "bonavista/logging/assert.h"
 
 namespace {
 
 void GetCoefficients(const Ray& ray, double* a, double* b, double* c) {
+  ASSERT(a);
+  ASSERT(b);
+  ASSERT(c);
+
   const Vector3& d = ray.direction();
   const Point3& o = ray.origin();
 
@@ -41,13 +46,16 @@ int GetRoots(double a, double b, double c, double roots[2]) {
 
 }  // namespace
 
-Sphere::Sphere() : Shape() {
+Sphere::Sphere() {
 }
 
 Sphere::~Sphere() {
 }
 
 bool Sphere::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {
+  ASSERT(point);
+  ASSERT(normal);
+
   double a, b, c;
   GetCoefficients(ray, &a, &b, &c);
 
@@ -57,7 +65,7 @@ bool Sphere::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3*
   if (num_roots == 0) {
     return false;
   } else if (num_roots == 1) {
-    if (roots[0] >= EPSILON)
+    if (roots[0] >= kEpsilon)
       *t = roots[0];
     else
       return false;
@@ -67,9 +75,9 @@ bool Sphere::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3*
       roots[0] = roots[1];
       roots[1] = x;
     }
-    if (roots[0] >= EPSILON)
+    if (roots[0] >= kEpsilon)
       *t = roots[0];
-    else if (roots[1] >= EPSILON)
+    else if (roots[1] >= kEpsilon)
       *t = roots[1];
     else
       return false;
@@ -86,7 +94,7 @@ bool Sphere::HasIntersection(const Ray& ray) const {
 
   // Find the point on the line closest to the sphere's origin.
   double t = -direction.Dot(Vector3(origin)) / direction.Dot(direction);
-  if (t < EPSILON)
+  if (t < kEpsilon)
     return false;
 
   // Use Vector3's dot method to calculate the squared length.

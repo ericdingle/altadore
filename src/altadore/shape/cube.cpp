@@ -3,14 +3,19 @@
 #include <limits>
 #include "altadore/algebra/ray.h"
 #include "altadore/shape/shape_constants.h"
+#include "bonavista/logging/assert.h"
 
-Cube::Cube() : Shape() {
+Cube::Cube() {
 }
 
 Cube::~Cube() {
 }
 
 bool Cube::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {
+  ASSERT(t);
+  ASSERT(point);
+  ASSERT(normal);
+
   const Point3& origin = ray.origin();
   const Vector3& direction = ray.direction();
 
@@ -25,7 +30,7 @@ bool Cube::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* n
         continue;
 
       double s = (j - origin[i]) / direction[i];
-      if (s >= EPSILON && s < *t) {
+      if (s >= kEpsilon && s < *t) {
         uint k = (i + 1) % 3;
         double y = origin[k] + direction[k] * s;
 
@@ -52,7 +57,7 @@ bool Cube::HasIntersection(const Ray& ray) const {
   for (int i = 0; i < 3; ++i) {
     for (int j = -1; j <= 1; j += 2) {
       double t = (j - origin[i]) / direction[i];
-      if (t >= EPSILON) {
+      if (t >= kEpsilon) {
         uint k = (i + 1) % 3;
         double y = origin[k] + direction[k] * t;
 

@@ -1,3 +1,3 @@
 #include "altadore/shape/shape_constants.h"
 
-const double EPSILON = 0.001;
+const double kEpsilon = 0.001;
