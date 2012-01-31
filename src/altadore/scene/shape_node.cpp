@@ -19,6 +19,11 @@ void ShapeNode::CalculateTransforms(const Matrix4& parent_transform) {
 }
 
 bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
+  ASSERT(t);
+  ASSERT(point);
+  ASSERT(normal);
+  ASSERT(material);
+
   Point3 origin = transform_inverse_ * ray.origin();
   Vector3 direction = transform_inverse_ * ray.direction();
 

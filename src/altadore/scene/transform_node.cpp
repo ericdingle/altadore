@@ -38,6 +38,11 @@ void TransformNode::CalculateTransforms(const Matrix4& parent_transform) {
 }
 
 bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
+  ASSERT(t);
+  ASSERT(point);
+  ASSERT(normal);
+  ASSERT(material);
+
   *t = std::numeric_limits<double>::max();
 
   for (uint i = 0; i < children_.size(); ++i) {

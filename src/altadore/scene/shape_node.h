@@ -23,12 +23,12 @@ class ShapeNode : public SceneNode {
   const Matrix4& transform_inverse_transpose() const { return transform_inverse_transpose_; }
 
  private:
+  const memory::scoped_refptr<const Shape> shape_;
+  const memory::scoped_refptr<const Material> material_;
+
   Matrix4 transform_;
   Matrix4 transform_inverse_;
   Matrix4 transform_inverse_transpose_;
-
-  const memory::scoped_refptr<const Shape> shape_;
-  const memory::scoped_refptr<const Material> material_;
 
   DISALLOW_COPY_AND_ASSIGN(ShapeNode);
 };
