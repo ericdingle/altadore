@@ -11,7 +11,7 @@ class RayTracer {
   RayTracer(const TransformNode* root, const LightVector* lights);
   ~RayTracer();
 
-  bool Render(const char* fileName, int width, int height, bool anti_alias);
+  bool Render(const char* file_name, int width, int height, bool anti_alias);
 
  protected:
   Color GetColor(const Ray& ray);

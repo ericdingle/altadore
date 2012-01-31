@@ -1,6 +1,6 @@
 #ifndef ALTADORE_RAY_TRACER_RAY_TRACER_CONSTANTS_H_
 #define ALTADORE_RAY_TRACER_RAY_TRACER_CONSTANTS_H_
 
-extern const double AMBIENT_INTENSITY;
+extern const double kAmbientIntensity;
 
 #endif

@@ -15,7 +15,9 @@ RayTracer::RayTracer(const TransformNode* root, const LightVector* lights) : roo
 RayTracer::~RayTracer() {
 }
 
-bool RayTracer::Render(const char* fileName, int width, int height, bool anti_alias) {
+bool RayTracer::Render(const char* file_name, int width, int height, bool anti_alias) {
+  ASSERT(file_name);
+
   if (anti_alias) {
     width *= 2;
     height *= 2;
@@ -29,7 +31,7 @@ bool RayTracer::Render(const char* fileName, int width, int height, bool anti_al
 
   // The viewing angle is 45 degrees. The adjacent is 1 unit (the distance from the origin to the plane).
   // Scale the scene according to the opposite.
-  double h = 2 * tan(45/2 * PI/180);
+  double h = 2 * tan(45/2 * kPi/180);
   Matrix4 s = Matrix4::GetScaling(h/height, h/height, 1);
 
   // Calculate the bitmap point to world matrix.
@@ -58,7 +60,7 @@ bool RayTracer::Render(const char* fileName, int width, int height, bool anti_al
     bitmap.AntiAlias();
   }
 
-  return bitmap.Save(fileName);
+  return bitmap.Save(file_name);
 }
 
 Color RayTracer::GetColor(const Ray& ray) {
@@ -85,9 +87,11 @@ Color RayTracer::GetColor(const Ray& ray) {
 }
 
 Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, const Material* material) {
+  ASSERT(material);
+
   // color = ambient_intensity
   Color color;
-  color += AMBIENT_INTENSITY;
+  color += kAmbientIntensity;
 
   // color += diffuse_intensity[i] * light_color[i]
   for (uint i = 0; i < lights_->lights().size(); ++i) {
@@ -112,6 +116,8 @@ Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, co
 }
 
 Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Vector3& normal, const Material* material) {
+  ASSERT(material);
+
   // color = reflected_color
   Vector3 reflected_dir = ray.direction() - normal * 2 * normal.Dot(ray.direction());
   reflected_dir.Normalize();
