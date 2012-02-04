@@ -1,5 +1,5 @@
-#ifndef ALTADORE_SCENE_SCENE_LEXER_H_
-#define ALTADORE_SCENE_SCENE_LEXER_H_
+#ifndef ALTADORE_SCENE_INTERP_SCENE_LEXER_H_
+#define ALTADORE_SCENE_INTERP_SCENE_LEXER_H_
 
 #include "bonavista/util/macros.h"
 #include "chaparral/lexer/lexer.h"

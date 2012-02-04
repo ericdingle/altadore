@@ -8,12 +8,8 @@
     'dependencies': [
       '../shader/shader.gyp:shader_lib',
       '../shape/shape.gyp:shape_lib',
-      '../../bonavista/string/string.gyp:string_lib',
-      '../../chaparral/lexer/lexer.gyp:lexer_lib',
     ],
     'sources': [
-      'scene_lexer.cpp',
-      'scene_lexer.h',
       'scene_node.cpp',
       'scene_node.h',
       'shape_node.cpp',
@@ -29,7 +25,6 @@
       '../../bonavista/testing/testing.gyp:testing_lib',
     ],
     'sources': [
-      'scene_lexer_test.cpp',
       'shape_node_test.cpp',
       'transform_node_test.cpp',
       '../../bonavista/testing/test_main.cpp',

@@ -1,4 +1,4 @@
-#include "altadore/scene/scene_lexer.h"
+#include "altadore/scene_interp/scene_lexer.h"
 
 #include "bonavista/util/macros.h"
 #include "bonavista/testing/test_case.h"
