@@ -7,7 +7,7 @@
 class CalcLexer : public Lexer {
  public:
   CalcLexer();
-  ~CalcLexer();
+  virtual ~CalcLexer();
 
   enum Type {
     TYPE_ASTERISK,
