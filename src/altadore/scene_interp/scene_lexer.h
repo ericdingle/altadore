@@ -7,7 +7,7 @@
 class SceneLexer : public Lexer {
  public:
   SceneLexer();
-  ~SceneLexer();
+  virtual ~SceneLexer();
 
   enum Type {
     TYPE_COMMA,
