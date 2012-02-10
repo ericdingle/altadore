@@ -4,13 +4,14 @@
 #include "bonavista/logging/assert.h"
 #include "bonavista/memory/ref_count.h"
 #include "bonavista/memory/scoped_ptr.h"
-#include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
 
-class Variant {
+class Variant : public memory::RefCount {
  public:
   template <typename T>
   explicit Variant(T value) : data_(new Data<T>(value)) {}
+  template <typename T>
+  explicit Variant(T* value) : data_(new ScopedData<T>(value)) {}
   ~Variant();
 
   template <typename T>
@@ -19,7 +20,7 @@ class Variant {
 
     const Data<T>* data = dynamic_cast<const Data<T>*>(data_.ptr());
     if (data) {
-      *out = data->value;
+      *out = data->value();
       return true;
     }
 
@@ -30,11 +31,9 @@ class Variant {
   bool Get(T** out) const {
     ASSERT(out);
 
-    const Data<memory::scoped_refptr<T> >* ref_data =
-        dynamic_cast<const Data<memory::scoped_refptr<T> >*>(data_.ptr());
-    if (ref_data) {
-      ref_data->value->AddRef();
-      *out = ref_data->value.ptr();
+    const ScopedData<T>* data = dynamic_cast<const ScopedData<T>*>(data_.ptr());
+    if (data) {
+      *out = data->value();
       return true;
     }
 
@@ -42,16 +41,41 @@ class Variant {
   }
 
  private:
-  struct DataBase {
+  class DataBase {
+   public:
+    DataBase();
     virtual ~DataBase();
+
+   private:
+    DISALLOW_COPY_AND_ASSIGN(DataBase);
   };
 
   template <typename T>
-  struct Data : public DataBase {
-    Data(T t) : value(t) {}
+  class Data : public DataBase {
+   public:
+    explicit Data(T t) : value_(t) {}
     virtual ~Data() {}
 
-    T value;
+    const T& value() const { return value_; }
+
+   private:
+    T value_;
+
+    DISALLOW_COPY_AND_ASSIGN(Data);
+  };
+
+  template <typename T>
+  class ScopedData : public DataBase {
+   public:
+    explicit ScopedData(T* t) : value_(t) {}
+    virtual ~ScopedData() {}
+
+    T* value() const { return value_.ptr(); }
+
+   private:
+    memory::scoped_ptr<T> value_;
+
+    DISALLOW_COPY_AND_ASSIGN(ScopedData);
   };
 
   memory::scoped_ptr<const DataBase> data_;

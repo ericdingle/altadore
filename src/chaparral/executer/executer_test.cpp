@@ -1,6 +1,8 @@
 #include "chaparral/executer/executer.h"
 
 #include "bonavista/logging/assert.h"
+#include "bonavista/memory/scoped_ptr.h"
+#include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/testing/test_case.h"
 #include "chaparral/executer/executer.h"
 #include "chaparral/executer/variant.h"
@@ -66,7 +68,8 @@ class TestExecuter : public Executer {
       return false;
     }
 
-    *var = new Variant(digit);
+    memory::scoped_refptr<const Variant> var_ref(new Variant(digit));
+    *var = var_ref.Release();
     return true;
   }
 };
@@ -83,7 +86,7 @@ TEST_CASE(ExecuterTest) {
   memory::scoped_ptr<TokenStream> stream_;
   memory::scoped_ptr<Parser> parser_;
   memory::scoped_ptr<Executer> executer_;
-  memory::scoped_ptr<const Variant> var_;
+  memory::scoped_refptr<const Variant> var_;
 };
 
 TEST(ExecuterTest, Empty) {

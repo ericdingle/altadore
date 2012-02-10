@@ -3,5 +3,8 @@
 Variant::~Variant() {
 }
 
+Variant::DataBase::DataBase() {
+}
+
 Variant::DataBase::~DataBase() {
 }
