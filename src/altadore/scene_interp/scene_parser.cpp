@@ -18,8 +18,16 @@ bool SceneParser::Parse(const ASTNode** root) {
   if (!Parser::Parse(node.Receive()))
     return false;
 
-  if (node.ptr() && !ConsumeToken(SceneLexer::TYPE_SEMI_COLON))
-    return false;
+  if (node.ptr()) {
+    if (node->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS)) {
+      position_ = node->token()->position();
+      error_ = "Unexpected function call";
+      return false;
+    }
+
+    if (!ConsumeToken(SceneLexer::TYPE_SEMI_COLON))
+      return false;
+  }
 
   *root = node.Release();
   return true;
