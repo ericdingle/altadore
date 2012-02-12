@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright (c) 2011 Google Inc. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,9 +16,11 @@ import string
 import subprocess
 import sys
 
+
 def main(args):
   executor = MacTool()
   executor.Dispatch(args)
+
 
 class MacTool(object):
   """This class performs all the Mac tooling steps. The methods can either be
@@ -73,12 +75,14 @@ class MacTool(object):
     if not plist:
       return
 
-    # The format of PkgInfo is eight characters, representing the bundle type
-    # and bundle signature, each four characters. If either is missing, four
-    # '?' characters are used instead.
+    # Only create PkgInfo for executable types.
     package_type = plist['CFBundlePackageType']
-    if len(package_type) != 4:
-      package_type = '?' * 4
+    if package_type != 'APPL':
+      return
+
+    # The format of PkgInfo is eight characters, representing the bundle type
+    # and bundle signature, each four characters. If that is missing, four
+    # '?' characters are used instead.
     signature_code = plist['CFBundleSignature']
     if len(signature_code) != 4:
       signature_code = '?' * 4
@@ -182,6 +186,7 @@ class MacTool(object):
       return "UTF-8"
     else:
       return None
+
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv[1:]))
