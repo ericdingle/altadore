@@ -1,5 +1,7 @@
 #include "bonavista/memory/ref_count.h"
 
+#include "bonavista/logging/assert.h"
+
 namespace memory {
 
 RefCount::RefCount() : ref_count_(0) {
@@ -13,6 +15,8 @@ void RefCount::AddRef() const {
 }
 
 void RefCount::Release() const {
+  DASSERT(ref_count_ != 0);
+
   if (--ref_count_ == 0) {
     delete this;
   }
