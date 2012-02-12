@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2011 Google Inc. All rights reserved.
+# Copyright (c) 2012 Google Inc. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,7 +13,7 @@ import TestGyp
 import sys
 
 if sys.platform == 'darwin':
-  test = TestGyp.TestGyp(formats=['make', 'xcode'])
+  test = TestGyp.TestGyp(formats=['ninja', 'make', 'xcode'])
 
   test.run_gyp('framework.gyp', chdir='framework')
 
@@ -42,6 +42,9 @@ if sys.platform == 'darwin':
                              chdir='framework')
   test.built_file_must_exist('Test Framework.framework/Test Framework',
                              chdir='framework')
+  # PkgInfo.
+  test.built_file_must_not_exist(
+      'Test Framework.framework/Versions/A/Resources/PkgInfo',
+      chdir='framework')
 
   test.pass_test()
-

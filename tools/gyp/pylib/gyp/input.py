@@ -1,6 +1,4 @@
-#!/usr/bin/python
-
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+# Copyright (c) 2011 Google Inc. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -1328,7 +1326,7 @@ class DependencyGraphNode(object):
     setting.
 
     When adding a target to the list of dependencies, this function will
-    recurse into itself with |initial| set to False, to collect depenedencies
+    recurse into itself with |initial| set to False, to collect dependencies
     that are linked into the linkable target for which the list is being built.
     """
     if dependencies == None:
@@ -1360,6 +1358,13 @@ class DependencyGraphNode(object):
       # True) and this target won't be linked.
       return dependencies
 
+    # Don't traverse 'none' targets if explicitly excluded.
+    if (target_type == 'none' and
+        not targets[self.ref].get('dependencies_traverse', True)):
+      if self.ref not in dependencies:
+        dependencies.append(self.ref)
+      return dependencies
+
     # Executables and loadable modules are already fully and finally linked.
     # Nothing else can be a link dependency of them, there can only be
     # dependencies in the sense that a dependent target might run an
@@ -1369,11 +1374,7 @@ class DependencyGraphNode(object):
 
     # The target is linkable, add it to the list of link dependencies.
     if self.ref not in dependencies:
-      if target_type != 'none':
-        # Special case: "none" type targets don't produce any linkable products
-        # and shouldn't be exposed as link dependencies, although dependencies
-        # of "none" type targets may still be link dependencies.
-        dependencies.append(self.ref)
+      dependencies.append(self.ref)
       if initial or not is_linkable:
         # If this is a subsequent target and it's linkable, don't look any
         # further for linkable dependencies, as they'll already be linked into
@@ -1525,26 +1526,39 @@ def AdjustStaticLibraryDependencies(flat_list, targets, dependency_nodes,
       target_dict['dependencies_original'] = target_dict.get(
           'dependencies', [])[:]
 
+      # A static library should not depend on another static library unless
+      # the dependency relationship is "hard," which should only be done when
+      # a dependent relies on some side effect other than just the build
+      # product, like a rule or action output. Further, if a target has a
+      # non-hard dependency, but that dependency exports a hard dependency,
+      # the non-hard dependency can safely be removed, but the exported hard
+      # dependency must be added to the target to keep the same dependency
+      # ordering.
+      dependencies = \
+          dependency_nodes[target].DirectAndImportedDependencies(targets)
       index = 0
-      while index < len(target_dict['dependencies']):
-        dependency = target_dict['dependencies'][index]
+      while index < len(dependencies):
+        dependency = dependencies[index]
         dependency_dict = targets[dependency]
-        if dependency_dict['type'] == 'static_library' and \
-           (not 'hard_dependency' in dependency_dict or \
-            not dependency_dict['hard_dependency']):
-          # A static library should not depend on another static library unless
-          # the dependency relationship is "hard," which should only be done
-          # when a dependent relies on some side effect other than just the
-          # build product, like a rule or action output.  Take the dependency
-          # out of the list, and don't increment index because the next
-          # dependency to analyze will shift into the index formerly occupied
-          # by the one being removed.
-          del target_dict['dependencies'][index]
+
+        # Remove every non-hard static library dependency and remove every
+        # non-static library dependency that isn't a direct dependency.
+        if (dependency_dict['type'] == 'static_library' and \
+            not dependency_dict.get('hard_dependency', False)) or \
+           (dependency_dict['type'] != 'static_library' and \
+            not dependency in target_dict['dependencies']):
+          # Take the dependency out of the list, and don't increment index
+          # because the next dependency to analyze will shift into the index
+          # formerly occupied by the one being removed.
+          del dependencies[index]
         else:
           index = index + 1
 
-      # If the dependencies list is empty, it's not needed, so unhook it.
-      if len(target_dict['dependencies']) == 0:
+      # Update the dependencies. If the dependencies list is empty, it's not
+      # needed, so unhook it.
+      if len(dependencies) > 0:
+        target_dict['dependencies'] = dependencies
+      else:
         del target_dict['dependencies']
 
     elif target_type in linkable_types:
