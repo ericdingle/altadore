@@ -55,6 +55,7 @@ bool CalcParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
 bool CalcParser::ParseInfixToken(const Token* token, const ASTNode* left,
                                  const ASTNode** root) {
   ASSERT(token);
+  ASSERT(left);
   ASSERT(root);
 
   memory::scoped_ptr<const Token> token_holder(token);

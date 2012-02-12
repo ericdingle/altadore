@@ -2,6 +2,7 @@
 #define CHAPARRAL_EXECUTER_EXECUTER_H_
 
 #include "bonavista/memory/scoped_ptr.h"
+#include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
 #include "chaparral/executer/variant.h"
 #include "chaparral/lexer/token.h"
@@ -22,7 +23,7 @@ class Executer {
   const std::string& error() const;
 
  protected:
-  // |node| is owned by the caller.
+  // |node| is owned by the caller. |var| must be AddRef'd.
   virtual bool ExecuteASTNode(const ASTNode* node, const Variant** var) =0;
   // |node| is owned by the caller.
   template <typename T>
@@ -39,7 +40,7 @@ class Executer {
 
 template <typename T>
 bool Executer::ExecuteT(T* out) {
-  memory::scoped_ptr<const Variant> var;
+  memory::scoped_refptr<const Variant> var;
   if (!Execute(var.Receive()))
     return false;
 
@@ -53,7 +54,7 @@ bool Executer::ExecuteT(T* out) {
 
 template <typename T>
 bool Executer::ExecuteASTNodeT(const ASTNode* node, T* out) {
-  memory::scoped_ptr<const Variant> var;
+  memory::scoped_refptr<const Variant> var;
   if (!ExecuteASTNode(node, var.Receive()))
     return false;
 

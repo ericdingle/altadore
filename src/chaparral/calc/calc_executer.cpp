@@ -35,13 +35,15 @@ bool CalcExecuter::ExecuteASTNode(const ASTNode* node, const Variant** var) {
     else
       result = left / right;
 
-    *var = new Variant(result);
+    memory::scoped_refptr<const Variant> var_ref(new Variant(result));
+    *var = var_ref.Release();
     return true;
   }
 
   if (node->token()->IsType(CalcLexer::TYPE_NUMBER)) {
     double value = atof(node->token()->value().c_str());
-    *var = new Variant(value);
+    memory::scoped_refptr<const Variant> var_ref(new Variant(value));
+    *var = var_ref.Release();
     return true;
   }
 

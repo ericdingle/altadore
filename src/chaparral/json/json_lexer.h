@@ -7,7 +7,7 @@
 class JsonLexer : public Lexer {
  public:
   JsonLexer();
-  ~JsonLexer();
+  virtual ~JsonLexer();
 
   enum Type {
     TYPE_COLON,

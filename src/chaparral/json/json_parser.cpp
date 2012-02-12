@@ -63,6 +63,7 @@ bool JsonParser::ParseObject(const Token* token, const ASTNode** root) {
   //  pair -> string ':' value
   //  pairs -> pair more_pairs | E
   //  more_pairs -> ',' pair more_pairs | E
+  ASSERT(token);
   ASSERT(root);
 
   memory::scoped_ptr<ASTNode> node(new ASTNode(token));
@@ -110,6 +111,7 @@ bool JsonParser::ParseArray(const Token* token, const ASTNode** root) {
   //   array -> '[' values ']'
   //   values -> value more_values | E
   //   more_values -> ',' value more_values | E
+  ASSERT(token);
   ASSERT(root);
 
   memory::scoped_ptr<ASTNode> node(new ASTNode(token));
