@@ -58,6 +58,9 @@ bool SceneParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
     return true;
   }
 
+  if (token->IsType(SceneLexer::TYPE_NEW))
+    return ParseNewObject(token_holder.Release(), root);
+
   position_ = token->position();
   error_ = string::Format("Unexpected token: %s", token->value().c_str());
   return false;
@@ -86,6 +89,26 @@ bool SceneParser::ParseInfixToken(const Token* token, const ASTNode* left,
   return false;
 }
 
+bool SceneParser::ParseNewObject(const Token* token, const ASTNode** root) {
+  ASSERT(token);
+  ASSERT(root);
+
+  memory::scoped_ptr<ASTNode> node(new ASTNode(token));
+
+  memory::scoped_ptr<const ASTNode> right;
+  if (!ParseExpression(0, right.Receive()))
+    return false;
+  if (!right->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS)) {
+    position_ = right->token()->position();
+    error_ = "Expecting function call on right of new";
+    return false;
+  }
+  node->AddChild(right.Release());
+
+  *root = node.Release();
+  return true;
+}
+
 bool SceneParser::ParseDotAccessor(const Token* token, const ASTNode* left,
                                    const ASTNode** root) {
   ASSERT(token);
@@ -95,12 +118,12 @@ bool SceneParser::ParseDotAccessor(const Token* token, const ASTNode* left,
   memory::scoped_ptr<const ASTNode> left_holder(left);
 
   memory::scoped_ptr<ASTNode> node(new ASTNode(token));
+
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
     position_ = left->token()->position();
     error_ = "Expecting identifier on left of dot accessor";
     return false;
   }
-
   node->AddChild(left_holder.Release());
 
   memory::scoped_ptr<const ASTNode> right;
@@ -111,7 +134,6 @@ bool SceneParser::ParseDotAccessor(const Token* token, const ASTNode* left,
     error_ = "Expecting function call on right of dot accessor";
     return false;
   }
-
   node->AddChild(right.Release());
 
   *root = node.Release();
@@ -127,18 +149,17 @@ bool SceneParser::ParseAssignment(const Token* token, const ASTNode* left,
   memory::scoped_ptr<const ASTNode> left_holder(left);
 
   memory::scoped_ptr<ASTNode> node(new ASTNode(token));
+
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
     position_ = left->token()->position();
     error_ = "Expecting identifier on left of assignment";
     return false;
   }
-
   node->AddChild(left_holder.Release());
 
   memory::scoped_ptr<const ASTNode> right;
   if (!ParseExpression(GetBindingPower(token->type()), right.Receive()))
     return false;
-
   node->AddChild(right.Release());
 
   *root = node.Release();
@@ -160,7 +181,6 @@ bool SceneParser::ParseFunction(const Token* token, const ASTNode* left,
     error_ = "Expecting identifier on left of function call";
     return false;
   }
-
   node->AddChild(left_holder.Release());
 
   if (!look_ahead_token_->IsType(SceneLexer::TYPE_RIGHT_PARENTHESIS)) {

@@ -18,6 +18,7 @@ class SceneParser : public Parser {
                                const ASTNode** root);
 
  private:
+  bool ParseNewObject(const Token* token, const ASTNode** root);
   bool ParseDotAccessor(const Token* token, const ASTNode* left,
                         const ASTNode** root);
   bool ParseAssignment(const Token* token, const ASTNode* left,
