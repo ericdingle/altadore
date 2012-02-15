@@ -25,8 +25,8 @@ TEST_CASE(CalcExecuterTest) {
 
 TEST(CalcExecuterTest, ExecuteEmpty) {
   Init("");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_NULL(var_.ptr());
+  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->error().empty());
 }
 
 TEST(CalcExecuterTest, ExecuteUnknown) {
