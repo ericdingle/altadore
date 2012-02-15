@@ -15,6 +15,7 @@ class SceneLexer : public Lexer {
     TYPE_EQUAL,
     TYPE_IDENTIFIER,
     TYPE_LEFT_PARENTHESIS,
+    TYPE_NEW,
     TYPE_NUMBER,
     TYPE_RIGHT_PARENTHESIS,
     TYPE_SEMI_COLON

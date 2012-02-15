@@ -58,9 +58,12 @@ bool SceneLexer::GetIdentifierToken(const std::string& input,
   ++index;
   for (; index < length && (IsAlpha(input[index]) || IsDigit(input[index])); ++index);
 
-  *type = TYPE_IDENTIFIER;
-  *value = input.substr(start, index - start);
   *count = index - start;
+  *value = input.substr(start, *count);
+  if (*value == "new")
+    *type = TYPE_NEW;
+  else
+    *type = TYPE_IDENTIFIER;
   return true;
 }
 

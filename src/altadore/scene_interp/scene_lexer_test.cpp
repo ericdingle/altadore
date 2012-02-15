@@ -38,7 +38,15 @@ TEST(SceneLexerTest, TokenizeOperator) {
   }
 }
 
-TEST(SceneLexerTest, TokenizerString) {
+TEST(SceneLexerTest, TokenizeNew) {
+  input_ = "new";
+  EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
+  EXPECT_EQ(type_, SceneLexer::TYPE_NEW);
+  EXPECT_EQ(value_, input_);
+  EXPECT_EQ(count_, input_.length());
+}
+
+TEST(SceneLexerTest, TokenizeIdentifier) {
   input_ = "adf9f3que0";
   EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
   EXPECT_EQ(type_, SceneLexer::TYPE_IDENTIFIER);
