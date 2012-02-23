@@ -19,7 +19,7 @@ TEST_CASE(CalcExecuterTest) {
   memory::scoped_ptr<TokenStream> stream_;
   memory::scoped_ptr<Parser> parser_;
   memory::scoped_ptr<Executer> executer_;
-  memory::scoped_ptr<const Variant> var_;
+  memory::scoped_refptr<const Variant> var_;
   double d_;
 };
 
