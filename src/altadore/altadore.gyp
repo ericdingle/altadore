@@ -22,6 +22,7 @@
       'scene_interp/scene_interp.gyp:scene_interp_lib',
       'shader/shader.gyp:shader_lib',
       'shape/shape.gyp:shape_lib',
+      'util/util.gyp:util_lib',
     ],
   }, {
     'target_name': 'tests',
