@@ -1,19 +1,28 @@
 #ifndef ALTADORE_ALGEBRA_POINT3_H_
 #define ALTADORE_ALGEBRA_POINT3_H_
 
-#include "bonavista/memory/ref_count.h"
+#include "altadore/util/invokable.h"
 #include "bonavista/util/types.h"
 
 class Vector3;
 
-class Point3 : public memory::RefCount {
+class Point3 : public Invokable {
  public:
+  static Result Create(
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      Invokable** object);
+
   Point3();
   Point3(double x, double y, double z);
   virtual ~Point3();
 
   Point3(const Point3& p);
   Point3& operator=(const Point3& p);
+
+  virtual Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var);
 
   double& operator[](uint i);
   double operator[](uint i) const;

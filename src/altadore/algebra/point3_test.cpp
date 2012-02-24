@@ -2,9 +2,44 @@
 
 #include "altadore/algebra/vector3.h"
 #include "bonavista/testing/test_case.h"
+#include "chaparral/executer/variant.h"
 
 TEST_CASE(Point3Test) {
 };
+
+TEST(Point3Test, Create) {
+  std::vector<memory::scoped_refptr<const Variant> > args;
+
+  memory::scoped_ptr<Invokable> object;
+  EXPECT_EQ(Point3::Create(args, object.Receive()), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.ptr());
+
+  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  args.push_back(var.ptr());
+  args.push_back(var.ptr());
+  args.push_back(var.ptr());
+
+  EXPECT_EQ(Point3::Create(args, object.Receive()), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.ptr());
+}
+
+TEST(Point3Test, CreateError) {
+  std::vector<memory::scoped_refptr<const Variant> > args;
+
+  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  args.push_back(var.ptr());
+  args.push_back(var.ptr());
+
+  memory::scoped_ptr<Invokable> object;
+  EXPECT_EQ(Point3::Create(args, object.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+
+  var.Reset(new Variant(2));
+  args.push_back(var.ptr());
+
+  EXPECT_EQ(Point3::Create(args, object.Receive()),
+            Invokable::RESULT_ERR_ARG_TYPE);
+}
 
 TEST(Point3Test, Constructor) {
   Point3 point1;
