@@ -119,7 +119,9 @@ TEST(SceneExecuterTest, ExecuteNew) {
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
   Invokable* object;
   EXPECT_TRUE(var_->Get(&object));
-  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object));
+  Point3* point = dynamic_cast<Point3*>(object);
+  EXPECT_NOT_NULL(point);
+  EXPECT_EQ((*point)[0], 0);
 }
 
 TEST(SceneExecuterTest, ExecuteNewError) {

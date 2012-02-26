@@ -14,7 +14,8 @@ Invokable::Result Point3::Create(
     return RESULT_ERR_ARG_SIZE;
 
   if (args.size() == 0) {
-    *object = new Point3();
+    memory::scoped_refptr<Point3> point(new Point3());
+    *object = point.Release();
     return RESULT_OK;
   }
 
@@ -28,7 +29,8 @@ Invokable::Result Point3::Create(
   if (!args[2]->Get(&z))
     return RESULT_ERR_ARG_TYPE;
 
-  *object = new Point3(x, y, z);
+  memory::scoped_refptr<Point3> point(new Point3(x, y, z));
+  *object = point.Release();
   return RESULT_OK;
 }
 

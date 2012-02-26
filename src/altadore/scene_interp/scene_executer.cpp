@@ -38,8 +38,8 @@ bool SceneExecuter::ExecuteDotAccessor(const ASTNode* node, const Variant** var)
   ASSERT(var);
 
   const ASTNode* obj_node = node->children()[0];
-  Invokable* object = NULL;
-  if (!ExecuteASTNodeT(obj_node, &object))
+  memory::scoped_refptr<Invokable> object;
+  if (!ExecuteASTNodeT(obj_node, object.Receive()))
     return false;
 
   const std::vector<const ASTNode*>& children = node->children()[1]->children();
@@ -110,7 +110,7 @@ bool SceneExecuter::ExecuteNew(const ASTNode* node, const Variant** var) {
     args.push_back(arg.ptr());
   }
 
-  memory::scoped_ptr<Invokable> object;
+  memory::scoped_refptr<Invokable> object;
   Invokable::Result result = Invokable::RESULT_ERR_NAME;
   if (name == "Point3")
     result = Point3::Create(args, object.Receive());
@@ -121,7 +121,7 @@ bool SceneExecuter::ExecuteNew(const ASTNode* node, const Variant** var) {
     return false;
   }
 
-  memory::scoped_refptr<const Variant> var_ref(new Variant(object.Release()));
+  memory::scoped_refptr<const Variant> var_ref(new Variant(object.ptr()));
   *var = var_ref.Release();
   return true;
 }
