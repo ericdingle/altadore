@@ -13,8 +13,8 @@ Invokable::Result Color::Create(
     return RESULT_ERR_ARG_SIZE;
 
   if (args.size() == 0) {
-    memory::scoped_refptr<Color> point(new Color());
-    *object = point.Release();
+    memory::scoped_refptr<Color> color(new Color());
+    *object = color.Release();
     return RESULT_OK;
   }
 
@@ -28,8 +28,8 @@ Invokable::Result Color::Create(
   if (!args[2]->Get(&b))
     return RESULT_ERR_ARG_TYPE;
 
-  memory::scoped_refptr<Color> point(new Color(r, g, b));
-  *object = point.Release();
+  memory::scoped_refptr<Color> color(new Color(r, g, b));
+  *object = color.Release();
   return RESULT_OK;
 }
 
