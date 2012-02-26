@@ -6,6 +6,8 @@
 #include "altadore/shader/color.h"
 #include "altadore/shader/light.h"
 #include "altadore/shader/material.h"
+#include "altadore/shape/cube.h"
+#include "altadore/shape/sphere.h"
 #include "altadore/util/invokable.h"
 #include "bonavista/testing/test_case.h"
 #include "chaparral/lexer/token_stream.h"
@@ -124,6 +126,11 @@ TEST(SceneExecuterTest, ExecuteNew) {
   EXPECT_TRUE(var_->Get(object.Receive()));
   EXPECT_NOT_NULL(dynamic_cast<Color*>(object.ptr()));
 
+  Init("new Cube();");
+  EXPECT_TRUE(executer_->Execute(var_.Receive()));
+  EXPECT_TRUE(var_->Get(object.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Cube*>(object.ptr()));
+
   Init("new Light(new Point3(1.0, 2.0, 3.0), new Color(0.1, 0.2, 0.3));");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
   EXPECT_TRUE(var_->Get(object.Receive()));
@@ -138,6 +145,11 @@ TEST(SceneExecuterTest, ExecuteNew) {
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
   EXPECT_TRUE(var_->Get(object.Receive()));
   EXPECT_NOT_NULL(dynamic_cast<Point3*>(object.ptr()));
+
+  Init("new Sphere();");
+  EXPECT_TRUE(executer_->Execute(var_.Receive()));
+  EXPECT_TRUE(var_->Get(object.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Sphere*>(object.ptr()));
 }
 
 TEST(SceneExecuterTest, ExecuteNewError) {

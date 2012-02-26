@@ -5,6 +5,8 @@
 #include "altadore/shader/color.h"
 #include "altadore/shader/light.h"
 #include "altadore/shader/material.h"
+#include "altadore/shape/cube.h"
+#include "altadore/shape/sphere.h"
 #include "altadore/util/invokable.h"
 #include "bonavista/logging/assert.h"
 #include "bonavista/string/format.h"
@@ -117,12 +119,16 @@ bool SceneExecuter::ExecuteNew(const ASTNode* node, const Variant** var) {
   Invokable::Result result = Invokable::RESULT_ERR_NAME;
   if (name == "Color")
     result = Color::Create(args, object.Receive());
+  else if (name == "Cube")
+    result = Cube::Create(args, object.Receive());
   else if (name == "Light")
     result = Light::Create(args, object.Receive());
   else if (name == "Material")
     result = Material::Create(args, object.Receive());
   else if (name == "Point3")
     result = Point3::Create(args, object.Receive());
+  else if (name == "Sphere")
+    result = Sphere::Create(args, object.Receive());
 
   if (result != Invokable::RESULT_OK) {
     position_ = children[0]->token()->position();
