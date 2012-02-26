@@ -8,7 +8,13 @@ class Vector3;
 
 class Matrix4 {
  public:
-  static Matrix4 GetRotation(char axis, double angle);
+  enum Axis {
+    AXIS_X,
+    AXIS_Y,
+    AXIS_Z
+  };
+
+  static Matrix4 GetRotation(Axis axis, double angle);
   static Matrix4 GetScaling(double s);
   static Matrix4 GetScaling(double x, double y, double z);
   static Matrix4 GetTranslation(double x, double y, double z);

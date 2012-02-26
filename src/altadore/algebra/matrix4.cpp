@@ -7,25 +7,25 @@
 #include "altadore/algebra/vector3.h"
 #include "bonavista/logging/assert.h"
 
-Matrix4 Matrix4::GetRotation(char axis, double angle) {
+Matrix4 Matrix4::GetRotation(Axis axis, double angle) {
   Matrix4 ret;
   double c = cos(angle * kPi/180);
   double s = sin(angle * kPi/180);
 
   switch (axis) {
-    case 'x':
+    case AXIS_X:
       ret.m_[1][1] = c;
       ret.m_[1][2] = -s;
       ret.m_[2][1] = s;
       ret.m_[2][2] = c;
       break;
-    case 'y':
+    case AXIS_Y:
       ret.m_[0][0] = c;
       ret.m_[0][2] = s;
       ret.m_[2][0] = -s;
       ret.m_[2][2] = c;
       break;
-    case 'z':
+    case AXIS_Z:
       ret.m_[0][0] = c;
       ret.m_[0][1] = -s;
       ret.m_[1][0] = s;

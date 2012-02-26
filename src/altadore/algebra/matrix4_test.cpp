@@ -15,7 +15,7 @@ TEST(Matrix4Test, GetRotation) {
     {0, sqrt(3.0)/2, 0.5,          0},
     {0, 0,           0,            1}
   };
-  EXPECT_TRUE(Matrix4::GetRotation('x', 60) == x);
+  EXPECT_TRUE(Matrix4::GetRotation(Matrix4::AXIS_X, 60) == x);
 
   double y[][4] = {
     {0.5,          0, sqrt(3.0)/2, 0},
@@ -23,7 +23,7 @@ TEST(Matrix4Test, GetRotation) {
     {-sqrt(3.0)/2, 0, 0.5,         0},
     {0,            0, 0,           1}
   };
-  EXPECT_TRUE(Matrix4::GetRotation('y', 60) == y);
+  EXPECT_TRUE(Matrix4::GetRotation(Matrix4::AXIS_Y, 60) == y);
 
   double z[][4] = {
     {0.5,         -sqrt(3.0)/2, 0, 0},
@@ -31,7 +31,7 @@ TEST(Matrix4Test, GetRotation) {
     {0,           0,            1, 0},
     {0,           0,            0, 1}
   };
-  EXPECT_TRUE(Matrix4::GetRotation('z', 60) == z);
+  EXPECT_TRUE(Matrix4::GetRotation(Matrix4::AXIS_Z, 60) == z);
 }
 
 TEST(Matrix4Test, GetScaling) {
@@ -110,14 +110,14 @@ TEST(Matrix4Test, AssignmentOperator) {
 }
 
 TEST(Matrix4Test, GetInverse) {
-  Matrix4 m = Matrix4::GetRotation('x', 78);
+  Matrix4 m = Matrix4::GetRotation(Matrix4::AXIS_X, 78);
   Matrix4 inv = m.GetInverse();
   EXPECT_TRUE(m * inv == Matrix4());
 }
 
 TEST(Matrix4Test, GetTranspose) {
-  Matrix4 a = Matrix4::GetRotation('x', 34);
-  Matrix4 b = Matrix4::GetRotation('y', 83);
+  Matrix4 a = Matrix4::GetRotation(Matrix4::AXIS_X, 34);
+  Matrix4 b = Matrix4::GetRotation(Matrix4::AXIS_Y, 83);
 
   EXPECT_TRUE(a.GetTranspose().GetTranspose() == a);
   EXPECT_TRUE((a * b).GetTranspose() == b.GetTranspose() * a.GetTranspose());
