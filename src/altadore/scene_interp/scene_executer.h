@@ -13,10 +13,10 @@ class SceneExecuter : public Executer {
   SceneExecuter(Parser* parser);
   ~SceneExecuter();
 
+  void SetVar(const std::string& name, const Variant* var);
+
  protected:
   virtual bool ExecuteASTNode(const ASTNode* node, const Variant** var);
-
-  std::map<std::string, memory::scoped_refptr<const Variant> > var_map_;
 
  private:
   bool ExecuteDotAccessor(const ASTNode* node, const Variant** var);
@@ -24,6 +24,8 @@ class SceneExecuter : public Executer {
   bool ExecuteIdentifier(const ASTNode* node, const Variant** var);
   bool ExecuteNew(const ASTNode* node, const Variant** var);
   bool ExecuteNumber(const ASTNode* node, const Variant** var);
+
+  std::map<std::string, memory::scoped_refptr<const Variant> > var_map_;
 
   DISALLOW_COPY_AND_ASSIGN(SceneExecuter);
 };

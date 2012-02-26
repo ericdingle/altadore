@@ -17,6 +17,10 @@ SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
 SceneExecuter::~SceneExecuter() {
 }
 
+void SceneExecuter::SetVar(const std::string& name, const Variant* var) {
+  var_map_[name] = var;
+}
+
 bool SceneExecuter::ExecuteASTNode(const ASTNode* node, const Variant** var) {
   ASSERT(node);
   ASSERT(var);

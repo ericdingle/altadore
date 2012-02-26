@@ -12,16 +12,6 @@
 #include "bonavista/testing/test_case.h"
 #include "chaparral/lexer/token_stream.h"
 
-class TestSceneExecuter : public SceneExecuter {
- public:
-  TestSceneExecuter(Parser* parser) : SceneExecuter(parser) {
-  }
-
-  void Set(const std::string& name, const Variant* var) {
-    var_map_[name] = var;
-  }
-};
-
 class Object : public Invokable {
  public:
   virtual Result Invoke(
@@ -39,13 +29,13 @@ TEST_CASE(SceneExecuterTest) {
   void Init(const char* input) {
     stream_.Reset(new TokenStream(&lexer_, input));
     parser_.Reset(new SceneParser(stream_.ptr()));
-    executer_.Reset(new TestSceneExecuter(parser_.ptr()));
+    executer_.Reset(new SceneExecuter(parser_.ptr()));
   }
 
   SceneLexer lexer_;
   memory::scoped_ptr<TokenStream> stream_;
   memory::scoped_ptr<Parser> parser_;
-  memory::scoped_ptr<TestSceneExecuter> executer_;
+  memory::scoped_ptr<SceneExecuter> executer_;
   memory::scoped_refptr<const Variant> var_;
 };
 
@@ -54,7 +44,7 @@ TEST(SceneExecuterTest, ExecuteDotAccessor) {
 
   memory::scoped_refptr<Invokable> object(new Object());
   var_.Reset(new Variant(object.ptr()));
-  executer_->Set("obj", var_.ptr());
+  executer_->SetVar("obj", var_.ptr());
 
   int i;
   EXPECT_TRUE(executer_->ExecuteT(&i));
@@ -65,7 +55,7 @@ TEST(SceneExecuterTest, ExecuteDotAccessorError) {
   Init("obj.pass(1);");
 
   var_.Reset(new Variant(5));
-  executer_->Set("obj", var_.ptr());
+  executer_->SetVar("obj", var_.ptr());
 
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
   EXPECT_FALSE(executer_->error().empty());
@@ -74,7 +64,7 @@ TEST(SceneExecuterTest, ExecuteDotAccessorError) {
 
   Invokable* object = new Object();
   var_.Reset(new Variant(object));
-  executer_->Set("obj", var_.ptr());
+  executer_->SetVar("obj", var_.ptr());
 
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
   EXPECT_FALSE(executer_->error().empty());
@@ -83,7 +73,7 @@ TEST(SceneExecuterTest, ExecuteDotAccessorError) {
 
   object = new Object();
   var_.Reset(new Variant(object));
-  executer_->Set("obj", var_.ptr());
+  executer_->SetVar("obj", var_.ptr());
 
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
   EXPECT_FALSE(executer_->error().empty());
@@ -106,7 +96,7 @@ TEST(SceneExecuterTest, ExecuteIdentifier) {
   Init("a;");
 
   var_.Reset(new Variant(5));
-  executer_->Set("a", var_.ptr());
+  executer_->SetVar("a", var_.ptr());
 
   int i;
   EXPECT_TRUE(executer_->ExecuteT(&i));
