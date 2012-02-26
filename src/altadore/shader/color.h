@@ -1,16 +1,25 @@
 #ifndef ALTADORE_SHADER_COLOR_H_
 #define ALTADORE_SHADER_COLOR_H_
 
-#include "bonavista/memory/ref_count.h"
+#include "altadore/util/invokable.h"
 #include "bonavista/util/types.h"
 
-class Color : public memory::RefCount {
+class Color : public Invokable {
  public:
+  static Result Create(
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      Invokable** object);
+
   Color();
   Color(double r, double g, double b);
   ~Color();
 
   Color(const Color&);
+
+  virtual Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var);
 
   Color operator*(double d) const;
   Color& operator+=(double d);

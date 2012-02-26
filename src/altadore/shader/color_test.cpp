@@ -1,9 +1,44 @@
 #include "altadore/shader/color.h"
 
 #include "bonavista/testing/test_case.h"
+#include "chaparral/executer/variant.h"
 
 TEST_CASE(ColorTest) {
 };
+
+TEST(ColorTest, Create) {
+  std::vector<memory::scoped_refptr<const Variant> > args;
+
+  memory::scoped_ptr<Invokable> object;
+  EXPECT_EQ(Color::Create(args, object.Receive()), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.ptr());
+
+  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  args.push_back(var.ptr());
+  args.push_back(var.ptr());
+  args.push_back(var.ptr());
+
+  EXPECT_EQ(Color::Create(args, object.Receive()), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.ptr());
+}
+
+TEST(ColorTest, CreateError) {
+  std::vector<memory::scoped_refptr<const Variant> > args;
+
+  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  args.push_back(var.ptr());
+  args.push_back(var.ptr());
+
+  memory::scoped_ptr<Invokable> object;
+  EXPECT_EQ(Color::Create(args, object.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+
+  var.Reset(new Variant(2));
+  args.push_back(var.ptr());
+
+  EXPECT_EQ(Color::Create(args, object.Receive()),
+            Invokable::RESULT_ERR_ARG_TYPE);
+}
 
 TEST(ColorTest, Constructor) {
   Color color1;

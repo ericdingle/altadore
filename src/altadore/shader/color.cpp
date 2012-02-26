@@ -2,6 +2,36 @@
 
 #include <algorithm>
 #include "bonavista/logging/assert.h"
+#include "chaparral/executer/variant.h"
+
+Invokable::Result Color::Create(
+    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    Invokable** object) {
+  ASSERT(object);
+
+  if (args.size() != 0 && args.size() != 3)
+    return RESULT_ERR_ARG_SIZE;
+
+  if (args.size() == 0) {
+    memory::scoped_refptr<Color> point(new Color());
+    *object = point.Release();
+    return RESULT_OK;
+  }
+
+  double r;
+  if (!args[0]->Get(&r))
+    return RESULT_ERR_ARG_TYPE;
+  double g;
+  if (!args[1]->Get(&g))
+    return RESULT_ERR_ARG_TYPE;
+  double b;
+  if (!args[2]->Get(&b))
+    return RESULT_ERR_ARG_TYPE;
+
+  memory::scoped_refptr<Color> point(new Color(r, g, b));
+  *object = point.Release();
+  return RESULT_OK;
+}
 
 Color::Color() : r_(0.0), g_(0.0), b_(0.0) {
 }
@@ -17,6 +47,13 @@ Color::~Color() {
 }
 
 Color::Color(const Color& c) : r_(c.r_), g_(c.g_), b_(c.b_) {
+}
+
+Invokable::Result Color::Invoke(
+    const std::string& name,
+    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const Variant** var) {
+  return RESULT_ERR_NAME;
 }
 
 Color Color::operator*(double d) const {

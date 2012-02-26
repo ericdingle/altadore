@@ -6,8 +6,10 @@
     'target_name': 'shader_lib',
     'type': 'static_library',
     'dependencies': [
+      '../util/util.gyp:util_lib',
       '../algebra/algebra.gyp:algebra_lib',
       '../../bonavista/memory/memory.gyp:memory_lib',
+      '../../chaparral/executer/executer.gyp:executer_lib',
     ],
     'sources': [
       'color.cpp',
