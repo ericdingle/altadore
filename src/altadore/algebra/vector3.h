@@ -9,7 +9,7 @@ class Vector3 {
  public:
   Vector3();
   Vector3(double x, double y, double z);
-  virtual ~Vector3();
+  ~Vector3();
 
   Vector3(const Vector3& v);
   Vector3& operator=(const Vector3& v);

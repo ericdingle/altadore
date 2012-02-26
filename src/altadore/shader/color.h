@@ -12,7 +12,7 @@ class Color : public Invokable {
 
   Color();
   Color(double r, double g, double b);
-  ~Color();
+  virtual ~Color();
 
   Color(const Color&);
 

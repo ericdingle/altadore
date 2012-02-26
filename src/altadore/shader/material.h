@@ -13,7 +13,7 @@ class Material : public Invokable {
       Invokable** object);
 
   Material(const Color* color, double shininess, double reflectivity);
-  ~Material();
+  virtual ~Material();
 
   virtual Result Invoke(
       const std::string& name,

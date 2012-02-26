@@ -14,7 +14,7 @@ class Light : public Invokable {
       Invokable** object);
 
   Light(const Point3* position, const Color* color);
-  ~Light();
+  virtual ~Light();
 
   virtual Result Invoke(
       const std::string& name,
