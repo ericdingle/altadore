@@ -17,20 +17,18 @@ Invokable::Result Material::Create(
   if (!color)
     return RESULT_ERR_ARG_TYPE;
 
-  double shininess;
-  if (!args[1]->Get(&shininess))
+  double shininess, reflectivity;
+  if (!args[1]->Get(&shininess) || !args[2]->Get(&reflectivity))
     return RESULT_ERR_ARG_TYPE;
 
-  double reflectivity;
-  if (!args[2]->Get(&reflectivity))
-    return RESULT_ERR_ARG_TYPE;
-
-  memory::scoped_refptr<Material> material(new Material(color, shininess, reflectivity));
+  memory::scoped_refptr<Material> material(
+      new Material(color, shininess, reflectivity));
   *object = material.Release();
   return RESULT_OK;
 }
 
-Material::Material(const Color* color, double shininess, double reflectivity) : color_(color), shininess_(shininess), reflectivity_(reflectivity) {
+Material::Material(const Color* color, double shininess, double reflectivity)
+    : color_(color), shininess_(shininess), reflectivity_(reflectivity) {
   ASSERT(color);
   ASSERT(reflectivity >= 0 && reflectivity <= 1);
 }

@@ -12,23 +12,16 @@ Invokable::Result Color::Create(
   if (args.size() != 0 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
+  memory::scoped_refptr<Color> color;
   if (args.size() == 0) {
-    memory::scoped_refptr<Color> color(new Color());
-    *object = color.Release();
-    return RESULT_OK;
+    color.Reset(new Color());
+  } else {
+    double r, g, b;
+    if (!args[0]->Get(&r) || !args[1]->Get(&g) || !args[2]->Get(&b))
+      return RESULT_ERR_ARG_TYPE;
+    color.Reset(new Color(r, g, b));
   }
 
-  double r;
-  if (!args[0]->Get(&r))
-    return RESULT_ERR_ARG_TYPE;
-  double g;
-  if (!args[1]->Get(&g))
-    return RESULT_ERR_ARG_TYPE;
-  double b;
-  if (!args[2]->Get(&b))
-    return RESULT_ERR_ARG_TYPE;
-
-  memory::scoped_refptr<Color> color(new Color(r, g, b));
   *object = color.Release();
   return RESULT_OK;
 }

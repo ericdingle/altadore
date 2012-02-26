@@ -13,23 +13,16 @@ Invokable::Result Point3::Create(
   if (args.size() != 0 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
+  memory::scoped_refptr<Point3> point;
   if (args.size() == 0) {
-    memory::scoped_refptr<Point3> point(new Point3());
-    *object = point.Release();
-    return RESULT_OK;
+    point.Reset(new Point3());
+  } else {
+    double x, y, z;
+    if (!args[0]->Get(&x) || !args[1]->Get(&y) || !args[2]->Get(&z))
+      return RESULT_ERR_ARG_TYPE;
+    point.Reset(new Point3(x, y, z));
   }
 
-  double x;
-  if (!args[0]->Get(&x))
-    return RESULT_ERR_ARG_TYPE;
-  double y;
-  if (!args[1]->Get(&y))
-    return RESULT_ERR_ARG_TYPE;
-  double z;
-  if (!args[2]->Get(&z))
-    return RESULT_ERR_ARG_TYPE;
-
-  memory::scoped_refptr<Point3> point(new Point3(x, y, z));
   *object = point.Release();
   return RESULT_OK;
 }
