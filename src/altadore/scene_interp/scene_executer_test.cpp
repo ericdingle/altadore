@@ -4,6 +4,7 @@
 #include "altadore/scene_interp/scene_lexer.h"
 #include "altadore/scene_interp/scene_parser.h"
 #include "altadore/shader/color.h"
+#include "altadore/shader/material.h"
 #include "altadore/util/invokable.h"
 #include "bonavista/testing/test_case.h"
 #include "chaparral/lexer/token_stream.h"
@@ -121,6 +122,11 @@ TEST(SceneExecuterTest, ExecuteNew) {
   memory::scoped_refptr<Invokable> object;
   EXPECT_TRUE(var_->Get(object.Receive()));
   EXPECT_NOT_NULL(dynamic_cast<Color*>(object.ptr()));
+
+  Init("new Material(new Color(0.1, 0.2, 0.3), 25.0, 1.0);");
+  EXPECT_TRUE(executer_->Execute(var_.Receive()));
+  EXPECT_TRUE(var_->Get(object.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Material*>(object.ptr()));
 
   Init("new Point3();");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));

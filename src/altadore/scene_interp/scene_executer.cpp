@@ -3,6 +3,7 @@
 #include "altadore/algebra/point3.h"
 #include "altadore/scene_interp/scene_lexer.h"
 #include "altadore/shader/color.h"
+#include "altadore/shader/material.h"
 #include "altadore/util/invokable.h"
 #include "bonavista/logging/assert.h"
 #include "bonavista/string/format.h"
@@ -115,6 +116,8 @@ bool SceneExecuter::ExecuteNew(const ASTNode* node, const Variant** var) {
   Invokable::Result result = Invokable::RESULT_ERR_NAME;
   if (name == "Color")
     result = Color::Create(args, object.Receive());
+  else if (name == "Material")
+    result = Material::Create(args, object.Receive());
   else if (name == "Point3")
     result = Point3::Create(args, object.Receive());
 
