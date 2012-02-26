@@ -10,9 +10,10 @@ TEST(MaterialTest, Create) {
   std::vector<memory::scoped_refptr<const Variant> > args;
 
   memory::scoped_refptr<const Variant> var;
+  memory::scoped_refptr<Invokable> object;
 
-  memory::scoped_refptr<Invokable> color(new Color(0.1, 0.2, 0.3));
-  var.Reset(new Variant(color.ptr()));
+  object.Reset(new Color(0.1, 0.2, 0.3));
+  var.Reset(new Variant(object.ptr()));
   args.push_back(var.ptr());
 
   var.Reset(new Variant(25.0));
@@ -21,7 +22,6 @@ TEST(MaterialTest, Create) {
   var.Reset(new Variant(0.4));
   args.push_back(var.ptr());
 
-  memory::scoped_ptr<Invokable> object;
   EXPECT_EQ(Material::Create(args, object.Receive()), Invokable::RESULT_OK);
   EXPECT_NOT_NULL(object.ptr());
 }
