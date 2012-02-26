@@ -2,10 +2,9 @@
 #define ALTADORE_SHAPE_SPHERE_H_
 
 #include "altadore/shape/shape.h"
-#include "altadore/util/invokable.h"
 #include "bonavista/util/macros.h"
 
-class Sphere : public Invokable, public Shape {
+class Sphere : public Shape {
  public:
   static Result Create(
       const std::vector<memory::scoped_refptr<const Variant> >& args,

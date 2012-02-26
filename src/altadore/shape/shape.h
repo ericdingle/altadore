@@ -1,13 +1,14 @@
 #ifndef ALTADORE_SHAPE_SHAPE_H_
 #define ALTADORE_SHAPE_SHAPE_H_
 
+#include "altadore/util/invokable.h"
 #include "bonavista/util/macros.h"
 
 class Point3;
 class Ray;
 class Vector3;
 
-class Shape {
+class Shape : public Invokable {
  public:
   Shape();
   virtual ~Shape();
