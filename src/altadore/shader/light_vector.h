@@ -3,14 +3,19 @@
 
 #include <vector>
 #include "altadore/shader/light.h"
-#include "bonavista/memory/ref_count.h"
+#include "altadore/util/invokable.h"
 #include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
 
-class LightVector : public memory::RefCount {
+class LightVector : public Invokable {
  public:
   LightVector();
-  ~LightVector();
+  virtual ~LightVector();
+
+  virtual Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var);
 
   void AddLight(const Light* light);
 
