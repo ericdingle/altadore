@@ -3,6 +3,7 @@
 #include "altadore/algebra/point3.h"
 #include "altadore/scene_interp/scene_lexer.h"
 #include "altadore/scene_interp/scene_parser.h"
+#include "altadore/shader/color.h"
 #include "altadore/util/invokable.h"
 #include "bonavista/testing/test_case.h"
 #include "chaparral/lexer/token_stream.h"
@@ -47,8 +48,8 @@ TEST_CASE(SceneExecuterTest) {
 TEST(SceneExecuterTest, ExecuteDotAccessor) {
   Init("obj.pass(1);");
 
-  Invokable* object = new Object();
-  var_.Reset(new Variant(object));
+  memory::scoped_refptr<Invokable> object(new Object());
+  var_.Reset(new Variant(object.ptr()));
   executer_->Set("obj", var_.ptr());
 
   int i;
@@ -115,15 +116,20 @@ TEST(SceneExecuterTest, ExecuteIdentifierError) {
 }
 
 TEST(SceneExecuterTest, ExecuteNew) {
+  Init("new Color();");
+  EXPECT_TRUE(executer_->Execute(var_.Receive()));
+  memory::scoped_refptr<Invokable> object;
+  EXPECT_TRUE(var_->Get(object.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Color*>(object.ptr()));
+
   Init("new Point3();");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  Invokable* object;
-  EXPECT_TRUE(var_->Get(&object));
-  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object));
+  EXPECT_TRUE(var_->Get(object.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object.ptr()));
 }
 
 TEST(SceneExecuterTest, ExecuteNewError) {
-  Init("new Point3(a);");
+  Init("new Color(a);");
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
   EXPECT_FALSE(executer_->error().empty());
 

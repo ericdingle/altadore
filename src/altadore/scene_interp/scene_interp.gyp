@@ -7,6 +7,7 @@
     'type': 'static_library',
     'dependencies': [
       '../algebra/algebra.gyp:algebra_lib',
+      '../shader/shader.gyp:shader_lib',
       '../util/util.gyp:util_lib',
       '../../bonavista/string/string.gyp:string_lib',
       '../../chaparral/executer/executer.gyp:executer_lib',

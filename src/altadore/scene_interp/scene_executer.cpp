@@ -2,6 +2,7 @@
 
 #include "altadore/algebra/point3.h"
 #include "altadore/scene_interp/scene_lexer.h"
+#include "altadore/shader/color.h"
 #include "altadore/util/invokable.h"
 #include "bonavista/logging/assert.h"
 #include "bonavista/string/format.h"
@@ -112,12 +113,14 @@ bool SceneExecuter::ExecuteNew(const ASTNode* node, const Variant** var) {
 
   memory::scoped_refptr<Invokable> object;
   Invokable::Result result = Invokable::RESULT_ERR_NAME;
-  if (name == "Point3")
+  if (name == "Color")
+    result = Color::Create(args, object.Receive());
+  else if (name == "Point3")
     result = Point3::Create(args, object.Receive());
 
-  if (result == Invokable::RESULT_ERR_NAME) {
+  if (result != Invokable::RESULT_OK) {
     position_ = children[0]->token()->position();
-    error_ = string::Format("%s is not a class", name.c_str());
+    error_ = "ERROR";
     return false;
   }
 
