@@ -3,7 +3,7 @@
 
 #include "bonavista/logging/assert.h"
 #include "bonavista/memory/ref_count.h"
-#include "bonavista/memory/scoped_ptr.h"
+#include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
 
 class Variant : public memory::RefCount {
@@ -11,7 +11,7 @@ class Variant : public memory::RefCount {
   template <typename T>
   explicit Variant(T value) : data_(new Data<T>(value)) {}
   template <typename T>
-  explicit Variant(T* value) : data_(new ScopedData<T>(value)) {}
+  explicit Variant(T* value) : data_(new ScopedRefData<T>(value)) {}
   ~Variant();
 
   template <typename T>
@@ -31,8 +31,9 @@ class Variant : public memory::RefCount {
   bool Get(T** out) const {
     ASSERT(out);
 
-    const ScopedData<T>* data = dynamic_cast<const ScopedData<T>*>(data_.ptr());
+    const ScopedRefData<T>* data = dynamic_cast<const ScopedRefData<T>*>(data_.ptr());
     if (data) {
+      data->value()->AddRef();
       *out = data->value();
       return true;
     }
@@ -65,17 +66,17 @@ class Variant : public memory::RefCount {
   };
 
   template <typename T>
-  class ScopedData : public DataBase {
+  class ScopedRefData : public DataBase {
    public:
-    explicit ScopedData(T* t) : value_(t) {}
-    virtual ~ScopedData() {}
+    explicit ScopedRefData(T* t) : value_(t) {}
+    virtual ~ScopedRefData() {}
 
     T* value() const { return value_.ptr(); }
 
    private:
-    memory::scoped_ptr<T> value_;
+    memory::scoped_refptr<T> value_;
 
-    DISALLOW_COPY_AND_ASSIGN(ScopedData);
+    DISALLOW_COPY_AND_ASSIGN(ScopedRefData);
   };
 
   memory::scoped_ptr<const DataBase> data_;
