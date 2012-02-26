@@ -5,10 +5,30 @@
 #include "altadore/shape/shape_constants.h"
 #include "bonavista/logging/assert.h"
 
+Invokable::Result Cube::Create(
+    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    Invokable** object) {
+  ASSERT(object);
+
+  if (args.size() != 0)
+    return RESULT_ERR_ARG_SIZE;
+
+  memory::scoped_refptr<Cube> cube(new Cube());
+  *object = cube.Release();
+  return RESULT_OK;
+}
+
 Cube::Cube() {
 }
 
 Cube::~Cube() {
+}
+
+Invokable::Result Cube::Invoke(
+    const std::string& name,
+    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const Variant** var) {
+  return RESULT_ERR_NAME;
 }
 
 bool Cube::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {

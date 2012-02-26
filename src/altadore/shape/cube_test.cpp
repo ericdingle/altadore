@@ -2,9 +2,29 @@
 
 #include "altadore/algebra/ray.h"
 #include "bonavista/testing/test_case.h"
+#include "chaparral/executer/variant.h"
 
 TEST_CASE(CubeTest) {
 };
+
+TEST(CubeTest, Create) {
+  std::vector<memory::scoped_refptr<const Variant> > args;
+
+  memory::scoped_ptr<Invokable> object;
+  EXPECT_EQ(Cube::Create(args, object.Receive()), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.ptr());
+}
+
+TEST(CubeTest, CreateError) {
+  std::vector<memory::scoped_refptr<const Variant> > args;
+
+  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  args.push_back(var.ptr());
+
+  memory::scoped_ptr<Invokable> object;
+  EXPECT_EQ(Cube::Create(args, object.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+}
 
 TEST(CubeTest, FindIntersection) {
   Cube cube;

@@ -46,10 +46,30 @@ int GetRoots(double a, double b, double c, double roots[2]) {
 
 }  // namespace
 
+Invokable::Result Sphere::Create(
+    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    Invokable** object) {
+  ASSERT(object);
+
+  if (args.size() != 0)
+    return RESULT_ERR_ARG_SIZE;
+
+  memory::scoped_refptr<Sphere> sphere(new Sphere());
+  *object = sphere.Release();
+  return RESULT_OK;
+}
+
 Sphere::Sphere() {
 }
 
 Sphere::~Sphere() {
+}
+
+Invokable::Result Sphere::Invoke(
+    const std::string& name,
+    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const Variant** var) {
+  return RESULT_ERR_NAME;
 }
 
 bool Sphere::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {

@@ -1,14 +1,13 @@
 #ifndef ALTADORE_SHAPE_SHAPE_H_
 #define ALTADORE_SHAPE_SHAPE_H_
 
-#include "bonavista/memory/ref_count.h"
 #include "bonavista/util/macros.h"
 
 class Point3;
 class Ray;
 class Vector3;
 
-class Shape : public memory::RefCount {
+class Shape {
  public:
   Shape();
   virtual ~Shape();
