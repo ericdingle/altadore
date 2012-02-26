@@ -3,14 +3,23 @@
 
 #include "altadore/algebra/point3.h"
 #include "altadore/shader/color.h"
-#include "bonavista/memory/ref_count.h"
+#include "altadore/util/invokable.h"
 #include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
 
-class Light : public memory::RefCount {
+class Light : public Invokable {
  public:
+  static Result Create(
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      Invokable** object);
+
   Light(const Point3* position, const Color* color);
   ~Light();
+
+  virtual Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var);
 
   const Point3* position() const { return position_.ptr(); }
   const Color* color() const { return color_.ptr(); }
