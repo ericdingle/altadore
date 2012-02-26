@@ -1,5 +1,6 @@
 #include "altadore/scene_interp/scene_executer.h"
 
+#include "altadore/algebra/point3.h"
 #include "altadore/scene_interp/scene_lexer.h"
 #include "altadore/util/invokable.h"
 #include "bonavista/logging/assert.h"
@@ -23,7 +24,7 @@ bool SceneExecuter::ExecuteASTNode(const ASTNode* node, const Variant** var) {
     case SceneLexer::TYPE_IDENTIFIER:
       return ExecuteIdentifier(node, var);
     case SceneLexer::TYPE_NEW:
-      return false;
+      return ExecuteNew(node, var);
     case SceneLexer::TYPE_NUMBER:
       return ExecuteNumber(node, var);
     default:
@@ -90,6 +91,37 @@ bool SceneExecuter::ExecuteIdentifier(const ASTNode* node, const Variant** var) 
   }
 
   memory::scoped_refptr<const Variant> var_ref(var_map_[name]);
+  *var = var_ref.Release();
+  return true;
+}
+
+bool SceneExecuter::ExecuteNew(const ASTNode* node, const Variant** var) {
+  ASSERT(node);
+  ASSERT(var);
+
+  const std::vector<const ASTNode*>& children = node->children()[0]->children();
+  const std::string& name = children[0]->token()->value();
+
+  std::vector<memory::scoped_refptr<const Variant> > args;
+  for (uint i = 1; i < children.size(); ++i) {
+    memory::scoped_refptr<const Variant> arg;
+    if (!ExecuteASTNode(children[i], arg.Receive()))
+      return false;
+    args.push_back(arg.ptr());
+  }
+
+  memory::scoped_ptr<Invokable> object;
+  Invokable::Result result = Invokable::RESULT_ERR_NAME;
+  if (name == "Point3")
+    result = Point3::Create(args, object.Receive());
+
+  if (result == Invokable::RESULT_ERR_NAME) {
+    position_ = children[0]->token()->position();
+    error_ = string::Format("%s is not a class", name.c_str());
+    return false;
+  }
+
+  memory::scoped_refptr<const Variant> var_ref(new Variant(object.Release()));
   *var = var_ref.Release();
   return true;
 }

@@ -1,5 +1,6 @@
 #include "altadore/scene_interp/scene_executer.h"
 
+#include "altadore/algebra/point3.h"
 #include "altadore/scene_interp/scene_lexer.h"
 #include "altadore/scene_interp/scene_parser.h"
 #include "altadore/util/invokable.h"
@@ -109,6 +110,24 @@ TEST(SceneExecuterTest, ExecuteIdentifier) {
 
 TEST(SceneExecuterTest, ExecuteIdentifierError) {
   Init("a;");
+  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->error().empty());
+}
+
+TEST(SceneExecuterTest, ExecuteNew) {
+  Init("new Point3();");
+  EXPECT_TRUE(executer_->Execute(var_.Receive()));
+  Invokable* object;
+  EXPECT_TRUE(var_->Get(&object));
+  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object));
+}
+
+TEST(SceneExecuterTest, ExecuteNewError) {
+  Init("new Point3(a);");
+  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->error().empty());
+
+  Init("new Blah();");
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
   EXPECT_FALSE(executer_->error().empty());
 }

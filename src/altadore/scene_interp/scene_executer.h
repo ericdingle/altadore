@@ -22,6 +22,7 @@ class SceneExecuter : public Executer {
   bool ExecuteDotAccessor(const ASTNode* node, const Variant** var);
   bool ExecuteAssignment(const ASTNode* node, const Variant** var);
   bool ExecuteIdentifier(const ASTNode* node, const Variant** var);
+  bool ExecuteNew(const ASTNode* node, const Variant** var);
   bool ExecuteNumber(const ASTNode* node, const Variant** var);
 
   DISALLOW_COPY_AND_ASSIGN(SceneExecuter);

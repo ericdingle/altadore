@@ -6,6 +6,7 @@
     'target_name': 'scene_interp_lib',
     'type': 'static_library',
     'dependencies': [
+      '../algebra/algebra.gyp:algebra_lib',
       '../util/util.gyp:util_lib',
       '../../bonavista/string/string.gyp:string_lib',
       '../../chaparral/executer/executer.gyp:executer_lib',
