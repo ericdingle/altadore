@@ -21,8 +21,14 @@ TEST_CASE(CalcParserTest) {
 
 TEST(CalcParserTest, ParseEmpty) {
   Init("");
-  EXPECT_TRUE(parser_->Parse(root_.Receive()));
-  EXPECT_NULL(root_.ptr());
+  EXPECT_FALSE(parser_->Parse(root_.Receive()));
+  EXPECT_FALSE(parser_->error().empty());
+}
+
+TEST(CalcParserTest, ParseMultiple) {
+  Init("1 2");
+  EXPECT_FALSE(parser_->Parse(root_.Receive()));
+  EXPECT_FALSE(parser_->error().empty());
 }
 
 TEST(CalcParserTest, ParseUnknown) {
@@ -101,14 +107,4 @@ TEST(CalcParserTest, OperatorPrecedence) {
     EXPECT_TRUE(parser_->Parse(root_.Receive()));
     EXPECT_EQ(root_->token()->type(), types[i]);
   }
-}
-
-TEST(CalcParserTest, ParseMultipleExpressions) {
-  Init("1 2");
-
-  EXPECT_TRUE(parser_->Parse(root_.Receive()));
-  EXPECT_TRUE(root_->token()->IsType(CalcLexer::TYPE_NUMBER));
-
-  EXPECT_TRUE(parser_->Parse(root_.Receive()));
-  EXPECT_TRUE(root_->token()->IsType(CalcLexer::TYPE_NUMBER));
 }

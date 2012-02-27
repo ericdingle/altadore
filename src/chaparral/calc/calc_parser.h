@@ -8,6 +8,8 @@ class CalcParser : public Parser {
   CalcParser(TokenStream* token_stream);
   virtual ~CalcParser();
 
+  virtual bool Parse(const ASTNode** root);
+
  protected:
   virtual uint GetBindingPower(int type) const;
   virtual bool ParsePrefixToken(const Token* token, const ASTNode** root);
