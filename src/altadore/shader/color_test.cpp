@@ -9,7 +9,7 @@ TEST_CASE(ColorTest) {
 TEST(ColorTest, Create) {
   std::vector<memory::scoped_refptr<const Variant> > args;
 
-  memory::scoped_ptr<Invokable> object;
+  memory::scoped_refptr<Invokable> object;
   EXPECT_EQ(Color::Create(args, object.Receive()), Invokable::RESULT_OK);
   EXPECT_NOT_NULL(object.ptr());
 
@@ -29,7 +29,7 @@ TEST(ColorTest, CreateError) {
   args.push_back(var.ptr());
   args.push_back(var.ptr());
 
-  memory::scoped_ptr<Invokable> object;
+  memory::scoped_refptr<Invokable> object;
   EXPECT_EQ(Color::Create(args, object.Receive()),
             Invokable::RESULT_ERR_ARG_SIZE);
 

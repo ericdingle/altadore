@@ -29,7 +29,7 @@ TEST(MaterialTest, Create) {
 TEST(MaterialTest, CreateError) {
   std::vector<memory::scoped_refptr<const Variant> > args;
 
-  memory::scoped_ptr<Invokable> object;
+  memory::scoped_refptr<Invokable> object;
   EXPECT_EQ(Material::Create(args, object.Receive()),
             Invokable::RESULT_ERR_ARG_SIZE);
 
