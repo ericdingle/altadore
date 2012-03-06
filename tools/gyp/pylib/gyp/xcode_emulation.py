@@ -7,6 +7,7 @@ This module contains classes that help to emulate xcodebuild behavior on top of
 other build systems, such as make and ninja.
 """
 
+import gyp.common
 import os.path
 import re
 import shlex
@@ -28,6 +29,9 @@ class XcodeSettings(object):
 
     # This is only non-None temporarily during the execution of some methods.
     self.configname = None
+
+    # Used by _AdjustLibrary to match .a and .dylib entries in libraries.
+    self.library_re = re.compile(r'^lib([^/]+)\.(a|dylib)$')
 
   def _Settings(self):
     assert self.configname
@@ -230,6 +234,9 @@ class XcodeSettings(object):
     if 'SDKROOT' in self._Settings():
       cflags.append('-isysroot %s' % sdk_root)
 
+    if self._Test('GCC_CHAR_IS_UNSIGNED_CHAR', 'YES', default='NO'):
+      cflags.append('-funsigned-char')
+
     if self._Test('GCC_CW_ASM_SYNTAX', 'YES', default='YES'):
       cflags.append('-fasm-blocks')
 
@@ -286,6 +293,17 @@ class XcodeSettings(object):
       self._WarnUnimplemented('ARCHS')
       archs = ['i386']
     cflags.append('-arch ' + archs[0])
+
+    if archs[0] in ('i386', 'x86_64'):
+      if self._Test('GCC_ENABLE_SSE3_EXTENSIONS', 'YES', default='NO'):
+        cflags.append('-msse3')
+      if self._Test('GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS', 'YES',
+                    default='NO'):
+        cflags.append('-mssse3')  # Note 3rd 's'.
+      if self._Test('GCC_ENABLE_SSE41_EXTENSIONS', 'YES', default='NO'):
+        cflags.append('-msse4.1')
+      if self._Test('GCC_ENABLE_SSE42_EXTENSIONS', 'YES', default='NO'):
+        cflags.append('-msse4.2')
 
     cflags += self._Settings().get('OTHER_CFLAGS', [])
     cflags += self._Settings().get('WARNING_CFLAGS', [])
@@ -380,15 +398,19 @@ class XcodeSettings(object):
       ldflags.append('-isysroot ' + self._SdkPath())
 
     for library_path in self._Settings().get('LIBRARY_SEARCH_PATHS', []):
-      ldflags.append('-L' + library_path)
+      ldflags.append('-L' + gyp_to_build_path(library_path))
 
     if 'ORDER_FILE' in self._Settings():
       ldflags.append('-Wl,-order_file ' +
                      '-Wl,' + gyp_to_build_path(
                                   self._Settings()['ORDER_FILE']))
 
-    # TODO: Do not hardcode arch. Supporting fat binaries will be annoying.
-    ldflags.append('-arch i386')
+    archs = self._Settings().get('ARCHS', ['i386'])
+    if len(archs) != 1:
+      # TODO: Supporting fat binaries will be annoying.
+      self._WarnUnimplemented('ARCHS')
+      archs = ['i386']
+    ldflags.append('-arch ' + archs[0])
 
     # Xcode adds the product directory by default.
     ldflags.append('-L' + product_dir)
@@ -473,7 +495,7 @@ class XcodeSettings(object):
       return default
     return result
 
-  def _GetStripPostbuilds(self, configname, output_binary):
+  def _GetStripPostbuilds(self, configname, output_binary, quiet):
     """Returns a list of shell commands that contain the shell commands
     neccessary to strip this target's binary. These should be run as postbuilds
     before the actual postbuilds run."""
@@ -498,15 +520,16 @@ class XcodeSettings(object):
 
       explicit_strip_flags = self._Settings().get('STRIPFLAGS', '')
       if explicit_strip_flags:
-        strip_flags += ' ' + explicit_strip_flags
+        strip_flags += ' ' + _NormalizeEnvVarReferences(explicit_strip_flags)
 
-      result.append('echo STRIP\\(%s\\)' % self.spec['target_name'])
+      if not quiet:
+        result.append('echo STRIP\\(%s\\)' % self.spec['target_name'])
       result.append('strip %s %s' % (strip_flags, output_binary))
 
     self.configname = None
     return result
 
-  def _GetDebugPostbuilds(self, configname, output, output_binary):
+  def _GetDebugInfoPostbuilds(self, configname, output, output_binary, quiet):
     """Returns a list of shell commands that contain the shell commands
     neccessary to massage this target's debug information. These should be run
     as postbuilds before the actual postbuilds run."""
@@ -518,29 +541,37 @@ class XcodeSettings(object):
         self._Test(
             'DEBUG_INFORMATION_FORMAT', 'dwarf-with-dsym', default='dwarf') and
         self.spec['type'] != 'static_library'):
-      result.append('echo DSYMUTIL\\(%s\\)' % self.spec['target_name'])
+      if not quiet:
+        result.append('echo DSYMUTIL\\(%s\\)' % self.spec['target_name'])
       result.append('dsymutil %s -o %s' % (output_binary, output + '.dSYM'))
 
     self.configname = None
     return result
 
-  def GetTargetPostbuilds(self, configname, output, output_binary):
+  def GetTargetPostbuilds(self, configname, output, output_binary, quiet=False):
     """Returns a list of shell commands that contain the shell commands
     to run as postbuilds for this target, before the actual postbuilds."""
     # dSYMs need to build before stripping happens.
-    return (self._GetDebugPostbuilds(configname, output, output_binary) +
-            self._GetStripPostbuilds(configname, output_binary))
+    return (
+        self._GetDebugInfoPostbuilds(configname, output, output_binary, quiet) +
+        self._GetStripPostbuilds(configname, output_binary, quiet))
 
-  def AdjustFrameworkLibraries(self, libraries):
+  def _AdjustLibrary(self, library):
+    if library.endswith('.framework'):
+      l = '-framework ' + os.path.splitext(os.path.basename(library))[0]
+    else:
+      m = self.library_re.match(library)
+      if m:
+        l = '-l' + m.group(1)
+      else:
+        l = library
+    return l.replace('$(SDKROOT)', self._SdkPath())
+
+  def AdjustLibraries(self, libraries):
     """Transforms entries like 'Cocoa.framework' in libraries into entries like
-    '-framework Cocoa'.
+    '-framework Cocoa', 'libcrypto.dylib' into '-lcrypto', etc.
     """
-    libraries = [
-        '-framework ' + os.path.splitext(os.path.basename(library))[0]
-        if library.endswith('.framework') else library
-        for library in libraries]
-    libraries = [library.replace('$(SDKROOT)', self._SdkPath())
-        for library in libraries]
+    libraries = [ self._AdjustLibrary(library) for library in libraries]
     return libraries
 
 
@@ -917,3 +948,25 @@ def TopologicallySortedEnvVarKeys(env):
   sorted_nodes.extend(key_list)
 
   return sorted_nodes
+
+def GetSpecPostbuildCommands(spec, gyp_path_to_build_path, quiet=False):
+  """Returns the list of postbuilds explicitly defined on |spec|, in a form
+  executable by a shell."""
+  postbuilds = []
+  for postbuild in spec.get('postbuilds', []):
+    if not quiet:
+      postbuilds.append('echo POSTBUILD\\(%s\\) %s' % (
+            spec['target_name'], postbuild['postbuild_name']))
+    shell_list = postbuild['action'][:]
+    # The first element is the command. If it's a relative path, it's
+    # a script in the source tree relative to the gyp file and needs to be
+    # absolutified. Else, it's in the PATH (e.g. install_name_tool, ln).
+    if os.path.sep in shell_list[0]:
+      shell_list[0] = gyp_path_to_build_path(shell_list[0])
+
+      # "script.sh" -> "./script.sh"
+      if not os.path.sep in shell_list[0]:
+        shell_list[0] = os.path.join('.', shell_list[0])
+    postbuilds.append(gyp.common.EncodePOSIXShellList(shell_list))
+
+  return postbuilds
