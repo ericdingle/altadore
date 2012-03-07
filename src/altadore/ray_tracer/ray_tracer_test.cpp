@@ -11,6 +11,13 @@ class TestSceneNode : public SceneNode {
       : find_intersection_(find_intersection), has_intersection_(has_intersection), material_(material) {
   }
 
+  Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var) {
+    return RESULT_ERR_NAME;
+  }
+
   void CalculateTransforms(const Matrix4& parent_transform) {
   }
 
