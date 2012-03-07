@@ -7,6 +7,7 @@
     'type': 'static_library',
     'dependencies': [
       '../algebra/algebra.gyp:algebra_lib',
+      '../util/util.gyp:util_lib',
       '../../bonavista/memory/memory.gyp:memory_lib',
     ],
     'sources': [

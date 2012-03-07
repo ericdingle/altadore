@@ -4,6 +4,7 @@
 #include "altadore/algebra/ray.h"
 #include "altadore/shape/shape_constants.h"
 #include "bonavista/logging/assert.h"
+#include "chaparral/executer/variant.h"
 
 Invokable::Result Cube::Create(
     const std::vector<memory::scoped_refptr<const Variant> >& args,

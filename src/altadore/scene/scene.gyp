@@ -8,6 +8,7 @@
     'dependencies': [
       '../shader/shader.gyp:shader_lib',
       '../shape/shape.gyp:shape_lib',
+      '../util/util.gyp:util_lib',
     ],
     'sources': [
       'scene_node.cpp',
