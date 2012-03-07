@@ -3,6 +3,8 @@
 #include "altadore/algebra/point3.h"
 #include "altadore/scene_interp/scene_lexer.h"
 #include "altadore/scene_interp/scene_parser.h"
+#include "altadore/scene/shape_node.h"
+#include "altadore/scene/transform_node.h"
 #include "altadore/shader/color.h"
 #include "altadore/shader/light.h"
 #include "altadore/shader/material.h"
@@ -126,7 +128,7 @@ TEST(SceneExecuterTest, ExecuteNew) {
   EXPECT_TRUE(var_->Get(object.Receive()));
   EXPECT_NOT_NULL(dynamic_cast<Light*>(object.ptr()));
 
-  Init("new Material(new Color(0.1, 0.2, 0.3), 25.0, 1.0);");
+  Init("new Material(new Color(), 25.0, 1.0);");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
   EXPECT_TRUE(var_->Get(object.Receive()));
   EXPECT_NOT_NULL(dynamic_cast<Material*>(object.ptr()));
@@ -136,10 +138,20 @@ TEST(SceneExecuterTest, ExecuteNew) {
   EXPECT_TRUE(var_->Get(object.Receive()));
   EXPECT_NOT_NULL(dynamic_cast<Point3*>(object.ptr()));
 
+  Init("new ShapeNode(new Cube(), new Material(new Color(), 25.0, 1.0));");
+  EXPECT_TRUE(executer_->Execute(var_.Receive()));
+  EXPECT_TRUE(var_->Get(object.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<ShapeNode*>(object.ptr()));
+
   Init("new Sphere();");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
   EXPECT_TRUE(var_->Get(object.Receive()));
   EXPECT_NOT_NULL(dynamic_cast<Sphere*>(object.ptr()));
+
+  Init("new TransformNode();");
+  EXPECT_TRUE(executer_->Execute(var_.Receive()));
+  EXPECT_TRUE(var_->Get(object.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<TransformNode*>(object.ptr()));
 }
 
 TEST(SceneExecuterTest, ExecuteNewError) {

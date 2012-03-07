@@ -7,6 +7,7 @@
     'type': 'static_library',
     'dependencies': [
       '../algebra/algebra.gyp:algebra_lib',
+      '../scene/scene.gyp:scene_lib',
       '../shader/shader.gyp:shader_lib',
       '../shape/shape.gyp:shape_lib',
       '../util/util.gyp:util_lib',
