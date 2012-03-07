@@ -9,12 +9,21 @@
 
 class TransformNode : public SceneNode {
  public:
+  static Result Create(
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      Invokable** object);
+
   TransformNode();
   virtual ~TransformNode();
 
+  virtual Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var);
+
   void AddChild(SceneNode* node);
 
-  void Rotate(char axis, double angle);
+  void Rotate(Matrix4::Axis axis, double angle);
   void Scale(double s);
   void Scale(double x, double y, double z);
   void Translate(double x, double y, double z);
@@ -28,6 +37,15 @@ class TransformNode : public SceneNode {
   const Matrix4& transform() { return transform_; }
 
  private:
+  Result InvokeAddChild(
+      const std::vector<memory::scoped_refptr<const Variant> >& args);
+  Result InvokeRotate(
+      const std::vector<memory::scoped_refptr<const Variant> >& args);
+  Result InvokeScale(
+      const std::vector<memory::scoped_refptr<const Variant> >& args);
+  Result InvokeTranslate(
+      const std::vector<memory::scoped_refptr<const Variant> >& args);
+
   std::vector<memory::scoped_refptr<SceneNode> > children_;
   Matrix4 transform_;
 

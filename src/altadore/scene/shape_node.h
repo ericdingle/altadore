@@ -10,8 +10,17 @@ class Shape;
 
 class ShapeNode : public SceneNode {
  public:
+  static Result Create(
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      Invokable** object);
+
   ShapeNode(const Shape* shape, const Material* material);
   virtual ~ShapeNode();
+
+  virtual Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var);
 
   virtual void CalculateTransforms(const Matrix4& parent_transform);
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const;

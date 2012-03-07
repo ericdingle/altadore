@@ -3,13 +3,22 @@
 #include "altadore/shape/shape.h"
 #include "altadore/shader/color.h"
 #include "altadore/shader/material.h"
+#include "altadore/shape/cube.h"
 #include "bonavista/testing/test_case.h"
+#include "chaparral/executer/variant.h"
 
 namespace {
 
 class TestShape : public Shape {
  public:
   TestShape(bool intersection) : intersection_(intersection) {
+  }
+
+  Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var) {
+    return RESULT_ERR_NAME;
   }
 
   bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {
@@ -32,6 +41,13 @@ class TestShapeNode : public ShapeNode {
   TestShapeNode(const Shape* shape, const Material* material) : ShapeNode(shape, material) {
   }
 
+  Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var) {
+    return RESULT_ERR_NAME;
+  }
+
   using ShapeNode::transform;
   using ShapeNode::transform_inverse;
   using ShapeNode::transform_inverse_transpose;
@@ -47,6 +63,39 @@ TEST_CASE(ShapeNodeTest) {
 
   memory::scoped_refptr<Material> material_;
 };
+
+TEST(ShapeNodeTest, Create) {
+  std::vector<memory::scoped_refptr<const Variant> > args;
+
+  memory::scoped_refptr<const Variant> var;
+  memory::scoped_refptr<Invokable> object;
+
+  object.Reset(new Cube());
+  var.Reset(new Variant(object.ptr()));
+  args.push_back(var.ptr());
+
+  object.Reset(new Material(new Color(), 1, 1));
+  var.Reset(new Variant(object.ptr()));
+  args.push_back(var.ptr());
+
+  EXPECT_EQ(ShapeNode::Create(args, object.Receive()), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.ptr());
+}
+
+TEST(ShapeNodeTest, CreateError) {
+  std::vector<memory::scoped_refptr<const Variant> > args;
+
+  memory::scoped_refptr<Invokable> object;
+  EXPECT_EQ(ShapeNode::Create(args, object.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+
+  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  args.push_back(var.ptr());
+  args.push_back(var.ptr());
+
+  EXPECT_EQ(ShapeNode::Create(args, object.Receive()),
+            Invokable::RESULT_ERR_ARG_TYPE);
+}
 
 TEST(ShapeNodeTest, CalcTransforms) {
   Matrix4 transform = Matrix4::GetScaling(2);

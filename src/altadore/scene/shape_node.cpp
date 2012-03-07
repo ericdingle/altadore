@@ -3,13 +3,49 @@
 #include "altadore/shader/material.h"
 #include "altadore/shape/shape.h"
 #include "bonavista/logging/assert.h"
+#include "chaparral/executer/variant.h"
 
-ShapeNode::ShapeNode(const Shape* shape, const Material* material) : SceneNode(), shape_(shape), material_(material) {
+Invokable::Result ShapeNode::Create(
+    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    Invokable** object) {
+  ASSERT(object);
+
+  if (args.size() != 2)
+    return RESULT_ERR_ARG_SIZE;
+
+  memory::scoped_refptr<Invokable> shape_object;
+  if (!args[0]->Get(shape_object.Receive()))
+    return RESULT_ERR_ARG_TYPE;
+  Shape* shape = dynamic_cast<Shape*>(shape_object.ptr());
+  if (!shape)
+    return RESULT_ERR_ARG_TYPE;
+
+  memory::scoped_refptr<Invokable> material_object;
+  if (!args[1]->Get(material_object.Receive()))
+    return RESULT_ERR_ARG_TYPE;
+  Material* material = dynamic_cast<Material*>(material_object.ptr());
+  if (!material)
+    return RESULT_ERR_ARG_TYPE;
+
+  memory::scoped_refptr<ShapeNode> node(new ShapeNode(shape, material));
+  *object = node.Release();
+  return RESULT_OK;
+}
+
+ShapeNode::ShapeNode(const Shape* shape, const Material* material)
+    : SceneNode(), shape_(shape), material_(material) {
   ASSERT(shape);
   ASSERT(material);
 }
 
 ShapeNode::~ShapeNode() {
+}
+
+Invokable::Result ShapeNode::Invoke(
+    const std::string& name,
+    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const Variant** var) {
+  return RESULT_ERR_NAME;
 }
 
 void ShapeNode::CalculateTransforms(const Matrix4& parent_transform) {

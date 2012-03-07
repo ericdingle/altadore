@@ -1,6 +1,7 @@
 #include "altadore/scene/transform_node.h"
 
 #include "bonavista/testing/test_case.h"
+#include "chaparral/executer/variant.h"
 
 namespace {
 
@@ -9,6 +10,12 @@ class TestSceneNode : public SceneNode {
   TestSceneNode(bool intersection) : intersection_(intersection) {
   }
 
+  Result Invoke(
+      const std::string& name,
+      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const Variant** var) {
+    return RESULT_ERR_NAME;
+  }
   void CalculateTransforms(const Matrix4& parent_transform) {
     transform_ = parent_transform;
   }
@@ -43,7 +50,128 @@ class TestTransformNode : public TransformNode {
 }  // namespace
 
 TEST_CASE(TransformNodeTest) {
+ protected:
+  std::vector<memory::scoped_refptr<const Variant> > args_;
+  memory::scoped_refptr<const Variant> var_;
+  memory::scoped_refptr<Invokable> object_;
 };
+
+TEST(TransformNodeTest, Create) {
+  EXPECT_EQ(TransformNode::Create(args_, object_.Receive()),
+            Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object_.ptr());
+}
+
+TEST(TransformNodeTest, CreateError) {
+  args_.push_back(new Variant(1.0));
+
+  EXPECT_EQ(TransformNode::Create(args_, object_.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+}
+
+TEST(TransformNodeTest, InvokeAddChild) {
+  object_.Reset(new TransformNode());
+  args_.push_back(new Variant(object_.ptr()));
+
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("AddChild", args_, var_.Receive()),
+            Invokable::RESULT_OK);
+}
+
+TEST(TransformNodeTest, InvokeAddChildError) {
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("AddChild", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+
+  args_.push_back(new Variant(1.0));
+
+  EXPECT_EQ(node.Invoke("AddChild", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_TYPE);
+}
+
+TEST(TransformNodeTest, InvokeRotate) {
+  args_.push_back(new Variant(0.0));
+  args_.push_back(new Variant(45.0));
+
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("Rotate", args_, var_.Receive()), Invokable::RESULT_OK);
+}
+
+TEST(TransformNodeTest, InvokeRotateError) {
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("Rotate", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+
+  args_.push_back(new Variant(1));
+  args_.push_back(new Variant(45.0));
+
+  EXPECT_EQ(node.Invoke("Rotate", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_TYPE);
+
+  args_[0] = new Variant(3.0);
+
+  EXPECT_EQ(node.Invoke("Rotate", args_, var_.Receive()),
+            Invokable::RESULT_ERR_FAIL);
+}
+
+TEST(TransformNodeTest, InvokeScale) {
+  args_.push_back(new Variant(1.0));
+
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("Scale", args_, var_.Receive()), Invokable::RESULT_OK);
+
+  args_.push_back(new Variant(2.0));
+  args_.push_back(new Variant(3.0));
+
+  EXPECT_EQ(node.Invoke("Scale", args_, var_.Receive()), Invokable::RESULT_OK);
+}
+
+TEST(TransformNodeTest, InvokeScaleError) {
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("Scale", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+
+  args_.push_back(new Variant(1));
+
+  EXPECT_EQ(node.Invoke("Scale", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_TYPE);
+
+  args_[0] = new Variant(1.0);
+  args_.push_back(new Variant(2.0));
+  args_.push_back(new Variant(3));
+
+  EXPECT_EQ(node.Invoke("Scale", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_TYPE);
+}
+
+TEST(TransformNodeTest, InvokeTranslate) {
+  args_.push_back(new Variant(1.0));
+  args_.push_back(new Variant(2.0));
+  args_.push_back(new Variant(3.0));
+
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("Translate", args_, var_.Receive()),
+            Invokable::RESULT_OK);
+}
+
+TEST(TransformNodeTest, InvokeTranslateError) {
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("Translate", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_SIZE);
+
+  args_.push_back(new Variant(1.0));
+  args_.push_back(new Variant(2.0));
+  args_.push_back(new Variant(3));
+
+  EXPECT_EQ(node.Invoke("Translate", args_, var_.Receive()),
+            Invokable::RESULT_ERR_ARG_TYPE);
+}
+
+TEST(TransformNodeTest, InvokeError) {
+  TransformNode node;
+  EXPECT_EQ(node.Invoke("a", args_, var_.Receive()),
+            Invokable::RESULT_ERR_NAME);
+}
 
 TEST(TransformNodeTest, AddChild) {
   TestTransformNode node;
@@ -53,7 +181,7 @@ TEST(TransformNodeTest, AddChild) {
 
 TEST(TransformNodeTest, Transform) {
   TestTransformNode node;
-  node.Rotate('x', 34);
+  node.Rotate(Matrix4::AXIS_X, 34);
   node.Scale(4);
   node.Scale(1, 2, 3);
   node.Translate(1, 2, 3);
@@ -61,7 +189,7 @@ TEST(TransformNodeTest, Transform) {
   Matrix4 expected = Matrix4::GetTranslation(1, 2, 3) *
                      Matrix4::GetScaling(1, 2, 3) *
                      Matrix4::GetScaling(4) *
-                     Matrix4::GetRotation('x', 34);
+                     Matrix4::GetRotation(Matrix4::AXIS_X, 34);
   EXPECT_TRUE(node.transform() == expected);
 }
 
