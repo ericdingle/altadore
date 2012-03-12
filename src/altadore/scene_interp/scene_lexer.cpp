@@ -56,7 +56,7 @@ bool SceneLexer::GetIdentifierToken(const std::string& input,
   const uint start = index;
 
   ++index;
-  for (; index < length && (IsAlpha(input[index]) || IsDigit(input[index])); ++index);
+  for (; index < length && (IsAlpha(input[index]) || IsDigit(input[index]) || input[index] == '_'); ++index);
 
   *count = index - start;
   *value = input.substr(start, *count);
