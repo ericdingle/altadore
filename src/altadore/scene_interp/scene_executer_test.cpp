@@ -39,13 +39,22 @@ TEST_CASE(SceneExecuterTest) {
   memory::scoped_ptr<Parser> parser_;
   memory::scoped_ptr<SceneExecuter> executer_;
   memory::scoped_refptr<const Variant> var_;
+  memory::scoped_refptr<Invokable> object_;
 };
+
+TEST(SceneExecuterTest, Constants) {
+  Init("AXIS_X;");
+
+  double d;
+  EXPECT_TRUE(executer_->ExecuteT(&d));
+  EXPECT_EQ(d, Matrix4::AXIS_X);
+}
 
 TEST(SceneExecuterTest, ExecuteDotAccessor) {
   Init("obj.pass(1);");
 
-  memory::scoped_refptr<Invokable> object(new Object());
-  var_.Reset(new Variant(object.ptr()));
+  object_.Reset(new Object());
+  var_.Reset(new Variant(object_.ptr()));
   executer_->SetVar("obj", var_.ptr());
 
   int i;
@@ -64,8 +73,8 @@ TEST(SceneExecuterTest, ExecuteDotAccessorError) {
 
   Init("obj.pass(a);");
 
-  Invokable* object = new Object();
-  var_.Reset(new Variant(object));
+  object_.Reset(new Object());
+  var_.Reset(new Variant(object_.ptr()));
   executer_->SetVar("obj", var_.ptr());
 
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
@@ -73,8 +82,8 @@ TEST(SceneExecuterTest, ExecuteDotAccessorError) {
 
   Init("obj.fail(1);");
 
-  object = new Object();
-  var_.Reset(new Variant(object));
+  object_.Reset(new Object());
+  var_.Reset(new Variant(object_.ptr()));
   executer_->SetVar("obj", var_.ptr());
 
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
@@ -114,44 +123,43 @@ TEST(SceneExecuterTest, ExecuteIdentifierError) {
 TEST(SceneExecuterTest, ExecuteNew) {
   Init("new Color();");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  memory::scoped_refptr<Invokable> object;
-  EXPECT_TRUE(var_->Get(object.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Color*>(object.ptr()));
+  EXPECT_TRUE(var_->Get(object_.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Color*>(object_.ptr()));
 
   Init("new Cube();");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Cube*>(object.ptr()));
+  EXPECT_TRUE(var_->Get(object_.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Cube*>(object_.ptr()));
 
   Init("new Light(new Point3(1.0, 2.0, 3.0), new Color(0.1, 0.2, 0.3));");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Light*>(object.ptr()));
+  EXPECT_TRUE(var_->Get(object_.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Light*>(object_.ptr()));
 
   Init("new Material(new Color(), 25.0, 1.0);");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Material*>(object.ptr()));
+  EXPECT_TRUE(var_->Get(object_.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Material*>(object_.ptr()));
 
   Init("new Point3();");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object.ptr()));
+  EXPECT_TRUE(var_->Get(object_.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object_.ptr()));
 
   Init("new ShapeNode(new Cube(), new Material(new Color(), 25.0, 1.0));");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<ShapeNode*>(object.ptr()));
+  EXPECT_TRUE(var_->Get(object_.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<ShapeNode*>(object_.ptr()));
 
   Init("new Sphere();");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Sphere*>(object.ptr()));
+  EXPECT_TRUE(var_->Get(object_.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<Sphere*>(object_.ptr()));
 
   Init("new TransformNode();");
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<TransformNode*>(object.ptr()));
+  EXPECT_TRUE(var_->Get(object_.Receive()));
+  EXPECT_NOT_NULL(dynamic_cast<TransformNode*>(object_.ptr()));
 }
 
 TEST(SceneExecuterTest, ExecuteNewError) {

@@ -14,6 +14,9 @@
 #include "bonavista/string/format.h"
 
 SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
+  SetVar("AXIS_X", new Variant(static_cast<double>(Matrix4::AXIS_X)));
+  SetVar("AXIS_Y", new Variant(static_cast<double>(Matrix4::AXIS_Y)));
+  SetVar("AXIS_Z", new Variant(static_cast<double>(Matrix4::AXIS_Z)));
 }
 
 SceneExecuter::~SceneExecuter() {
