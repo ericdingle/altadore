@@ -58,9 +58,6 @@ generator_wants_sorted_dependencies = False
 def CalculateVariables(default_variables, params):
   """Calculate additional variables for use in the build (called by gyp)."""
   cc_target = os.environ.get('CC.target', os.environ.get('CC', 'cc'))
-  default_variables['LINKER_SUPPORTS_ICF'] = \
-      gyp.system_test.TestLinkerSupportsICF(cc_command=cc_target)
-
   flavor = gyp.common.GetFlavor(params)
   if flavor == 'mac':
     default_variables.setdefault('OS', 'mac')
@@ -159,7 +156,7 @@ cmd_solink_module = $(LINK.$(TOOLSET)) -shared $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSE
 
 LINK_COMMANDS_MAC = """\
 quiet_cmd_alink = LIBTOOL-STATIC $@
-cmd_alink = rm -f $@ && libtool -static -o $@ $(filter %.o,$^)
+cmd_alink = rm -f $@ && ./gyp-mac-tool filter-libtool libtool -static -o $@ $(filter %.o,$^)
 
 quiet_cmd_link = LINK($(TOOLSET)) $@
 cmd_link = $(LINK.$(TOOLSET)) $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -o "$@" $(LD_INPUTS) $(LIBS)
@@ -261,7 +258,7 @@ CFLAGS.target ?= $(CFLAGS)
 CXX.target ?= $(CXX)
 CXXFLAGS.target ?= $(CXXFLAGS)
 LINK.target ?= $(LINK)
-LDFLAGS.target ?= $(LDFLAGS) %(LINK_flags)s
+LDFLAGS.target ?= $(LDFLAGS)
 AR.target ?= $(AR)
 ARFLAGS.target ?= %(ARFLAGS.target)s
 
@@ -694,15 +691,6 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
     self.type = spec['type']
     self.toolset = spec['toolset']
 
-    if self.type == 'settings':
-      # TODO: 'settings' is not actually part of gyp; it was
-      # accidentally introduced somehow into just the Linux build files.
-      # Remove this (or make it an error) once all the users are fixed.
-      print ("WARNING: %s uses invalid type 'settings'.  " % self.target +
-             "Please fix the source gyp file to use type 'none'.")
-      print "See http://code.google.com/p/chromium/issues/detail?id=96629 ."
-      self.type = 'none'
-
     self.is_mac_bundle = gyp.xcode_emulation.IsMacBundle(self.flavor, spec)
     if self.flavor == 'mac':
       self.xcode_settings = gyp.xcode_emulation.XcodeSettings(spec)
@@ -900,7 +888,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
       # Same for environment.
       self.WriteLn("%s: obj := $(abs_obj)" % QuoteSpaces(outputs[0]))
       self.WriteLn("%s: builddir := $(abs_builddir)" % QuoteSpaces(outputs[0]))
-      self.WriteXcodeEnv(outputs[0])
+      self.WriteXcodeEnv(outputs[0], self.GetXcodeEnv())
 
       for input in inputs:
         assert ' ' not in input, (
@@ -1114,7 +1102,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
            '@plutil -convert xml1 $@ $@'])
       info_plist = intermediate_plist
     # plists can contain envvars and substitute them into the file.
-    self.WriteXcodeEnv(out, additional_settings=extra_env)
+    self.WriteXcodeEnv(out, self.GetXcodeEnv(additional_settings=extra_env))
     self.WriteDoCmd([out], [info_plist], 'mac_tool,,,copy-info-plist',
                     part_of_all=True)
     bundle_deps.append(out)
@@ -1429,51 +1417,26 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
         # Remove duplicate entries
         libraries = gyp.common.uniquer(libraries)
         if self.flavor == 'mac':
-          libraries = self.xcode_settings.AdjustFrameworkLibraries(libraries)
+          libraries = self.xcode_settings.AdjustLibraries(libraries)
       self.WriteList(libraries, 'LIBS')
       self.WriteLn('%s: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))' %
           QuoteSpaces(self.output_binary))
       self.WriteLn('%s: LIBS := $(LIBS)' % QuoteSpaces(self.output_binary))
 
+    # Postbuild actions. Like actions, but implicitly depend on the target's
+    # output.
     postbuilds = []
     if self.flavor == 'mac':
       if target_postbuilds:
         postbuilds.append('$(TARGET_POSTBUILDS_$(BUILDTYPE))')
-      # Postbuild actions. Like actions, but implicitly depend on the target's
-      # output.
-      for postbuild in spec.get('postbuilds', []):
-        postbuilds.append('echo POSTBUILD\\(%s\\) %s' % (
-              self.target, postbuild['postbuild_name']))
-        shell_list = postbuild['action']
-        # The first element is the command. If it's a relative path, it's
-        # a script in the source tree relative to the gyp file and needs to be
-        # absolutified. Else, it's in the PATH (e.g. install_name_tool, ln).
-        if os.path.sep in shell_list[0]:
-          shell_list[0] = self.Absolutify(shell_list[0])
-
-          # "script.sh" -> "./script.sh"
-          if not os.path.sep in shell_list[0]:
-            shell_list[0] = os.path.join('.', shell_list[0])
-        postbuilds.append(gyp.common.EncodePOSIXShellList(shell_list))
+      postbuilds.extend(
+          gyp.xcode_emulation.GetSpecPostbuildCommands(spec, self.Absolutify))
 
     if postbuilds:
-      # Write an envvar for postbuilds.
-      # CHROMIUM_STRIP_SAVE_FILE is a chromium-specific hack.
-      # TODO(thakis): It would be nice to have some general mechanism instead.
-      # This variable may be referenced by TARGET_POSTBUILDS_$(BUILDTYPE),
+      # Envvars may be referenced by TARGET_POSTBUILDS_$(BUILDTYPE),
       # so we must output its definition first, since we declare variables
       # using ":=".
-      strip_save_file = self.xcode_settings.GetPerTargetSetting(
-          'CHROMIUM_STRIP_SAVE_FILE')
-      if strip_save_file:
-        strip_save_file = self.Absolutify(strip_save_file)
-      else:
-        # Explicitly clear this out, else a postbuild might pick up an export
-        # from an earlier target.
-        strip_save_file = ''
-      self.WriteXcodeEnv(
-          self.output,
-          additional_settings={'CHROMIUM_STRIP_SAVE_FILE': strip_save_file})
+      self.WriteXcodeEnv(self.output, self.GetXcodePostbuildEnv())
 
       for configname in target_postbuilds:
         self.WriteLn('%s: TARGET_POSTBUILDS_%s := %s' %
@@ -1812,8 +1775,22 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
         additional_settings)
 
 
-  def WriteXcodeEnv(self, target, additional_settings=None):
-    env = self.GetXcodeEnv(additional_settings)
+  def GetXcodePostbuildEnv(self):
+    # CHROMIUM_STRIP_SAVE_FILE is a chromium-specific hack.
+    # TODO(thakis): It would be nice to have some general mechanism instead.
+    strip_save_file = self.xcode_settings.GetPerTargetSetting(
+        'CHROMIUM_STRIP_SAVE_FILE')
+    if strip_save_file:
+      strip_save_file = self.Absolutify(strip_save_file)
+    else:
+      # Explicitly clear this out, else a postbuild might pick up an export
+      # from an earlier target.
+      strip_save_file = ''
+    return self.GetXcodeEnv(
+        additional_settings={'CHROMIUM_STRIP_SAVE_FILE': strip_save_file})
+
+
+  def WriteXcodeEnv(self, target, env):
     for k in gyp.xcode_emulation.TopologicallySortedEnvVarKeys(env):
       # For
       #  foo := a\ b
@@ -1933,21 +1910,8 @@ def RunSystemTests(flavor):
                                                          cc_command=cc_host):
     arflags_host = 'crsT'
 
-  link_flags = ''
-  if gyp.system_test.TestLinkerSupportsThreads(cc_command=cc_target):
-    # N.B. we don't test for cross-compilation; as currently written, we
-    # don't even use flock when linking in the cross-compile setup!
-    # TODO(evan): refactor cross-compilation such that this code can
-    # be reused.
-    link_flags = '-Wl,--threads -Wl,--thread-count=4'
-
-  # TODO(evan): cache this output.  (But then we'll need to add extra
-  # flags to gyp to flush the cache, yuk!  It's fast enough for now to
-  # just run it every time.)
-
   return { 'ARFLAGS.target': arflags_target,
-           'ARFLAGS.host': arflags_host,
-           'LINK_flags': link_flags }
+           'ARFLAGS.host': arflags_host }
 
 
 def GenerateOutput(target_list, target_dicts, data, params):
