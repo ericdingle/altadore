@@ -4,9 +4,7 @@
 #include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_array.h"
 
-namespace string {
-
-std::string Format(const char* format, ...) {
+std::string StringFormat(const char* format, ...) {
   va_list args;
   va_start(args, format);
 
@@ -34,5 +32,3 @@ std::string Format(const char* format, ...) {
   va_end(args);
   return buffer.ptr();
 }
-
-}  // namespace string

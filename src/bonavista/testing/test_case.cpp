@@ -31,40 +31,41 @@ uint TestCase::RunAll() {
   for (uint i = 0; i < tests.size();) {
     ++num_test_cases;
     uint num_tests = GetNumTests(i);
-    ColorPrintf(logging::COLOR_GREEN, kDivider);
+    ColorPrintf(TEXT_COLOR_GREEN, kDivider);
     printf(" %d test(s) from %s\n", num_tests, tests[i]->testCaseName_);
 
     for (uint j = 0; j < num_tests; ++i, ++j)
       if (!RunTest(tests[i]))
         failures.push_back(tests[i]);
 
-    ColorPrintf(logging::COLOR_GREEN, kDivider);
+    ColorPrintf(TEXT_COLOR_GREEN, kDivider);
     printf(" %d test(s) from %s\n\n", num_tests, tests[i-1]->testCaseName_);
   }
 
 
   if (failures.size() == 0) {
-    ColorPrintf(logging::COLOR_GREEN, kDivider);
+    ColorPrintf(TEXT_COLOR_GREEN, kDivider);
     printf("\n");
 
-    ColorPrintf(logging::COLOR_GREEN, kPassed);
-    printf(" " SIZE_T_FORMAT " test(s) from %u test case(s)\n", tests.size(), num_test_cases);
+    ColorPrintf(TEXT_COLOR_GREEN, kPassed);
+    printf(" " SIZE_T_FORMAT " test(s) from %u test case(s)\n", tests.size(),
+           num_test_cases);
 
-    ColorPrintf(logging::COLOR_GREEN, kDivider);
+    ColorPrintf(TEXT_COLOR_GREEN, kDivider);
     printf("\n");
   } else {
-    ColorPrintf(logging::COLOR_RED, kDivider);
+    ColorPrintf(TEXT_COLOR_RED, kDivider);
     printf("\n");
 
-    ColorPrintf(logging::COLOR_RED, kFailed);
+    ColorPrintf(TEXT_COLOR_RED, kFailed);
     printf(" " SIZE_T_FORMAT " test(s)\n", failures.size());
 
     for (uint i = 0; i < failures.size(); ++i) {
-      ColorPrintf(logging::COLOR_RED, kDivider);
+      ColorPrintf(TEXT_COLOR_RED, kDivider);
       printf(" %s.%s\n", failures[i]->testCaseName_, failures[i]->testName_);
     }
 
-    ColorPrintf(logging::COLOR_RED, kDivider);
+    ColorPrintf(TEXT_COLOR_RED, kDivider);
     printf("\n");
   }
 
@@ -78,7 +79,8 @@ void TestCase::AddTest(TestCase* test) {
 TestCase::TestCase() {
 }
 
-TestCase::TestCase(const char* testCaseName, const char* testName) : testCaseName_(testCaseName), testName_(testName), succeeded_(true) {
+TestCase::TestCase(const char* testCaseName, const char* testName)
+    : testCaseName_(testCaseName), testName_(testName), succeeded_(true) {
 }
 
 TestCase::~TestCase() {
@@ -98,7 +100,7 @@ uint TestCase::GetNumTests(uint index) {
 }
 
 bool TestCase::RunTest(TestCase* test) {
-  ColorPrintf(logging::COLOR_GREEN, kRun);
+  ColorPrintf(TEXT_COLOR_GREEN, kRun);
   printf(" %s.%s\n", test->testCaseName_, test->testName_);
 
   test->SetUp();
@@ -110,9 +112,9 @@ bool TestCase::RunTest(TestCase* test) {
   test->TearDown();
 
   if (test->succeeded_) {
-    ColorPrintf(logging::COLOR_GREEN, kPass);
+    ColorPrintf(TEXT_COLOR_GREEN, kPass);
   } else {
-    ColorPrintf(logging::COLOR_RED, kFail);
+    ColorPrintf(TEXT_COLOR_RED, kFail);
   }
 
   printf(" %s.%s\n", test->testCaseName_, test->testName_);

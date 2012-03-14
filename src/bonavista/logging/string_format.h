@@ -1,12 +1,8 @@
-#ifndef BONAVISTA_STRING_FORMAT_H_
-#define BONAVISTA_STRING_FORMAT_H_
+#ifndef BONAVISTA_LOGGING_STRING_FORMAT_H_
+#define BONAVISTA_LOGGING_STRING_FORMAT_H_
 
 #include <string>
 
-namespace string {
-
-std::string Format(const char* format, ...);
-
-}  // namespace string
+std::string StringFormat(const char* format, ...);
 
 #endif
