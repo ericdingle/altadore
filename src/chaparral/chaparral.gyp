@@ -3,7 +3,7 @@
     '../bonavista/common.gypi',
   ],
   'targets': [{
-    'target_name': 'exes',
+    'target_name': 'bins',
     'type': 'none',
     'dependencies': [
       'calc/calc.gyp:calc',

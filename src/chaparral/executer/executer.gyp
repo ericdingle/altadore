@@ -12,6 +12,8 @@
     'sources': [
       'executer.cpp',
       'executer.h',
+      'invokable.cpp',
+      'invokable.h',
       'variant.cpp',
       'variant.h',
     ],
