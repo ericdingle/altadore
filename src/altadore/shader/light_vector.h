@@ -3,9 +3,9 @@
 
 #include <vector>
 #include "altadore/shader/light.h"
-#include "altadore/util/invokable.h"
 #include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
+#include "chaparral/executer/invokable.h"
 
 class LightVector : public Invokable {
  public:

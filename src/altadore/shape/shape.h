@@ -1,8 +1,8 @@
 #ifndef ALTADORE_SHAPE_SHAPE_H_
 #define ALTADORE_SHAPE_SHAPE_H_
 
-#include "altadore/util/invokable.h"
 #include "bonavista/util/macros.h"
+#include "chaparral/executer/invokable.h"
 
 class Point3;
 class Ray;

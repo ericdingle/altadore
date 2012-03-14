@@ -10,8 +10,8 @@
 #include "altadore/shader/material.h"
 #include "altadore/shape/cube.h"
 #include "altadore/shape/sphere.h"
-#include "altadore/util/invokable.h"
 #include "bonavista/testing/test_case.h"
+#include "chaparral/executer/invokable.h"
 #include "chaparral/lexer/token_stream.h"
 
 class Object : public Invokable {

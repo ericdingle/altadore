@@ -3,9 +3,9 @@
 
 #include "altadore/algebra/point3.h"
 #include "altadore/shader/color.h"
-#include "altadore/util/invokable.h"
 #include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
+#include "chaparral/executer/invokable.h"
 
 class Light : public Invokable {
  public:

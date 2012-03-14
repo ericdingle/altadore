@@ -2,9 +2,9 @@
 #define ALTADORE_SHADER_MATERIAL_H_
 
 #include "altadore/shader/color.h"
-#include "altadore/util/invokable.h"
 #include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/util/macros.h"
+#include "chaparral/executer/invokable.h"
 
 class Material : public Invokable {
  public:

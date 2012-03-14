@@ -2,8 +2,8 @@
 #define ALTADORE_SCENE_SCENE_NODE_H_
 
 #include "altadore/algebra/ray.h"
-#include "altadore/util/invokable.h"
 #include "bonavista/util/macros.h"
+#include "chaparral/executer/invokable.h"
 
 class Material;
 class Matrix4;

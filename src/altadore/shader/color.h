@@ -1,8 +1,8 @@
 #ifndef ALTADORE_SHADER_COLOR_H_
 #define ALTADORE_SHADER_COLOR_H_
 
-#include "altadore/util/invokable.h"
 #include "bonavista/util/types.h"
+#include "chaparral/executer/invokable.h"
 
 class Color : public Invokable {
  public:

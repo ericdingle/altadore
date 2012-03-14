@@ -9,9 +9,9 @@
 #include "altadore/shader/material.h"
 #include "altadore/shape/cube.h"
 #include "altadore/shape/sphere.h"
-#include "altadore/util/invokable.h"
 #include "bonavista/logging/assert.h"
 #include "bonavista/string/format.h"
+#include "chaparral/executer/invokable.h"
 
 SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
   SetVar("AXIS_X", new Variant(static_cast<double>(Matrix4::AXIS_X)));
