@@ -1,7 +1,7 @@
 #include "bonavista/io/io.h"
 
+#include "bonavista/base/macros.h"
 #include "bonavista/io/scoped_file.h"
-#include "bonavista/logging/assert.h"
 
 namespace io {
 
@@ -16,7 +16,7 @@ FILE* OpenFile(const char* file_name, const char* mode) {
 }
 
 bool ReadFile(const char* file_name, std::string* buffer) {
-  ASSERT(buffer);
+  DCHECK(buffer);
 
   scoped_FILE file(OpenFile(file_name, "r"));
   if (!file.ptr())

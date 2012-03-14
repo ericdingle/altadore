@@ -1,6 +1,7 @@
 #ifndef BONAVISTA_MEMORY_SCOPED_ARRAY_H_
 #define BONAVISTA_MEMORY_SCOPED_ARRAY_H_
 
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_ptr.h"
 
 namespace memory {
@@ -20,13 +21,13 @@ class scoped_array : public scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> > {
 
   T& operator[](uint index) {
     T* ptr = scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> >::ptr();
-    ASSERT(ptr);
+    CHECK(ptr);
     return ptr[index];
   }
 
   const T& operator[](uint index) const {
     T* ptr = scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> >::ptr();
-    ASSERT(ptr);
+    CHECK(ptr);
     return ptr[index];
   }
 

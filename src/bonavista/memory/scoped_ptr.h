@@ -3,7 +3,6 @@
 
 #include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
-#include "bonavista/logging/assert.h"
 
 namespace memory {
 
@@ -18,7 +17,7 @@ class scoped_ptr_base {
   }
 
   T* operator->() const {
-    ASSERT(ptr_ != NULL);
+    CHECK(ptr_);
     return ptr_;
   }
 

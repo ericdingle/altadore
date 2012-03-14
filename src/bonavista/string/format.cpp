@@ -1,7 +1,7 @@
 #include "bonavista/string/format.h"
 
 #include <stdarg.h>
-#include "bonavista/logging/assert.h"
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_array.h"
 
 namespace string {
@@ -29,7 +29,7 @@ std::string Format(const char* format, ...) {
   va_end(args_copy);
 #endif
 
-  DASSERT(n == len);
+  DCHECK(n == len);
 
   va_end(args);
   return buffer.ptr();
