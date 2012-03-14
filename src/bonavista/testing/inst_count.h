@@ -1,8 +1,8 @@
 #ifndef BONAVISTA_TESTING_INSTANCE_COUNT_H_
 #define BONAVISTA_TESTING_INSTANCE_COUNT_H_
 
-#include "bonavista/util/macros.h"
-#include "bonavista/util/types.h"
+#include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 
 namespace testing {
 
