@@ -1,4 +1,4 @@
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 
 #include "bonavista/testing/test_case.h"
 

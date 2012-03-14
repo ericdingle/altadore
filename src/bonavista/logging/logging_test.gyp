@@ -3,21 +3,14 @@
     '../common.gypi',
   ],
   'targets': [{
-    'target_name': 'string_lib',
-    'type': 'static_library',
-    'sources': [
-      'format.cpp',
-      'format.h',
-    ],
-  }, {
-    'target_name': 'string_test',
+    'target_name': 'logging_test',
     'type': 'executable',
     'dependencies': [
-      'string_lib',
+      'logging.gyp:logging_lib',
       '../testing/testing.gyp:testing_lib',
     ],
     'sources': [
-      'format_test.cpp',
+      'string_format_test.cpp',
       '../testing/test_main.cpp',
     ],
   }],

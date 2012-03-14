@@ -9,7 +9,6 @@
       'io/io.gyp:io_lib',
       'logging/logging.gyp:logging_lib',
       'memory/memory.gyp:memory_lib',
-      'string/string.gyp:string_lib',
       'testing/testing.gyp:testing_lib',
     ],
   }, {
@@ -17,8 +16,8 @@
     'type': 'none',
     'dependencies': [
       'io/io.gyp:io_test',
+      'logging/logging_test.gyp:logging_test',
       'memory/memory.gyp:memory_test',
-      'string/string.gyp:string_test',
       'testing/testing.gyp:testing_test',
     ],
   }],
