@@ -3,24 +3,24 @@
     '../common.gypi',
   ],
   'targets': [{
-    'target_name': 'io_lib',
+    'target_name': 'file_lib',
     'type': 'static_library',
     'sources': [
-      'io.cpp',
-      'io.h',
       'scoped_file.cpp',
       'scoped_file.h',
+      'util.cpp',
+      'util.h',
     ],
   }, {
-    'target_name': 'io_test',
+    'target_name': 'file_test',
     'type': 'executable',
     'dependencies': [
-      'io_lib',
+      'file_lib',
       '../testing/testing.gyp:testing_lib',
     ],
     'sources': [
-      'io_test.cpp',
       'scoped_file_test.cpp',
+      'util_test.cpp',
       '../testing/test_main.cpp',
     ],
   }]

@@ -1,9 +1,7 @@
-#include "bonavista/io/io.h"
+#include "bonavista/file/util.h"
 
 #include "bonavista/base/macros.h"
-#include "bonavista/io/scoped_file.h"
-
-namespace io {
+#include "bonavista/file/scoped_file.h"
 
 FILE* OpenFile(const char* file_name, const char* mode) {
 #if OS_WIN
@@ -33,5 +31,3 @@ bool ReadFile(const char* file_name, std::string* buffer) {
   size_t usize = static_cast<size_t>(size);
   return fread(&buffer->at(0), 1, usize, file.ptr()) == usize;
 }
-
-}  // namespace io
