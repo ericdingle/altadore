@@ -5,7 +5,7 @@
 
 namespace {
 
-class Dummy : public memory::RefCount, public InstCount {
+class Dummy : public RefCount, public InstCount {
 };
 
 }  // namespace

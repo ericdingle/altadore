@@ -4,8 +4,6 @@
 #include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 
-namespace memory {
-
 template <typename T, typename InitFunc, typename UninitFunc>
 class scoped_ptr_base {
  public:
@@ -75,7 +73,5 @@ class scoped_ptr : public scoped_ptr_base<T, VoidFunc, DeletePtrFunc<T> > {
  private:
   DISALLOW_COPY_AND_ASSIGN(scoped_ptr);
 };
-
-}  // namespace memory
 
 #endif

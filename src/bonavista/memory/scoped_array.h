@@ -4,8 +4,6 @@
 #include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_ptr.h"
 
-namespace memory {
-
 template <typename T>
 struct DeleteArrayFunc {
   void operator()(T* ptr) const {
@@ -34,7 +32,5 @@ class scoped_array : public scoped_ptr_base<T, VoidFunc, DeleteArrayFunc<T> > {
  private:
   DISALLOW_COPY_AND_ASSIGN(scoped_array);
 };
-
-}  // namespace memory
 
 #endif

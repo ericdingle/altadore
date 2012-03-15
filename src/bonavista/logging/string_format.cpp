@@ -17,7 +17,7 @@ std::string StringFormat(const char* format, ...) {
   va_end(args_copy);
 #endif
 
-  memory::scoped_array<char> buffer(new char[len + 1]);
+  scoped_array<char> buffer(new char[len + 1]);
 
 #if OS_WIN
   int n = vsnprintf_s(buffer.ptr(), len + 1, len, format, args);

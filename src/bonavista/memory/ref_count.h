@@ -4,8 +4,6 @@
 #include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 
-namespace memory {
-
 class RefCount {
  public:
   RefCount();
@@ -21,7 +19,5 @@ class RefCount {
 
   DISALLOW_COPY_AND_ASSIGN(RefCount);
 };
-
-}  // namespace memory
 
 #endif

@@ -3,8 +3,6 @@
 
 #include "bonavista/memory/scoped_ptr.h"
 
-namespace memory {
-
 class RefCount;
 
 struct AddRefFunc {
@@ -30,7 +28,5 @@ class scoped_refptr : public scoped_ptr_base<T, AddRefFunc, ReleaseFunc> {
     return *this;
   }
 };
-
-}  // namespace memory
 
 #endif

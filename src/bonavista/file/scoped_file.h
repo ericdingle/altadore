@@ -7,6 +7,6 @@ struct FileCloseFunc {
   void operator()(FILE* file) const;
 };
 
-typedef memory::scoped_ptr_base<FILE, memory::VoidFunc, FileCloseFunc> scoped_FILE;
+typedef scoped_ptr_base<FILE, VoidFunc, FileCloseFunc> scoped_FILE;
 
 #endif

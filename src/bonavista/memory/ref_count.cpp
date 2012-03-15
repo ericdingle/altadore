@@ -2,8 +2,6 @@
 
 #include "bonavista/base/macros.h"
 
-namespace memory {
-
 RefCount::RefCount() : ref_count_(0) {
 }
 
@@ -21,5 +19,3 @@ void RefCount::Release() const {
     delete this;
   }
 }
-
-}  // namespace memory
