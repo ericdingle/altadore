@@ -7,12 +7,12 @@ TEST_CASE(ScopedArrayTest) {
 };
 
 TEST(ScopedArrayTest, ConstructorAndDestructor) {
-  EXPECT_EQ(testing::InstCount::inst_count(), 0);
+  EXPECT_EQ(InstCount::inst_count(), 0);
   {
-    memory::scoped_array<testing::InstCount> array(new testing::InstCount[5]);
-    EXPECT_EQ(testing::InstCount::inst_count(), 5);
+    memory::scoped_array<InstCount> array(new InstCount[5]);
+    EXPECT_EQ(InstCount::inst_count(), 5);
   }
-  EXPECT_EQ(testing::InstCount::inst_count(), 0);
+  EXPECT_EQ(InstCount::inst_count(), 0);
 }
 
 TEST(ScopedArrayTest, IndexOperator) {

@@ -6,22 +6,16 @@
 
 #ifdef OS_WIN
 #define SIZE_T_FORMAT "%Iu"
-#else
+#elif OS_LINUX
 #define SIZE_T_FORMAT "%zu"
 #endif
 
-namespace {
-
-const char* kDivider = "[------------]";
-const char* kRun =     "[ Run        ]";
-const char* kPass =    "[       Pass ]";
-const char* kFail =    "[       Fail ]";
-const char* kPassed =  "[   Passed   ]";
-const char* kFailed =  "[   Failed   ]";
-
-}  // namespace
-
-namespace testing {
+const char kDivider[] = "[------------]";
+const char kRun[]     = "[ Run        ]";
+const char kPass[]    = "[       Pass ]";
+const char kFail[]    = "[       Fail ]";
+const char kPassed[]  = "[   Passed   ]";
+const char kFailed[]  = "[   Failed   ]";
 
 uint TestCase::RunAll() {
   uint num_test_cases = 0;
@@ -126,5 +120,3 @@ void TestCase::SetUp() {
 
 void TestCase::TearDown() {
 }
-
-}  // namespace testing

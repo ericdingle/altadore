@@ -4,8 +4,6 @@
 #include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 
-namespace testing {
-
 class InstCount {
  public:
   InstCount();
@@ -35,7 +33,5 @@ class InstCountT {
 
 template <typename T>
 uint InstCountT<T>::inst_count_ = 0;
-
-}  // namespace testing
 
 #endif

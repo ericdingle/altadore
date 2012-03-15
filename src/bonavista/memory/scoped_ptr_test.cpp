@@ -73,10 +73,10 @@ TEST_CASE(ScopedPtrTest) {
 };
 
 TEST(ScopedPtrTest, ConstructorAndDestructor) {
-  EXPECT_EQ(testing::InstCount::inst_count(), 0);
+  EXPECT_EQ(InstCount::inst_count(), 0);
   {
-    memory::scoped_ptr<testing::InstCount> ptr(new testing::InstCount());
-    EXPECT_EQ(testing::InstCount::inst_count(), 1);
+    memory::scoped_ptr<InstCount> ptr(new InstCount());
+    EXPECT_EQ(InstCount::inst_count(), 1);
   }
-  EXPECT_EQ(testing::InstCount::inst_count(), 0);
+  EXPECT_EQ(InstCount::inst_count(), 0);
 }
