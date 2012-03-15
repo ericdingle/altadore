@@ -3,14 +3,14 @@
 
 #include "bonavista/memory/scoped_ptr.h"
 
-class RefCount;
+class RefCounted;
 
 struct AddRefFunc {
-  void operator()(const RefCount* ptr) const;
+  void operator()(const RefCounted* ptr) const;
 };
 
 struct ReleaseFunc {
-  void operator()(const RefCount* ptr) const;
+  void operator()(const RefCounted* ptr) const;
 };
 
 template <typename T>

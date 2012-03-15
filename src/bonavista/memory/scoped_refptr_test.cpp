@@ -2,11 +2,11 @@
 
 #include "bonavista/testing/inst_count.h"
 #include "bonavista/testing/test_case.h"
-#include "bonavista/memory/ref_count.h"
+#include "bonavista/memory/ref_counted.h"
 
 namespace {
 
-class Dummy : public RefCount, public InstCount {
+class Dummy : public RefCounted, public InstCount {
 };
 
 }  // namespace
