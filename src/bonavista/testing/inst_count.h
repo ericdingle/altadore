@@ -1,10 +1,8 @@
 #ifndef BONAVISTA_TESTING_INSTANCE_COUNT_H_
 #define BONAVISTA_TESTING_INSTANCE_COUNT_H_
 
-#include "bonavista/util/macros.h"
-#include "bonavista/util/types.h"
-
-namespace testing {
+#include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 
 class InstCount {
  public:
@@ -35,7 +33,5 @@ class InstCountT {
 
 template <typename T>
 uint InstCountT<T>::inst_count_ = 0;
-
-}  // namespace testing
 
 #endif

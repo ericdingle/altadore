@@ -3,22 +3,24 @@
     '../common.gypi',
   ],
   'targets': [{
-    'target_name': 'string_lib',
+    'target_name': 'base_lib',
     'type': 'static_library',
     'sources': [
-      'format.cpp',
-      'format.h',
+      'command_line.cpp',
+      'command_line.h',
+      'macros.h',
+      'types.h',
     ],
   }, {
-    'target_name': 'string_test',
+    'target_name': 'base_test',
     'type': 'executable',
     'dependencies': [
-      'string_lib',
+      'base_lib',
       '../testing/testing.gyp:testing_lib',
+      '../testing/testing.gyp:testing_main',
     ],
     'sources': [
-      'format_test.cpp',
-      '../testing/test_main.cpp',
+      'command_line_test.cpp',
     ],
   }],
 }

@@ -3,16 +3,14 @@
 
 #include "bonavista/memory/scoped_ptr.h"
 
-namespace memory {
-
-class RefCount;
+class RefCounted;
 
 struct AddRefFunc {
-  void operator()(const RefCount* ptr) const;
+  void operator()(const RefCounted* ptr) const;
 };
 
 struct ReleaseFunc {
-  void operator()(const RefCount* ptr) const;
+  void operator()(const RefCounted* ptr) const;
 };
 
 template <typename T>
@@ -30,7 +28,5 @@ class scoped_refptr : public scoped_ptr_base<T, AddRefFunc, ReleaseFunc> {
     return *this;
   }
 };
-
-}  // namespace memory
 
 #endif

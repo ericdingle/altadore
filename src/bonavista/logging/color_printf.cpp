@@ -6,25 +6,23 @@
 #include <windows.h>
 #endif
 
-namespace logging {
-
 #if OS_WIN
-WORD GetColorAttribute(Color color) {
+WORD GetColorAttribute(TextColor color) {
   switch (color) {
-    case COLOR_RED:
+    case TEXT_COLOR_RED:
       return FOREGROUND_RED;
-    case COLOR_GREEN:
+    case TEXT_COLOR_GREEN:
       return FOREGROUND_GREEN;
     default:
       return 0;
   }
 }
 #elif OS_LINUX
-const char* GetAnsiColorCode(Color color) {
+const char* GetAnsiColorCode(TextColor color) {
   switch (color) {
-    case COLOR_RED:
+    case TEXT_COLOR_RED:
       return "1";
-    case COLOR_GREEN:
+    case TEXT_COLOR_GREEN:
       return "2";
     default:
       return NULL;
@@ -32,7 +30,7 @@ const char* GetAnsiColorCode(Color color) {
 }
 #endif
 
-void ColorPrintf(Color color, const char* format, ...) {
+void ColorPrintf(TextColor color, const char* format, ...) {
   va_list args;
   va_start(args, format);
 #if OS_WIN
@@ -53,5 +51,3 @@ void ColorPrintf(Color color, const char* format, ...) {
 
   va_end(args);
 }
-
-}  // namespace logging

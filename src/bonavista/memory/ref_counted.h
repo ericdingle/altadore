@@ -1,15 +1,13 @@
 #ifndef BONAVISTA_MEMORY_REF_COUNT_H_
 #define BONAVISTA_MEMORY_REF_COUNT_H_
 
-#include "bonavista/util/macros.h"
-#include "bonavista/util/types.h"
+#include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 
-namespace memory {
-
-class RefCount {
+class RefCounted {
  public:
-  RefCount();
-  virtual ~RefCount();
+  RefCounted();
+  virtual ~RefCounted();
 
   void AddRef() const;
   void Release() const;
@@ -19,9 +17,7 @@ class RefCount {
  private:
   mutable uint ref_count_;
 
-  DISALLOW_COPY_AND_ASSIGN(RefCount);
+  DISALLOW_COPY_AND_ASSIGN(RefCounted);
 };
-
-}  // namespace memory
 
 #endif
