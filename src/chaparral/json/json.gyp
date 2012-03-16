@@ -20,7 +20,7 @@
     'type': 'executable',
     'dependencies': [
       'json_lib',
-      '../../bonavista/io/io.gyp:io_lib',
+      '../../bonavista/file/file.gyp:file_lib',
     ],
     'sources': [
       'main.cpp',
@@ -31,11 +31,11 @@
     'dependencies': [
       'json_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'json_lexer_test.cpp',
       'json_parser_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ],
   }],
 }

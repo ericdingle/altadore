@@ -1,7 +1,7 @@
 #ifndef CHAPARRAL_JSON_JSON_LEXER_H_
 #define CHAPARRAL_JSON_JSON_LEXER_H_
 
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 #include "chaparral/lexer/lexer.h"
 
 class JsonLexer : public Lexer {

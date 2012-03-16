@@ -1,7 +1,7 @@
 #ifndef CHAPARRAL_CALC_CALC_LEXER_H_
 #define CHAPARRAL_CALC_CALC_LEXER_H_
 
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 #include "chaparral/lexer/lexer.h"
 
 class CalcLexer : public Lexer {

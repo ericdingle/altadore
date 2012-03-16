@@ -3,12 +3,12 @@
 
 #include <string>
 #include <vector>
-#include "bonavista/memory/ref_count.h"
+#include "bonavista/memory/ref_counted.h"
 #include "bonavista/memory/scoped_refptr.h"
 
 class Variant;
 
-class Invokable : public memory::RefCount {
+class Invokable : public RefCounted {
  public:
   enum Result {
     RESULT_OK,
@@ -23,7 +23,7 @@ class Invokable : public memory::RefCount {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var) =0;
 };
 

@@ -13,9 +13,9 @@ TEST_CASE(JsonParserTest) {
   }
 
   JsonLexer lexer_;
-  memory::scoped_ptr<TokenStream> stream_;
-  memory::scoped_ptr<Parser> parser_;
-  memory::scoped_ptr<const ASTNode> root_;
+  scoped_ptr<TokenStream> stream_;
+  scoped_ptr<Parser> parser_;
+  scoped_ptr<const ASTNode> root_;
 };
 
 TEST(JsonParserTest, ParseEmpty) {

@@ -7,7 +7,7 @@
     'type': 'static_library',
     'dependencies': [
       '../lexer/lexer.gyp:lexer_lib',
-      '../../bonavista/string/string.gyp:string_lib',
+      '../../bonavista/logging/logging.gyp:logging_lib',
     ],
     'sources': [
       'ast_node.cpp',
@@ -21,10 +21,10 @@
     'dependencies': [
       'parser_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'parser_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ]
   }],
 }
