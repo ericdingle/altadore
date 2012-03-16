@@ -17,11 +17,11 @@
     'dependencies': [
       'file_lib',
       '../testing/testing.gyp:testing_lib',
+      '../testing/testing.gyp:testing_main',
     ],
     'sources': [
       'scoped_file_test.cpp',
       'util_test.cpp',
-      '../testing/test_main.cpp',
     ],
-  }]
+  }],
 }

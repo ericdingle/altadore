@@ -19,13 +19,13 @@
     'dependencies': [
       'memory_lib',
       '../testing/testing.gyp:testing_lib',
+      '../testing/testing.gyp:testing_main',
     ],
     'sources': [
       'ref_counted_test.cpp',
       'scoped_array_test.cpp',
       'scoped_ptr_test.cpp',
       'scoped_refptr_test.cpp',
-      '../testing/test_main.cpp',
     ],
   }],
 }

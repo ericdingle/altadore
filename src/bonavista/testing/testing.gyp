@@ -16,15 +16,21 @@
       'test_case_expect.h',
     ],
   }, {
+    'target_name': 'testing_main',
+    'type': 'static_library',
+    'sources': [
+      'test_main.cpp',
+    ],
+  }, {
     'target_name': 'testing_test',
     'type': 'executable',
     'dependencies': [
       'testing_lib',
+      'testing_main',
     ],
     'sources': [
       'inst_count_test.cpp',
       'test_case_test.cpp',
-      'test_main.cpp',
     ],
   }],
 }

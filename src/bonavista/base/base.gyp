@@ -17,10 +17,10 @@
     'dependencies': [
       'base_lib',
       '../testing/testing.gyp:testing_lib',
+      '../testing/testing.gyp:testing_main',
     ],
     'sources': [
       'command_line_test.cpp',
-      '../testing/test_main.cpp',
     ],
   }],
 }
