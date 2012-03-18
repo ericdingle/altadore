@@ -1,20 +1,19 @@
-#include "bonavista/memory/ref_count.h"
+#include "bonavista/memory/ref_counted.h"
 
 #include "bonavista/testing/inst_count.h"
 #include "bonavista/testing/test_case.h"
 
 namespace {
 
-class Dummy : public memory::RefCount,
-              public testing::InstCount {
+class Dummy : public RefCounted, public InstCount {
 };
 
 }  // namespace
 
-TEST_CASE(RefCountTest) {
+TEST_CASE(RefCountedTest) {
 };
 
-TEST(RefCountTest, AddRefAndRelease) {
+TEST(RefCountedTest, AddRefAndRelease) {
   EXPECT_EQ(Dummy::inst_count(), 0);
   Dummy* dummy = new Dummy();
   EXPECT_EQ(Dummy::inst_count(), 1);

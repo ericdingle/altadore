@@ -1,13 +1,14 @@
-#include "bonavista/io/scoped_file.h"
+#include "bonavista/file/scoped_file.h"
 
-#include "bonavista/io/io.h"
+#include <stdio.h>
+#include "bonavista/base/macros.h"
+#include "bonavista/file/util.h"
 #include "bonavista/testing/test_case.h"
-#include "bonavista/util/macros.h"
 
 TEST_CASE(ScopedFileTest) {
  protected:
   void SetUp() {
-    file_ = io::OpenFile("test.tmp", "w+b");
+    file_ = OpenFile("test.tmp", "w+b");
   }
 
   void TearDown() {
@@ -19,7 +20,7 @@ TEST_CASE(ScopedFileTest) {
 
 TEST(ScopedFileTest, ConstructorAndDestructor) {
   {
-    io::scoped_FILE scoped_file(file_);
+    scoped_FILE scoped_file(file_);
 
     int bytes[] = {1, 2, 3, 4};
     EXPECT_EQ(fwrite(bytes, sizeof(int), 4, file_), 4);

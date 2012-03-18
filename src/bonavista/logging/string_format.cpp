@@ -1,12 +1,10 @@
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 
 #include <stdarg.h>
-#include "bonavista/logging/assert.h"
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_array.h"
 
-namespace string {
-
-std::string Format(const char* format, ...) {
+std::string StringFormat(const char* format, ...) {
   va_list args;
   va_start(args, format);
 
@@ -19,7 +17,7 @@ std::string Format(const char* format, ...) {
   va_end(args_copy);
 #endif
 
-  memory::scoped_array<char> buffer(new char[len + 1]);
+  scoped_array<char> buffer(new char[len + 1]);
 
 #if OS_WIN
   int n = vsnprintf_s(buffer.ptr(), len + 1, len, format, args);
@@ -29,10 +27,8 @@ std::string Format(const char* format, ...) {
   va_end(args_copy);
 #endif
 
-  DASSERT(n == len);
+  DCHECK(n == len);
 
   va_end(args);
   return buffer.ptr();
 }
-
-}  // namespace string

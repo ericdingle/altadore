@@ -6,8 +6,8 @@
     'target_name': 'memory_lib',
     'type': 'static_library',
     'sources': [
-      'ref_count.cpp',
-      'ref_count.h',
+      'ref_counted.cpp',
+      'ref_counted.h',
       'scoped_array.h',
       'scoped_ptr.h',
       'scoped_refptr.cpp',
@@ -19,13 +19,13 @@
     'dependencies': [
       'memory_lib',
       '../testing/testing.gyp:testing_lib',
+      '../testing/testing.gyp:testing_main',
     ],
     'sources': [
-      'ref_count_test.cpp',
+      'ref_counted_test.cpp',
       'scoped_array_test.cpp',
       'scoped_ptr_test.cpp',
       'scoped_refptr_test.cpp',
-      '../testing/test_main.cpp',
     ],
   }],
 }

@@ -1,17 +1,13 @@
 #include "bonavista/memory/scoped_refptr.h"
 
-#include "bonavista/memory/ref_count.h"
+#include "bonavista/memory/ref_counted.h"
 
-namespace memory {
-
-void AddRefFunc::operator()(const RefCount* ptr) const {
+void AddRefFunc::operator()(const RefCounted* ptr) const {
   if (ptr)
     ptr->AddRef();
 }
 
-void ReleaseFunc::operator()(const RefCount* ptr) const {
+void ReleaseFunc::operator()(const RefCounted* ptr) const {
   if (ptr)
     ptr->Release();
 }
-
-}  // namespace memory

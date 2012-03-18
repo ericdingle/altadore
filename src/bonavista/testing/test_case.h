@@ -2,11 +2,9 @@
 #define BONAVISTA_TESTING_TEST_CASE_H_
 
 #include <vector>
+#include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 #include "bonavista/testing/test_case_expect.h"
-#include "bonavista/util/macros.h"
-#include "bonavista/util/types.h"
-
-namespace testing {
 
 class TestCase {
  public:
@@ -37,18 +35,16 @@ class TestCase {
   DISALLOW_COPY_AND_ASSIGN(TestCase);
 };
 
-}  // namespace testing
-
 #define TEST_CASE(testCaseName) \
-  class testCaseName : public virtual testing::TestCase
+  class testCaseName : public virtual TestCase
 
 #define TEST_CLASS_NAME(testCaseName, testName) testCaseName##_##testName##_Test
 
 #define TEST(testCaseName, testName) \
   class TEST_CLASS_NAME(testCaseName, testName) : public testCaseName { \
    private: \
-    TEST_CLASS_NAME(testCaseName, testName)() : testing::TestCase(#testCaseName, #testName) { \
-      testing::TestCase::AddTest(this); \
+    TEST_CLASS_NAME(testCaseName, testName)() : TestCase(#testCaseName, #testName) { \
+      TestCase::AddTest(this); \
     } \
     void Run(); \
     static TEST_CLASS_NAME(testCaseName, testName) instance_; \

@@ -1,11 +1,8 @@
 #ifndef BONAVISTA_MEMORY_SCOPED_PTR_H_
 #define BONAVISTA_MEMORY_SCOPED_PTR_H_
 
-#include "bonavista/logging/assert.h"
-#include "bonavista/util/macros.h"
-#include "bonavista/util/types.h"
-
-namespace memory {
+#include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 
 template <typename T, typename InitFunc, typename UninitFunc>
 class scoped_ptr_base {
@@ -18,7 +15,7 @@ class scoped_ptr_base {
   }
 
   T* operator->() const {
-    ASSERT(ptr_ != NULL);
+    CHECK(ptr_);
     return ptr_;
   }
 
@@ -76,7 +73,5 @@ class scoped_ptr : public scoped_ptr_base<T, VoidFunc, DeletePtrFunc<T> > {
  private:
   DISALLOW_COPY_AND_ASSIGN(scoped_ptr);
 };
-
-}  // namespace memory
 
 #endif
