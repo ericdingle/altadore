@@ -1,8 +1,7 @@
 #include "chaparral/calc/calc_executer.h"
 
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 #include "bonavista/testing/test_case.h"
-#include "bonavista/util/macros.h"
 #include "chaparral/calc/calc_lexer.h"
 #include "chaparral/calc/calc_parser.h"
 #include "chaparral/lexer/token_stream.h"
@@ -16,10 +15,10 @@ TEST_CASE(CalcExecuterTest) {
   }
 
   CalcLexer lexer_;
-  memory::scoped_ptr<TokenStream> stream_;
-  memory::scoped_ptr<Parser> parser_;
-  memory::scoped_ptr<Executer> executer_;
-  memory::scoped_refptr<const Variant> var_;
+  scoped_ptr<TokenStream> stream_;
+  scoped_ptr<Parser> parser_;
+  scoped_ptr<Executer> executer_;
+  scoped_refptr<const Variant> var_;
   double d_;
 };
 
@@ -46,7 +45,7 @@ TEST(CalcExecuterTest, ExecuteOperator) {
   const double results[] = { 9, 0, 6, 1 };
 
   for (uint i = 0; i < ARRAY_SIZE(ops); ++i) {
-    std::string input = string::Format("3%c3", ops[i]);
+    std::string input = StringFormat("3%c3", ops[i]);
     Init(input.c_str());
     EXPECT_TRUE(executer_->ExecuteT(&d_));
     EXPECT_EQ(d_, results[i]);

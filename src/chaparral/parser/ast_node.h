@@ -2,9 +2,9 @@
 #define CHAPARRAL_PARSER_AST_NODE_H_
 
 #include <vector>
+#include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 #include "bonavista/memory/scoped_ptr.h"
-#include "bonavista/util/macros.h"
-#include "bonavista/util/types.h"
 
 class Token;
 
@@ -19,7 +19,7 @@ class ASTNode {
   const std::vector<const ASTNode*>& children() const;
 
  private:
-  const memory::scoped_ptr<const Token> token_;
+  const scoped_ptr<const Token> token_;
   std::vector<const ASTNode*> children_;
 
   DISALLOW_COPY_AND_ASSIGN(ASTNode);

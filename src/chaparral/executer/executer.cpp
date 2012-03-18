@@ -9,9 +9,9 @@ Executer::~Executer() {
 }
 
 bool Executer::Execute(const Variant** var) {
-  ASSERT(var);
+  DCHECK(var);
 
-  memory::scoped_ptr<const ASTNode> node;
+  scoped_ptr<const ASTNode> node;
   if (!parser_->Parse(node.Receive())) {
     position_ = parser_->position();
     error_ = parser_->error();

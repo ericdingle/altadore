@@ -1,12 +1,11 @@
 #ifndef CHAPARRAL_EXECUTER_VARIANT_H_
 #define CHAPARRAL_EXECUTER_VARIANT_H_
 
-#include "bonavista/logging/assert.h"
-#include "bonavista/memory/ref_count.h"
+#include "bonavista/base/macros.h"
+#include "bonavista/memory/ref_counted.h"
 #include "bonavista/memory/scoped_refptr.h"
-#include "bonavista/util/macros.h"
 
-class Variant : public memory::RefCount {
+class Variant : public RefCounted {
  public:
   template <typename T>
   explicit Variant(T value) : data_(new Data<T>(value)) {}
@@ -16,7 +15,7 @@ class Variant : public memory::RefCount {
 
   template <typename T>
   bool Get(T* out) const {
-    ASSERT(out);
+    DCHECK(out);
 
     const Data<T>* data = dynamic_cast<const Data<T>*>(data_.ptr());
     if (data) {
@@ -29,7 +28,7 @@ class Variant : public memory::RefCount {
 
   template <typename T>
   bool Get(T** out) const {
-    ASSERT(out);
+    DCHECK(out);
 
     const ScopedRefData<T>* data = dynamic_cast<const ScopedRefData<T>*>(data_.ptr());
     if (data) {
@@ -74,12 +73,12 @@ class Variant : public memory::RefCount {
     T* value() const { return value_.ptr(); }
 
    private:
-    memory::scoped_refptr<T> value_;
+    scoped_refptr<T> value_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedRefData);
   };
 
-  memory::scoped_ptr<const DataBase> data_;
+  scoped_ptr<const DataBase> data_;
 
   DISALLOW_COPY_AND_ASSIGN(Variant);
 };

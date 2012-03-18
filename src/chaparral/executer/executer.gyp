@@ -23,11 +23,11 @@
     'dependencies': [
       'executer_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'executer_test.cpp',
       'variant_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ]
   }],
 }

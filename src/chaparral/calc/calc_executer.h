@@ -1,7 +1,7 @@
 #ifndef CHAPARRAL_CALC_CALC_EXECUTER_H_
 #define CHAPARRAL_CALC_CALC_EXECUTER_H_
 
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 #include "chaparral/executer/executer.h"
 
 class CalcExecuter : public Executer {

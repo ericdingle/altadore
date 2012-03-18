@@ -1,6 +1,6 @@
 #include "chaparral/calc/calc_parser.h"
 
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 #include "bonavista/testing/test_case.h"
 #include "chaparral/calc/calc_lexer.h"
 #include "chaparral/lexer/token_stream.h"
@@ -14,9 +14,9 @@ TEST_CASE(CalcParserTest) {
   }
 
   CalcLexer lexer_;
-  memory::scoped_ptr<TokenStream> stream_;
-  memory::scoped_ptr<Parser> parser_;
-  memory::scoped_ptr<const ASTNode> root_;
+  scoped_ptr<TokenStream> stream_;
+  scoped_ptr<Parser> parser_;
+  scoped_ptr<const ASTNode> root_;
 };
 
 TEST(CalcParserTest, ParseEmpty) {
@@ -66,7 +66,7 @@ TEST(CalcParserTest, ParseOperator) {
                         CalcLexer::TYPE_SLASH };
 
   for (uint i = 0; i < ARRAY_SIZE(ops); ++i) {
-    std::string input = string::Format("1%c2", ops[i]);
+    std::string input = StringFormat("1%c2", ops[i]);
     Init(input.c_str());
     EXPECT_TRUE(parser_->Parse(root_.Receive()));
 

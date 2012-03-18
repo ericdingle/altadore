@@ -19,9 +19,9 @@ class TestLexer : public Lexer {
                         std::string* value,
                         uint* count,
                         std::string* error) const {
-    ASSERT(type);
-    ASSERT(value);
-    ASSERT(count);
+    DCHECK(type);
+    DCHECK(value);
+    DCHECK(count);
 
     *type = TYPE_CHAR;
     *value = input[index];
@@ -34,7 +34,7 @@ TEST(TokenStreamTest, GetNextToken) {
   TestLexer lexer;
   TokenStream token_stream(&lexer, "a bc\nde  ");
 
-  memory::scoped_ptr<const Token> token;
+  scoped_ptr<const Token> token;
   EXPECT_TRUE(token_stream.GetNextToken(token.Receive()));
   EXPECT_TRUE(token->IsType(TestLexer::TYPE_CHAR));
   EXPECT_EQ(token->value(), "a");

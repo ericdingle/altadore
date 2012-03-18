@@ -1,6 +1,5 @@
 #include "chaparral/executer/executer.h"
 
-#include "bonavista/logging/assert.h"
 #include "bonavista/memory/scoped_ptr.h"
 #include "bonavista/memory/scoped_refptr.h"
 #include "bonavista/testing/test_case.h"
@@ -23,10 +22,10 @@ class TestLexer : public Lexer {
                         std::string* value,
                         uint* count,
                         std::string* error) const {
-    ASSERT(type);
-    ASSERT(value);
-    ASSERT(count);
-    ASSERT(error);
+    DCHECK(type);
+    DCHECK(value);
+    DCHECK(count);
+    DCHECK(error);
 
     if (!IsDigit(input[index])) {
       *error = "Expecting digit";
@@ -46,7 +45,7 @@ class TestParser : public Parser {
 
  protected:
   virtual bool ParsePrefixToken(const Token* token, const ASTNode** root) {
-    ASSERT(root);
+    DCHECK(root);
     *root = new ASTNode(token);
     return true;
   }
@@ -58,8 +57,8 @@ class TestExecuter : public Executer {
 
  protected:
   virtual bool ExecuteASTNode(const ASTNode* node, const Variant** var) {
-    ASSERT(node);
-    ASSERT(var);
+    DCHECK(node);
+    DCHECK(var);
 
     uint digit = node->token()->value()[0] - 0x30;
     if (digit == 9) {
@@ -68,7 +67,7 @@ class TestExecuter : public Executer {
       return false;
     }
 
-    memory::scoped_refptr<const Variant> var_ref(new Variant(digit));
+    scoped_refptr<const Variant> var_ref(new Variant(digit));
     *var = var_ref.Release();
     return true;
   }
@@ -83,10 +82,10 @@ TEST_CASE(ExecuterTest) {
   }
 
   TestLexer lexer_;
-  memory::scoped_ptr<TokenStream> stream_;
-  memory::scoped_ptr<Parser> parser_;
-  memory::scoped_ptr<Executer> executer_;
-  memory::scoped_refptr<const Variant> var_;
+  scoped_ptr<TokenStream> stream_;
+  scoped_ptr<Parser> parser_;
+  scoped_ptr<Executer> executer_;
+  scoped_refptr<const Variant> var_;
 };
 
 TEST(ExecuterTest, Empty) {

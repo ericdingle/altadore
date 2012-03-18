@@ -1,6 +1,6 @@
 #include "chaparral/json/json_lexer.h"
 
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 
 JsonLexer::JsonLexer() {
 }
@@ -43,7 +43,7 @@ bool JsonLexer::GetToken(const std::string& input,
     return true;
   }
 
-  *error = string::Format("Unrecognized token: %c", c);
+  *error = StringFormat("Unrecognized token: %c", c);
   return false;
 }
 

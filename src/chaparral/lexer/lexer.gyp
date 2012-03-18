@@ -19,11 +19,11 @@
     'dependencies': [
       'lexer_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'token_stream_test.cpp',
       'token_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ]
   }],
 }

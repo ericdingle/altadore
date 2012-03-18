@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string>
-#include "bonavista/io/io.h"
+#include "bonavista/file/util.h"
 #include "chaparral/json/json_lexer.h"
 #include "chaparral/json/json_parser.h"
 #include "chaparral/lexer/token_stream.h"
@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
   }
 
   std::string buffer;
-  if (!io::ReadFile(argv[1], &buffer)) {
+  if (!ReadFile(argv[1], &buffer)) {
     printf("Error: Could not read file\n");
     return 1;
   }
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
   TokenStream stream(&lexer, buffer.c_str());
 
   JsonParser parser(&stream);
-  memory::scoped_ptr<const ASTNode> root;
+  scoped_ptr<const ASTNode> root;
   if (!parser.Parse(root.Receive())) {
     printf("Error: %s at line %d, column %d\n", parser.error().c_str(),
            parser.position().line, parser.position().column);

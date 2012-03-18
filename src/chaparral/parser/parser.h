@@ -3,9 +3,9 @@
 
 #include <string>
 #include <vector>
+#include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 #include "bonavista/memory/scoped_ptr.h"
-#include "bonavista/util/macros.h"
-#include "bonavista/util/types.h"
 #include "chaparral/lexer/token.h"
 
 class ASTNode;
@@ -35,7 +35,7 @@ class Parser {
   virtual bool ParseInfixToken(const Token* token, const ASTNode* left,
                                const ASTNode** root);
 
-  memory::scoped_ptr<const Token> look_ahead_token_;
+  scoped_ptr<const Token> look_ahead_token_;
 
   Token::Position position_;
   std::string error_;

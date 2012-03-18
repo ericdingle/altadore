@@ -1,18 +1,17 @@
 #include "chaparral/lexer/token_stream.h"
 
-#include "bonavista/logging/assert.h"
 #include "chaparral/lexer/lexer.h"
 
 TokenStream::TokenStream(const Lexer* lexer, const std::string& input)
     : lexer_(lexer), input_(input), index_(0) {
-  ASSERT(lexer);
+  DCHECK(lexer);
 }
 
 TokenStream::~TokenStream() {
 }
 
 bool TokenStream::GetNextToken(const Token** token) {
-  ASSERT(token);
+  DCHECK(token);
 
   // Consume the white space.
   while (index_ < input_.length()) {

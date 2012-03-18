@@ -1,9 +1,9 @@
 #ifndef CHAPARRAL_EXECUTER_EXECUTER_H_
 #define CHAPARRAL_EXECUTER_EXECUTER_H_
 
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_ptr.h"
 #include "bonavista/memory/scoped_refptr.h"
-#include "bonavista/util/macros.h"
 #include "chaparral/executer/variant.h"
 #include "chaparral/lexer/token.h"
 #include "chaparral/parser/ast_node.h"
@@ -40,7 +40,7 @@ class Executer {
 
 template <typename T>
 bool Executer::ExecuteT(T* out) {
-  memory::scoped_refptr<const Variant> var;
+  scoped_refptr<const Variant> var;
   if (!Execute(var.Receive()))
     return false;
 
@@ -54,7 +54,7 @@ bool Executer::ExecuteT(T* out) {
 
 template <typename T>
 bool Executer::ExecuteASTNodeT(const ASTNode* node, T* out) {
-  memory::scoped_refptr<const Variant> var;
+  scoped_refptr<const Variant> var;
   if (!ExecuteASTNode(node, var.Receive()))
     return false;
 

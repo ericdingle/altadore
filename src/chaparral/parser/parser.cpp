@@ -1,20 +1,19 @@
 #include "chaparral/parser/parser.h"
 
-#include "bonavista/logging/assert.h"
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 #include "chaparral/lexer/lexer.h"
 #include "chaparral/lexer/token_stream.h"
 #include "chaparral/parser/ast_node.h"
 
 Parser::Parser(TokenStream* token_stream) : token_stream_(token_stream) {
-  ASSERT(token_stream);
+  DCHECK(token_stream);
 }
 
 Parser::~Parser() {
 }
 
 bool Parser::Parse(const ASTNode** root) {
-  ASSERT(root);
+  DCHECK(root);
 
   if (!Init())
     return false;
@@ -26,7 +25,7 @@ bool Parser::Parse(const ASTNode** root) {
   }
 
   // Parse expression.
-  memory::scoped_ptr<const ASTNode> node;
+  scoped_ptr<const ASTNode> node;
   if (!ParseExpression(0, node.Receive()))
     return false;
 
@@ -47,12 +46,12 @@ bool Parser::Init() {
     return true;
 
   // Advance the look ahead token to the first token.
-  memory::scoped_ptr<const Token> token;
+  scoped_ptr<const Token> token;
   return GetNextToken(token.Receive());
 }
 
 bool Parser::GetNextToken(const Token** token) {
-  ASSERT(token);
+  DCHECK(token);
 
   *token = look_ahead_token_.Release();
 
@@ -61,29 +60,29 @@ bool Parser::GetNextToken(const Token** token) {
     error_ = token_stream_->error();
     return false;
   }
-  DASSERT(look_ahead_token_.ptr());
+  DCHECK(look_ahead_token_.ptr());
 
   return true;
 }
 
 bool Parser::ParseExpression(uint binding_power, const ASTNode** root) {
-  memory::scoped_ptr<const Token> token;
+  scoped_ptr<const Token> token;
   if (!GetNextToken(token.Receive()))
     return false;
 
-  memory::scoped_ptr<const ASTNode> left;
+  scoped_ptr<const ASTNode> left;
   if (!ParsePrefixToken(token.Release(), left.Receive()))
     return false;
-  DASSERT(left.ptr());
+  DCHECK(left.ptr());
 
   while (binding_power < GetBindingPower(look_ahead_token_->type())) {
     if (!GetNextToken(token.Receive()))
       return false;
 
-    memory::scoped_ptr<const ASTNode> node;
+    scoped_ptr<const ASTNode> node;
     if (!ParseInfixToken(token.Release(), left.Release(), node.Receive()))
       return false;
-    DASSERT(node.ptr());
+    DCHECK(node.ptr());
 
     left.Reset(node.Release());
   }
@@ -93,13 +92,13 @@ bool Parser::ParseExpression(uint binding_power, const ASTNode** root) {
 }
 
 bool Parser::ConsumeToken(int type) {
-  memory::scoped_ptr<const Token> token;
+  scoped_ptr<const Token> token;
   if (!GetNextToken(token.Receive()))
     return false;
 
   if (!token->IsType(type)) {
     position_ = token->position();
-    error_ = string::Format("Unexpected token: %s", token->value().c_str());
+    error_ = StringFormat("Unexpected token: %s", token->value().c_str());
     return false;
   }
 
@@ -112,12 +111,12 @@ uint Parser::GetBindingPower(int type) const {
 
 bool Parser::ParseInfixToken(const Token* token, const ASTNode* left,
                              const ASTNode** root) {
-  ASSERT(token);
+  DCHECK(token);
 
-  memory::scoped_ptr<const Token> token_deleter(token);
-  memory::scoped_ptr<const ASTNode> left_deleter(left);
+  scoped_ptr<const Token> token_deleter(token);
+  scoped_ptr<const ASTNode> left_deleter(left);
 
   position_ = token->position();
-  error_ = string::Format("Unexpected token: %s", token->value().c_str());
+  error_ = StringFormat("Unexpected token: %s", token->value().c_str());
   return false;
 }

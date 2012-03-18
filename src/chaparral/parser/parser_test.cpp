@@ -1,6 +1,6 @@
 #include "chaparral/parser/parser.h"
 
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 #include "bonavista/testing/test_case.h"
 #include "chaparral/lexer/lexer.h"
 #include "chaparral/lexer/token_stream.h"
@@ -25,7 +25,7 @@ class TestLexer : public Lexer {
     } else if (IsDigit(c)) {
       *type = TYPE_DIGIT;
     } else {
-      *error = string::Format("Unexpected token: %c", c);
+      *error = StringFormat("Unexpected token: %c", c);
       return false;
     }
 
@@ -60,17 +60,17 @@ class TestParser : public Parser {
     }
 
     position_ = token->position();
-    error_ = string::Format("Unexpected token: %s", token->value().c_str());
+    error_ = StringFormat("Unexpected token: %s", token->value().c_str());
     return false;
   }
 
   virtual bool ParseInfixToken(const Token* token, const ASTNode* left,
                                const ASTNode** root) {
     if (token->IsType(TestLexer::TYPE_PLUS)) {
-      memory::scoped_ptr<ASTNode> node(new ASTNode(token));
+      scoped_ptr<ASTNode> node(new ASTNode(token));
       node->AddChild(left);
 
-      memory::scoped_ptr<const ASTNode> right;
+      scoped_ptr<const ASTNode> right;
       if (!ParseExpression(10, right.Receive()))
         return false;
       node->AddChild(right.Release());
@@ -80,7 +80,7 @@ class TestParser : public Parser {
     }
 
     position_ = token->position();
-    error_ = string::Format("Unexpected token: %s", token->value().c_str());
+    error_ = StringFormat("Unexpected token: %s", token->value().c_str());
     return false;
   }
 };
@@ -93,9 +93,9 @@ TEST_CASE(ParserTest) {
   }
 
   TestLexer lexer_;
-  memory::scoped_ptr<TokenStream> stream_;
-  memory::scoped_ptr<Parser> parser_;
-  memory::scoped_ptr<const ASTNode> root_;
+  scoped_ptr<TokenStream> stream_;
+  scoped_ptr<Parser> parser_;
+  scoped_ptr<const ASTNode> root_;
 };
 
 TEST(ParserTest, Empty) {
