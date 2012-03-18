@@ -7,10 +7,10 @@ TEST_CASE(LightVectorTest) {
 };
 
 TEST(LightVectorTest, Invoke) {
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
 
-  memory::scoped_refptr<const Variant> var;
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<const Variant> var;
+  scoped_refptr<Invokable> object;
 
   object.Reset(new Light(new Point3(1.0, 2.0, 3.0), new Color(0.1, 0.2, 0.3)));
   var.Reset(new Variant(object.ptr()));
@@ -22,9 +22,9 @@ TEST(LightVectorTest, Invoke) {
 }
 
 TEST(LightVectorTest, InvokeError) {
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
 
-  memory::scoped_refptr<const Variant> var;
+  scoped_refptr<const Variant> var;
 
   LightVector lights;
   EXPECT_EQ(lights.Invoke("blah", args, var.Receive()),

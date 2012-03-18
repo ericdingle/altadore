@@ -23,11 +23,11 @@
     'dependencies': [
       'scene_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'shape_node_test.cpp',
       'transform_node_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ],
   }],
 }

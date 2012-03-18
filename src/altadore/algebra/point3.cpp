@@ -2,18 +2,17 @@
 
 #include <string.h>
 #include "altadore/algebra/vector3.h"
-#include "bonavista/logging/assert.h"
 #include "chaparral/executer/variant.h"
 
 Invokable::Result Point3::Create(
-    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const std::vector<scoped_refptr<const Variant> >& args,
     Invokable** object) {
-  ASSERT(object);
+  DCHECK(object);
 
   if (args.size() != 0 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
-  memory::scoped_refptr<Point3> point;
+  scoped_refptr<Point3> point;
   if (args.size() == 0) {
     point.Reset(new Point3());
   } else {
@@ -56,18 +55,18 @@ Point3& Point3::operator=(const Point3& p) {
 
 Invokable::Result Point3::Invoke(
     const std::string& name,
-    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const std::vector<scoped_refptr<const Variant> >& args,
     const Variant** var) {
   return RESULT_ERR_NAME;
 }
 
 double& Point3::operator[](uint i) {
-  DASSERT(i <= 2);
+  DCHECK(i <= 2);
   return p_[i];
 }
 
 double Point3::operator[](uint i) const {
-  DASSERT(i <= 2);
+  DCHECK(i <= 2);
   return p_[i];
 }
 

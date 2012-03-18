@@ -4,14 +4,14 @@
 #include "chaparral/executer/variant.h"
 
 Invokable::Result TransformNode::Create(
-    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const std::vector<scoped_refptr<const Variant> >& args,
     Invokable** object) {
-  ASSERT(object);
+  DCHECK(object);
 
   if (args.size() != 0)
     return RESULT_ERR_ARG_SIZE;
 
-  memory::scoped_refptr<TransformNode> node(new TransformNode());
+  scoped_refptr<TransformNode> node(new TransformNode());
   *object = node.Release();
   return RESULT_OK;
 }
@@ -24,7 +24,7 @@ TransformNode::~TransformNode() {
 
 Invokable::Result TransformNode::Invoke(
     const std::string& name,
-    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const std::vector<scoped_refptr<const Variant> >& args,
     const Variant** var) {
   if (name == "AddChild")
     return InvokeAddChild(args);
@@ -39,11 +39,11 @@ Invokable::Result TransformNode::Invoke(
 }
 
 Invokable::Result TransformNode::InvokeAddChild(
-    const std::vector<memory::scoped_refptr<const Variant> >& args) {
+    const std::vector<scoped_refptr<const Variant> >& args) {
   if (args.size() != 1)
     return RESULT_ERR_ARG_SIZE;
 
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<Invokable> object;
   if (!args[0]->Get(object.Receive()))
     return RESULT_ERR_ARG_TYPE;
   SceneNode* node = dynamic_cast<SceneNode*>(object.ptr());
@@ -55,7 +55,7 @@ Invokable::Result TransformNode::InvokeAddChild(
 }
 
 Invokable::Result TransformNode::InvokeRotate(
-    const std::vector<memory::scoped_refptr<const Variant> >& args) {
+    const std::vector<scoped_refptr<const Variant> >& args) {
   if (args.size() != 2)
     return RESULT_ERR_ARG_SIZE;
 
@@ -73,7 +73,7 @@ Invokable::Result TransformNode::InvokeRotate(
 }
 
 Invokable::Result TransformNode::InvokeScale(
-    const std::vector<memory::scoped_refptr<const Variant> >& args) {
+    const std::vector<scoped_refptr<const Variant> >& args) {
   if (args.size() != 1 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
@@ -93,7 +93,7 @@ Invokable::Result TransformNode::InvokeScale(
 }
 
 Invokable::Result TransformNode::InvokeTranslate(
-    const std::vector<memory::scoped_refptr<const Variant> >& args) {
+    const std::vector<scoped_refptr<const Variant> >& args) {
   if (args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
@@ -106,7 +106,7 @@ Invokable::Result TransformNode::InvokeTranslate(
 }
 
 void TransformNode::AddChild(SceneNode* child) {
-  ASSERT(child);
+  DCHECK(child);
   children_.push_back(child);
 }
 
@@ -135,10 +135,10 @@ void TransformNode::CalculateTransforms(const Matrix4& parent_transform) {
 }
 
 bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
-  ASSERT(t);
-  ASSERT(point);
-  ASSERT(normal);
-  ASSERT(material);
+  DCHECK(t);
+  DCHECK(point);
+  DCHECK(normal);
+  DCHECK(material);
 
   *t = std::numeric_limits<double>::max();
 
@@ -148,7 +148,7 @@ bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point, V
     Vector3 normal2;
     const Material* material2 = NULL;
     if (children_[i]->FindIntersection(ray, &t2, &point2, &normal2, &material2) && t2 < *t) {
-      DASSERT(material2 != NULL);
+      DCHECK(material2);
       *t = t2;
       *point = point2;
       *normal = normal2;

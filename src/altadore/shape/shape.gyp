@@ -25,11 +25,11 @@
     'dependencies': [
       'shape_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'cube_test.cpp',
       'sphere_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ],
   }],
 }

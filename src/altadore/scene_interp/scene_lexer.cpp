@@ -1,6 +1,6 @@
 #include "altadore/scene_interp/scene_lexer.h"
 
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 
 SceneLexer::SceneLexer() {
 }
@@ -42,7 +42,7 @@ bool SceneLexer::GetToken(const std::string& input,
     return true;
   }
 
-  *error = string::Format("Unrecognized token: %c", c);
+  *error = StringFormat("Unrecognized token: %c", c);
   return false;
 }
 

@@ -1,7 +1,7 @@
 #ifndef ALTADORE_ALGEBRA_MATRIX4_H_
 #define ALTADORE_ALGEBRA_MATRIX4_H_
 
-#include "bonavista/util/types.h"
+#include "bonavista/base/types.h"
 
 class Point3;
 class Vector3;

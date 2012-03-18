@@ -13,7 +13,7 @@ class TestSceneNode : public SceneNode {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var) {
     return RESULT_ERR_NAME;
   }
@@ -64,8 +64,8 @@ TEST_CASE(RayTracerTest) {
     lights_.Reset(new LightVector());
   }
 
-  memory::scoped_refptr<TransformNode> root_;
-  memory::scoped_refptr<LightVector> lights_;
+  scoped_refptr<TransformNode> root_;
+  scoped_refptr<LightVector> lights_;
 
   Ray ray_;
   Point3 point_;
@@ -95,7 +95,7 @@ TEST(RayTracerTest, GetAbsorbedColor) {
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
   Vector3 normal(1.0, 0.0, 0.0);
-  memory::scoped_refptr<Material> material(new Material(new Color(0.5, 0.5, 0.5), 0, 0));
+  scoped_refptr<Material> material(new Material(new Color(0.5, 0.5, 0.5), 0, 0));
   Color color = ray_tracer.GetAbsorbedColor(point_, normal, material.ptr());
   EXPECT_TRUE(color == Color(0.25, 0.25, 0.25));
 }
@@ -104,7 +104,7 @@ TEST(RayTracerTest, GetAbsorbedColorNoLights) {
   root_->AddChild(new TestSceneNode(false, false, NULL));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
-  memory::scoped_refptr<Material> material(new Material(new Color(0.5, 0.5, 0.5), 0, 0));
+  scoped_refptr<Material> material(new Material(new Color(0.5, 0.5, 0.5), 0, 0));
   Color color = ray_tracer.GetAbsorbedColor(point_, normal_, material.ptr());
   EXPECT_TRUE(color == Color(0.05, 0.05, 0.05));
 }
@@ -114,7 +114,7 @@ TEST(RayTracerTest, GetAbsorbedColorShadows) {
   lights_->AddLight(new Light(new Point3(), new Color(1.0, 1.0, 1.0)));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
-  memory::scoped_refptr<Material> material(new Material(new Color(0.5, 0.5, 0.5), 0, 0));
+  scoped_refptr<Material> material(new Material(new Color(0.5, 0.5, 0.5), 0, 0));
   Color color = ray_tracer.GetAbsorbedColor(point_, normal_, material.ptr());
   EXPECT_TRUE(color == Color(0.05, 0.05, 0.05));
 }
@@ -127,7 +127,7 @@ TEST(RayTracerTest, GetReflectedColor) {
   Vector3 direction(-1.0, 0.0, 0.0);
   Ray ray(Point3(), direction);
   Vector3 normal(0.0, 1.0, 0.0);
-  memory::scoped_refptr<Material> material(new Material(new Color(), 20, 0));
+  scoped_refptr<Material> material(new Material(new Color(), 20, 0));
   Color color = ray_tracer.GetReflectedColor(ray, point_, normal, material.ptr());
   EXPECT_TRUE(color == Color(0.4, 0.4, 0.4));
 }
@@ -136,7 +136,7 @@ TEST(RayTracerTest, GetReflectedColorNoLights) {
   root_->AddChild(new TestSceneNode(false, false, NULL));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
-  memory::scoped_refptr<Material> material(new Material(new Color(), 10, 0));
+  scoped_refptr<Material> material(new Material(new Color(), 10, 0));
   Color color = ray_tracer.GetReflectedColor(ray_, point_, normal_, material.ptr());
   EXPECT_TRUE(color == Color());
 }
@@ -146,7 +146,7 @@ TEST(RayTracerTest, GetReflectedColorShadows) {
   lights_->AddLight(new Light(new Point3(), new Color(1.0, 1.0, 1.0)));
   TestRayTracer ray_tracer(root_.ptr(), lights_.ptr());
 
-  memory::scoped_refptr<Material> material(new Material(new Color(), 10, 0));
+  scoped_refptr<Material> material(new Material(new Color(), 10, 0));
   Color color = ray_tracer.GetReflectedColor(ray_, point_, normal_, material.ptr());
   EXPECT_TRUE(color == Color());
 }

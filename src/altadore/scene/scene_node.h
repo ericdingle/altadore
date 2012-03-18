@@ -2,7 +2,7 @@
 #define ALTADORE_SCENE_SCENE_NODE_H_
 
 #include "altadore/algebra/ray.h"
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 #include "chaparral/executer/invokable.h"
 
 class Material;

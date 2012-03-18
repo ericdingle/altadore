@@ -8,15 +8,15 @@
 #include "altadore/shader/material.h"
 
 RayTracer::RayTracer(const TransformNode* root, const LightVector* lights) : root_(root), lights_(lights) {
-  ASSERT(root);
-  ASSERT(lights);
+  DCHECK(root);
+  DCHECK(lights);
 }
 
 RayTracer::~RayTracer() {
 }
 
 bool RayTracer::Render(const char* file_name, int width, int height, bool anti_alias) {
-  ASSERT(file_name);
+  DCHECK(file_name);
 
   if (anti_alias) {
     width *= 2;
@@ -71,7 +71,7 @@ Color RayTracer::GetColor(const Ray& ray) {
   if (!root_->FindIntersection(ray, &t, &point, &normal, &material))
     return Color();
 
-  DASSERT(material);
+  DCHECK(material);
   double reflectivity = material->reflectivity();
   double absorptivity = 1 - reflectivity;
 
@@ -87,7 +87,7 @@ Color RayTracer::GetColor(const Ray& ray) {
 }
 
 Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, const Material* material) {
-  ASSERT(material);
+  DCHECK(material);
 
   // color = ambient_intensity
   Color color;
@@ -116,7 +116,7 @@ Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, co
 }
 
 Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Vector3& normal, const Material* material) {
-  ASSERT(material);
+  DCHECK(material);
 
   // color = reflected_color
   Vector3 reflected_dir = ray.direction() - normal * 2 * normal.Dot(ray.direction());

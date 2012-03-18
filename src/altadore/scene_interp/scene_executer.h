@@ -3,8 +3,8 @@
 
 #include <map>
 #include <string>
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_refptr.h"
-#include "bonavista/util/macros.h"
 #include "chaparral/executer/executer.h"
 #include "chaparral/executer/variant.h"
 
@@ -25,7 +25,7 @@ class SceneExecuter : public Executer {
   bool ExecuteNew(const ASTNode* node, const Variant** var);
   bool ExecuteNumber(const ASTNode* node, const Variant** var);
 
-  std::map<std::string, memory::scoped_refptr<const Variant> > var_map_;
+  std::map<std::string, scoped_refptr<const Variant> > var_map_;
 
   DISALLOW_COPY_AND_ASSIGN(SceneExecuter);
 };

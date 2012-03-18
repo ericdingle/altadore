@@ -3,8 +3,8 @@
 
 #include <vector>
 #include "altadore/shader/light.h"
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_refptr.h"
-#include "bonavista/util/macros.h"
 #include "chaparral/executer/invokable.h"
 
 class LightVector : public Invokable {
@@ -14,15 +14,15 @@ class LightVector : public Invokable {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var);
 
   void AddLight(const Light* light);
 
-  const std::vector<memory::scoped_refptr<const Light> >& lights() const { return lights_; }
+  const std::vector<scoped_refptr<const Light> >& lights() const { return lights_; }
 
  private:
-  std::vector<memory::scoped_refptr<const Light> > lights_;
+  std::vector<scoped_refptr<const Light> > lights_;
 
   DISALLOW_COPY_AND_ASSIGN(LightVector);
 };

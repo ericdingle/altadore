@@ -1,7 +1,7 @@
 #ifndef ALTADORE_SCENE_INTERP_SCENE_PARSER_H_
 #define ALTADORE_SCENE_INTERP_SCENE_PARSER_H_
 
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 #include "chaparral/parser/parser.h"
 
 class SceneParser : public Parser {

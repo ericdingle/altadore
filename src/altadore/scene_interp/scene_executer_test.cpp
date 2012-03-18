@@ -18,9 +18,9 @@ class Object : public Invokable {
  public:
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var) {
-    memory::scoped_refptr<const Variant> var_ref(new Variant(5));
+    scoped_refptr<const Variant> var_ref(new Variant(5));
     *var = var_ref.Release();
     return name == "pass" ? RESULT_OK : RESULT_ERR_NAME;
   }
@@ -35,11 +35,11 @@ TEST_CASE(SceneExecuterTest) {
   }
 
   SceneLexer lexer_;
-  memory::scoped_ptr<TokenStream> stream_;
-  memory::scoped_ptr<Parser> parser_;
-  memory::scoped_ptr<SceneExecuter> executer_;
-  memory::scoped_refptr<const Variant> var_;
-  memory::scoped_refptr<Invokable> object_;
+  scoped_ptr<TokenStream> stream_;
+  scoped_ptr<Parser> parser_;
+  scoped_ptr<SceneExecuter> executer_;
+  scoped_refptr<const Variant> var_;
+  scoped_refptr<Invokable> object_;
 };
 
 TEST(SceneExecuterTest, Constants) {

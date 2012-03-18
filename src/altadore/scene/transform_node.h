@@ -4,13 +4,13 @@
 #include <vector>
 #include "altadore/algebra/matrix4.h"
 #include "altadore/scene/scene_node.h"
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_refptr.h"
-#include "bonavista/util/macros.h"
 
 class TransformNode : public SceneNode {
  public:
   static Result Create(
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       Invokable** object);
 
   TransformNode();
@@ -18,7 +18,7 @@ class TransformNode : public SceneNode {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var);
 
   void AddChild(SceneNode* node);
@@ -33,20 +33,20 @@ class TransformNode : public SceneNode {
   virtual bool HasIntersection(const Ray& ray) const;
 
  protected:
-  const std::vector<memory::scoped_refptr<SceneNode> >& children() { return children_; }
+  const std::vector<scoped_refptr<SceneNode> >& children() { return children_; }
   const Matrix4& transform() { return transform_; }
 
  private:
   Result InvokeAddChild(
-      const std::vector<memory::scoped_refptr<const Variant> >& args);
+      const std::vector<scoped_refptr<const Variant> >& args);
   Result InvokeRotate(
-      const std::vector<memory::scoped_refptr<const Variant> >& args);
+      const std::vector<scoped_refptr<const Variant> >& args);
   Result InvokeScale(
-      const std::vector<memory::scoped_refptr<const Variant> >& args);
+      const std::vector<scoped_refptr<const Variant> >& args);
   Result InvokeTranslate(
-      const std::vector<memory::scoped_refptr<const Variant> >& args);
+      const std::vector<scoped_refptr<const Variant> >& args);
 
-  std::vector<memory::scoped_refptr<SceneNode> > children_;
+  std::vector<scoped_refptr<SceneNode> > children_;
   Matrix4 transform_;
 
   DISALLOW_COPY_AND_ASSIGN(TransformNode);

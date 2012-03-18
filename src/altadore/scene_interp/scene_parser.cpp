@@ -1,8 +1,8 @@
 #include "altadore/scene_interp/scene_parser.h"
 
 #include "altadore/scene_interp/scene_lexer.h"
+#include "bonavista/logging/string_format.h"
 #include "bonavista/memory/scoped_ptr.h"
-#include "bonavista/string/format.h"
 #include "chaparral/parser/ast_node.h"
 
 SceneParser::SceneParser(TokenStream* token_stream) : Parser(token_stream) {
@@ -12,9 +12,9 @@ SceneParser::~SceneParser() {
 }
 
 bool SceneParser::Parse(const ASTNode** root) {
-  ASSERT(root);
+  DCHECK(root);
 
-  memory::scoped_ptr<const ASTNode> node;
+  scoped_ptr<const ASTNode> node;
   if (!Parser::Parse(node.Receive()))
     return false;
 
@@ -47,10 +47,10 @@ uint SceneParser::GetBindingPower(int type) const {
 }
 
 bool SceneParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
-  ASSERT(token);
-  ASSERT(root);
+  DCHECK(token);
+  DCHECK(root);
 
-  memory::scoped_ptr<const Token> token_holder(token);
+  scoped_ptr<const Token> token_holder(token);
 
   if (token->IsType(SceneLexer::TYPE_IDENTIFIER) ||
       token->IsType(SceneLexer::TYPE_NUMBER)) {
@@ -62,18 +62,18 @@ bool SceneParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
     return ParseNewObject(token_holder.Release(), root);
 
   position_ = token->position();
-  error_ = string::Format("Unexpected token: %s", token->value().c_str());
+  error_ = StringFormat("Unexpected token: %s", token->value().c_str());
   return false;
 }
 
 bool SceneParser::ParseInfixToken(const Token* token, const ASTNode* left,
                                   const ASTNode** root) {
-  ASSERT(token);
-  ASSERT(left);
-  ASSERT(root);
+  DCHECK(token);
+  DCHECK(left);
+  DCHECK(root);
 
-  memory::scoped_ptr<const Token> token_holder(token);
-  memory::scoped_ptr<const ASTNode> left_holder(left);
+  scoped_ptr<const Token> token_holder(token);
+  scoped_ptr<const ASTNode> left_holder(left);
 
   if (token->IsType(SceneLexer::TYPE_DOT))
     return ParseDotAccessor(token_holder.Release(), left_holder.Release(), root);
@@ -85,17 +85,17 @@ bool SceneParser::ParseInfixToken(const Token* token, const ASTNode* left,
     return ParseFunction(token_holder.Release(), left_holder.Release(), root);
 
   position_ = token->position();
-  error_ = string::Format("Unexpected token: %s", token->value().c_str());
+  error_ = StringFormat("Unexpected token: %s", token->value().c_str());
   return false;
 }
 
 bool SceneParser::ParseNewObject(const Token* token, const ASTNode** root) {
-  ASSERT(token);
-  ASSERT(root);
+  DCHECK(token);
+  DCHECK(root);
 
-  memory::scoped_ptr<ASTNode> node(new ASTNode(token));
+  scoped_ptr<ASTNode> node(new ASTNode(token));
 
-  memory::scoped_ptr<const ASTNode> right;
+  scoped_ptr<const ASTNode> right;
   if (!ParseExpression(0, right.Receive()))
     return false;
   if (!right->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS)) {
@@ -111,13 +111,13 @@ bool SceneParser::ParseNewObject(const Token* token, const ASTNode** root) {
 
 bool SceneParser::ParseDotAccessor(const Token* token, const ASTNode* left,
                                    const ASTNode** root) {
-  ASSERT(token);
-  ASSERT(left);
-  ASSERT(root);
+  DCHECK(token);
+  DCHECK(left);
+  DCHECK(root);
 
-  memory::scoped_ptr<const ASTNode> left_holder(left);
+  scoped_ptr<const ASTNode> left_holder(left);
 
-  memory::scoped_ptr<ASTNode> node(new ASTNode(token));
+  scoped_ptr<ASTNode> node(new ASTNode(token));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
     position_ = left->token()->position();
@@ -126,7 +126,7 @@ bool SceneParser::ParseDotAccessor(const Token* token, const ASTNode* left,
   }
   node->AddChild(left_holder.Release());
 
-  memory::scoped_ptr<const ASTNode> right;
+  scoped_ptr<const ASTNode> right;
   if (!ParseExpression(GetBindingPower(token->type()), right.Receive()))
     return false;
   if (!right->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS)) {
@@ -142,13 +142,13 @@ bool SceneParser::ParseDotAccessor(const Token* token, const ASTNode* left,
 
 bool SceneParser::ParseAssignment(const Token* token, const ASTNode* left,
                                   const ASTNode** root) {
-  ASSERT(token);
-  ASSERT(left);
-  ASSERT(root);
+  DCHECK(token);
+  DCHECK(left);
+  DCHECK(root);
 
-  memory::scoped_ptr<const ASTNode> left_holder(left);
+  scoped_ptr<const ASTNode> left_holder(left);
 
-  memory::scoped_ptr<ASTNode> node(new ASTNode(token));
+  scoped_ptr<ASTNode> node(new ASTNode(token));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
     position_ = left->token()->position();
@@ -157,7 +157,7 @@ bool SceneParser::ParseAssignment(const Token* token, const ASTNode* left,
   }
   node->AddChild(left_holder.Release());
 
-  memory::scoped_ptr<const ASTNode> right;
+  scoped_ptr<const ASTNode> right;
   if (!ParseExpression(GetBindingPower(token->type()), right.Receive()))
     return false;
   node->AddChild(right.Release());
@@ -168,13 +168,13 @@ bool SceneParser::ParseAssignment(const Token* token, const ASTNode* left,
 
 bool SceneParser::ParseFunction(const Token* token, const ASTNode* left,
                                 const ASTNode** root) {
-  ASSERT(token);
-  ASSERT(left);
-  ASSERT(root);
+  DCHECK(token);
+  DCHECK(left);
+  DCHECK(root);
 
-  memory::scoped_ptr<const ASTNode> left_holder(left);
+  scoped_ptr<const ASTNode> left_holder(left);
 
-  memory::scoped_ptr<ASTNode> node(new ASTNode(token));
+  scoped_ptr<ASTNode> node(new ASTNode(token));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
     position_ = left->token()->position();
@@ -185,7 +185,7 @@ bool SceneParser::ParseFunction(const Token* token, const ASTNode* left,
 
   if (!look_ahead_token_->IsType(SceneLexer::TYPE_RIGHT_PARENTHESIS)) {
     while (true) {
-      memory::scoped_ptr<const ASTNode> arg;
+      scoped_ptr<const ASTNode> arg;
       if (!ParseExpression(0, arg.Receive()))
         return false;
       node->AddChild(arg.Release());
@@ -193,7 +193,7 @@ bool SceneParser::ParseFunction(const Token* token, const ASTNode* left,
       if (!look_ahead_token_->IsType(SceneLexer::TYPE_COMMA))
         break;
 
-      ASSERT(ConsumeToken(SceneLexer::TYPE_COMMA));
+      CHECK(ConsumeToken(SceneLexer::TYPE_COMMA));
     }
   }
 

@@ -22,10 +22,10 @@
     'dependencies': [
       'ray_tracer_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'ray_tracer_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ],
   }],
 }

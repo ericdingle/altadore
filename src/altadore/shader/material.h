@@ -2,14 +2,14 @@
 #define ALTADORE_SHADER_MATERIAL_H_
 
 #include "altadore/shader/color.h"
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_refptr.h"
-#include "bonavista/util/macros.h"
 #include "chaparral/executer/invokable.h"
 
 class Material : public Invokable {
  public:
   static Result Create(
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       Invokable** object);
 
   Material(const Color* color, double shininess, double reflectivity);
@@ -17,7 +17,7 @@ class Material : public Invokable {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var);
 
   const Color* color() const { return color_.ptr(); }
@@ -25,7 +25,7 @@ class Material : public Invokable {
   double reflectivity() const { return reflectivity_; }
 
  private:
-  const memory::scoped_refptr<const Color> color_;
+  const scoped_refptr<const Color> color_;
   const double shininess_;
   const double reflectivity_;
 

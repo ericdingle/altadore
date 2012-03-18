@@ -3,8 +3,8 @@
 
 #include "altadore/scene/transform_node.h"
 #include "altadore/shader/light_vector.h"
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_refptr.h"
-#include "bonavista/util/macros.h"
 
 class RayTracer {
  public:
@@ -19,8 +19,8 @@ class RayTracer {
   Color GetReflectedColor(const Ray& ray, const Point3& point, const Vector3& normal, const Material* material);
 
  private:
-  memory::scoped_refptr<const TransformNode> root_;
-  memory::scoped_refptr<const LightVector> lights_;
+  scoped_refptr<const TransformNode> root_;
+  scoped_refptr<const LightVector> lights_;
 
   DISALLOW_COPY_AND_ASSIGN(RayTracer);
 };

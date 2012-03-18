@@ -7,10 +7,10 @@ TEST_CASE(LightTest) {
 };
 
 TEST(LightTest, Create) {
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
 
-  memory::scoped_refptr<const Variant> var;
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<const Variant> var;
+  scoped_refptr<Invokable> object;
 
   object.Reset(new Point3(0.1, 0.2, 0.3));
   var.Reset(new Variant(object.ptr()));
@@ -25,13 +25,13 @@ TEST(LightTest, Create) {
 }
 
 TEST(LightTest, CreateError) {
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
 
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<Invokable> object;
   EXPECT_EQ(Light::Create(args, object.Receive()),
             Invokable::RESULT_ERR_ARG_SIZE);
 
-  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  scoped_refptr<const Variant> var(new Variant(1.0));
   args.push_back(var.ptr());
   args.push_back(var.ptr());
 

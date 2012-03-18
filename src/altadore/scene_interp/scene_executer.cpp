@@ -9,8 +9,7 @@
 #include "altadore/shader/material.h"
 #include "altadore/shape/cube.h"
 #include "altadore/shape/sphere.h"
-#include "bonavista/logging/assert.h"
-#include "bonavista/string/format.h"
+#include "bonavista/logging/string_format.h"
 #include "chaparral/executer/invokable.h"
 
 SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
@@ -27,8 +26,8 @@ void SceneExecuter::SetVar(const std::string& name, const Variant* var) {
 }
 
 bool SceneExecuter::ExecuteASTNode(const ASTNode* node, const Variant** var) {
-  ASSERT(node);
-  ASSERT(var);
+  DCHECK(node);
+  DCHECK(var);
 
   switch (node->token()->type()) {
     case SceneLexer::TYPE_DOT:
@@ -42,26 +41,25 @@ bool SceneExecuter::ExecuteASTNode(const ASTNode* node, const Variant** var) {
     case SceneLexer::TYPE_NUMBER:
       return ExecuteNumber(node, var);
     default:
-      // This should never happen.
-      ASSERT(false);
+      CHECK(false);
   }
 }
 
 bool SceneExecuter::ExecuteDotAccessor(const ASTNode* node, const Variant** var) {
-  ASSERT(node);
-  ASSERT(var);
+  DCHECK(node);
+  DCHECK(var);
 
   const ASTNode* obj_node = node->children()[0];
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<Invokable> object;
   if (!ExecuteASTNodeT(obj_node, object.Receive()))
     return false;
 
   const std::vector<const ASTNode*>& children = node->children()[1]->children();
   const std::string& name = children[0]->token()->value();
 
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
   for (uint i = 1; i < children.size(); ++i) {
-    memory::scoped_refptr<const Variant> arg;
+    scoped_refptr<const Variant> arg;
     if (!ExecuteASTNode(children[i], arg.Receive()))
       return false;
     args.push_back(arg.ptr());
@@ -78,12 +76,12 @@ bool SceneExecuter::ExecuteDotAccessor(const ASTNode* node, const Variant** var)
 }
 
 bool SceneExecuter::ExecuteAssignment(const ASTNode* node, const Variant** var) {
-  ASSERT(node);
-  ASSERT(var);
+  DCHECK(node);
+  DCHECK(var);
 
   const std::string& name = node->children()[0]->token()->value();
 
-  memory::scoped_refptr<const Variant> right_var;
+  scoped_refptr<const Variant> right_var;
   if (!ExecuteASTNode(node->children()[1], right_var.Receive()))
     return false;
 
@@ -93,38 +91,38 @@ bool SceneExecuter::ExecuteAssignment(const ASTNode* node, const Variant** var) 
 }
 
 bool SceneExecuter::ExecuteIdentifier(const ASTNode* node, const Variant** var) {
-  ASSERT(node);
-  ASSERT(var);
+  DCHECK(node);
+  DCHECK(var);
 
   const std::string& name = node->token()->value();
 
   if (var_map_.count(name) == 0) {
     position_ = node->token()->position();
-    error_ = string::Format("%s is undefined", name.c_str());
+    error_ = StringFormat("%s is undefined", name.c_str());
     return false;
   }
 
-  memory::scoped_refptr<const Variant> var_ref(var_map_[name]);
+  scoped_refptr<const Variant> var_ref(var_map_[name]);
   *var = var_ref.Release();
   return true;
 }
 
 bool SceneExecuter::ExecuteNew(const ASTNode* node, const Variant** var) {
-  ASSERT(node);
-  ASSERT(var);
+  DCHECK(node);
+  DCHECK(var);
 
   const std::vector<const ASTNode*>& children = node->children()[0]->children();
   const std::string& name = children[0]->token()->value();
 
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
   for (uint i = 1; i < children.size(); ++i) {
-    memory::scoped_refptr<const Variant> arg;
+    scoped_refptr<const Variant> arg;
     if (!ExecuteASTNode(children[i], arg.Receive()))
       return false;
     args.push_back(arg.ptr());
   }
 
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<Invokable> object;
   Invokable::Result result = Invokable::RESULT_ERR_NAME;
   if (name == "Color")
     result = Color::Create(args, object.Receive());
@@ -149,17 +147,17 @@ bool SceneExecuter::ExecuteNew(const ASTNode* node, const Variant** var) {
     return false;
   }
 
-  memory::scoped_refptr<const Variant> var_ref(new Variant(object.ptr()));
+  scoped_refptr<const Variant> var_ref(new Variant(object.ptr()));
   *var = var_ref.Release();
   return true;
 }
 
 bool SceneExecuter::ExecuteNumber(const ASTNode* node, const Variant** var) {
-  ASSERT(node);
-  ASSERT(var);
+  DCHECK(node);
+  DCHECK(var);
 
   double value = atof(node->token()->value().c_str());
-  memory::scoped_refptr<const Variant> var_ref(new Variant(value));
+  scoped_refptr<const Variant> var_ref(new Variant(value));
   *var = var_ref.Release();
   return true;
 }

@@ -6,7 +6,7 @@
     'target_name': 'image_lib',
     'type': 'static_library',
     'dependencies': [
-      '../../bonavista/io/io.gyp:io_lib',
+      '../../bonavista/file/file.gyp:file_lib',
     ],
     'sources': [
       'bitmap.cpp',
@@ -18,10 +18,10 @@
     'dependencies': [
       'image_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'bitmap_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ]
   }],
 }

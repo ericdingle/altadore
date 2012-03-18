@@ -16,7 +16,7 @@ class TestShape : public Shape {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var) {
     return RESULT_ERR_NAME;
   }
@@ -43,7 +43,7 @@ class TestShapeNode : public ShapeNode {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var) {
     return RESULT_ERR_NAME;
   }
@@ -61,14 +61,14 @@ TEST_CASE(ShapeNodeTest) {
     material_.Reset(new Material(new Color(), 1, 1));
   }
 
-  memory::scoped_refptr<Material> material_;
+  scoped_refptr<Material> material_;
 };
 
 TEST(ShapeNodeTest, Create) {
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
 
-  memory::scoped_refptr<const Variant> var;
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<const Variant> var;
+  scoped_refptr<Invokable> object;
 
   object.Reset(new Cube());
   var.Reset(new Variant(object.ptr()));
@@ -83,13 +83,13 @@ TEST(ShapeNodeTest, Create) {
 }
 
 TEST(ShapeNodeTest, CreateError) {
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
 
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<Invokable> object;
   EXPECT_EQ(ShapeNode::Create(args, object.Receive()),
             Invokable::RESULT_ERR_ARG_SIZE);
 
-  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  scoped_refptr<const Variant> var(new Variant(1.0));
   args.push_back(var.ptr());
   args.push_back(var.ptr());
 

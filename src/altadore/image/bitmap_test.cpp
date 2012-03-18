@@ -1,8 +1,8 @@
 #include "altadore/image/bitmap.h"
 
 #include <string.h>
-#include "bonavista/io/io.h"
-#include "bonavista/io/scoped_file.h"
+#include "bonavista/file/scoped_file.h"
+#include "bonavista/file/util.h"
 #include "bonavista/testing/test_case.h"
 
 const char* FILE_NAME = "test.bmp";
@@ -88,7 +88,7 @@ TEST(BitmapTest, Save) {
   bitmap.Set(1, 0, white);
   EXPECT_TRUE(bitmap.Save(FILE_NAME));
 
-  io::scoped_FILE file(io::OpenFile(FILE_NAME, "rb"));
+  scoped_FILE file(OpenFile(FILE_NAME, "rb"));
   EXPECT_NOT_NULL(file.ptr());
 
   TestBitmap::HeaderMagic header_magic_buffer, header_magic;

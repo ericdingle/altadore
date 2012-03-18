@@ -1,7 +1,7 @@
 #ifndef ALTADORE_SHAPE_SHAPE_H_
 #define ALTADORE_SHAPE_SHAPE_H_
 
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 #include "chaparral/executer/invokable.h"
 
 class Point3;

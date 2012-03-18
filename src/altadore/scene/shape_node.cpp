@@ -2,40 +2,39 @@
 
 #include "altadore/shader/material.h"
 #include "altadore/shape/shape.h"
-#include "bonavista/logging/assert.h"
 #include "chaparral/executer/variant.h"
 
 Invokable::Result ShapeNode::Create(
-    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const std::vector<scoped_refptr<const Variant> >& args,
     Invokable** object) {
-  ASSERT(object);
+  DCHECK(object);
 
   if (args.size() != 2)
     return RESULT_ERR_ARG_SIZE;
 
-  memory::scoped_refptr<Invokable> shape_object;
+  scoped_refptr<Invokable> shape_object;
   if (!args[0]->Get(shape_object.Receive()))
     return RESULT_ERR_ARG_TYPE;
   Shape* shape = dynamic_cast<Shape*>(shape_object.ptr());
   if (!shape)
     return RESULT_ERR_ARG_TYPE;
 
-  memory::scoped_refptr<Invokable> material_object;
+  scoped_refptr<Invokable> material_object;
   if (!args[1]->Get(material_object.Receive()))
     return RESULT_ERR_ARG_TYPE;
   Material* material = dynamic_cast<Material*>(material_object.ptr());
   if (!material)
     return RESULT_ERR_ARG_TYPE;
 
-  memory::scoped_refptr<ShapeNode> node(new ShapeNode(shape, material));
+  scoped_refptr<ShapeNode> node(new ShapeNode(shape, material));
   *object = node.Release();
   return RESULT_OK;
 }
 
 ShapeNode::ShapeNode(const Shape* shape, const Material* material)
     : SceneNode(), shape_(shape), material_(material) {
-  ASSERT(shape);
-  ASSERT(material);
+  DCHECK(shape);
+  DCHECK(material);
 }
 
 ShapeNode::~ShapeNode() {
@@ -43,7 +42,7 @@ ShapeNode::~ShapeNode() {
 
 Invokable::Result ShapeNode::Invoke(
     const std::string& name,
-    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const std::vector<scoped_refptr<const Variant> >& args,
     const Variant** var) {
   return RESULT_ERR_NAME;
 }
@@ -55,10 +54,10 @@ void ShapeNode::CalculateTransforms(const Matrix4& parent_transform) {
 }
 
 bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
-  ASSERT(t);
-  ASSERT(point);
-  ASSERT(normal);
-  ASSERT(material);
+  DCHECK(t);
+  DCHECK(point);
+  DCHECK(normal);
+  DCHECK(material);
 
   Point3 origin = transform_inverse_ * ray.origin();
   Vector3 direction = transform_inverse_ * ray.direction();

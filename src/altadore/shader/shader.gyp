@@ -26,13 +26,13 @@
     'dependencies': [
       'shader_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'color_test.cpp',
       'light_test.cpp',
       'light_vector_test.cpp',
       'material_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ],
   }],
 }

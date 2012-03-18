@@ -3,7 +3,7 @@
 
 #include "altadore/algebra/point3.h"
 #include "altadore/algebra/vector3.h"
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 
 class Ray {
  public:

@@ -5,7 +5,6 @@
 #include "altadore/algebra/algebra_constants.h"
 #include "altadore/algebra/point3.h"
 #include "altadore/algebra/vector3.h"
-#include "bonavista/logging/assert.h"
 
 Matrix4 Matrix4::GetRotation(Axis axis, double angle) {
   Matrix4 ret;
@@ -32,7 +31,7 @@ Matrix4 Matrix4::GetRotation(Axis axis, double angle) {
       ret.m_[1][1] = c;
       break;
     default:
-      DASSERT(false);
+      DCHECK(false);
       break;
   }
 

@@ -3,7 +3,6 @@
 #include <math.h>
 #include <string.h>
 #include "altadore/algebra/point3.h"
-#include "bonavista/logging/assert.h"
 
 Vector3::Vector3() {
   v_[0] = 0.0;
@@ -39,12 +38,12 @@ Vector3::Vector3(const Point3& p) {
 }
 
 double& Vector3::operator[](uint i) {
-  DASSERT(i <= 2);
+  DCHECK(i <= 2);
   return v_[i];
 }
 
 double Vector3::operator[](uint i) const {
-  DASSERT(i <= 2);
+  DCHECK(i <= 2);
   return v_[i];
 }
 

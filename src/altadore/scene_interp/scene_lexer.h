@@ -1,7 +1,7 @@
 #ifndef ALTADORE_SCENE_INTERP_SCENE_LEXER_H_
 #define ALTADORE_SCENE_INTERP_SCENE_LEXER_H_
 
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 #include "chaparral/lexer/lexer.h"
 
 class SceneLexer : public Lexer {

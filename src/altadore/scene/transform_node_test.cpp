@@ -12,7 +12,7 @@ class TestSceneNode : public SceneNode {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var) {
     return RESULT_ERR_NAME;
   }
@@ -51,9 +51,9 @@ class TestTransformNode : public TransformNode {
 
 TEST_CASE(TransformNodeTest) {
  protected:
-  std::vector<memory::scoped_refptr<const Variant> > args_;
-  memory::scoped_refptr<const Variant> var_;
-  memory::scoped_refptr<Invokable> object_;
+  std::vector<scoped_refptr<const Variant> > args_;
+  scoped_refptr<const Variant> var_;
+  scoped_refptr<Invokable> object_;
 };
 
 TEST(TransformNodeTest, Create) {

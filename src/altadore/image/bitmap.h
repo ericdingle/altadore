@@ -2,8 +2,8 @@
 #define ALTADORE_IMAGE_BITMAP_H_
 
 #include "bonavista/memory/scoped_array.h"
-#include "bonavista/util/macros.h"
-#include "bonavista/util/types.h"
+#include "bonavista/base/macros.h"
+#include "bonavista/base/types.h"
 
 class Bitmap {
  public:
@@ -80,7 +80,7 @@ class Bitmap {
  private:
   uint width_;
   uint height_;
-  memory::scoped_array<Color> data_;
+  scoped_array<Color> data_;
 
   DISALLOW_COPY_AND_ASSIGN(Bitmap);
 };

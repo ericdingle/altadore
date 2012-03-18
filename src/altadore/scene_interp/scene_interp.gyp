@@ -10,7 +10,7 @@
       '../scene/scene.gyp:scene_lib',
       '../shader/shader.gyp:shader_lib',
       '../shape/shape.gyp:shape_lib',
-      '../../bonavista/string/string.gyp:string_lib',
+      '../../bonavista/logging/logging.gyp:logging_lib',
       '../../chaparral/executer/executer.gyp:executer_lib',
       '../../chaparral/lexer/lexer.gyp:lexer_lib',
       '../../chaparral/parser/parser.gyp:parser_lib',
@@ -29,12 +29,12 @@
     'dependencies': [
       'scene_interp_lib',
       '../../bonavista/testing/testing.gyp:testing_lib',
+      '../../bonavista/testing/testing.gyp:testing_main',
     ],
     'sources': [
       'scene_executer_test.cpp',
       'scene_lexer_test.cpp',
       'scene_parser_test.cpp',
-      '../../bonavista/testing/test_main.cpp',
     ],
   }],
 }

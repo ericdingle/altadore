@@ -8,13 +8,13 @@ TEST_CASE(Point3Test) {
 };
 
 TEST(Point3Test, Create) {
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
 
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<Invokable> object;
   EXPECT_EQ(Point3::Create(args, object.Receive()), Invokable::RESULT_OK);
   EXPECT_NOT_NULL(object.ptr());
 
-  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  scoped_refptr<const Variant> var(new Variant(1.0));
   args.push_back(var.ptr());
   args.push_back(var.ptr());
   args.push_back(var.ptr());
@@ -24,13 +24,13 @@ TEST(Point3Test, Create) {
 }
 
 TEST(Point3Test, CreateError) {
-  std::vector<memory::scoped_refptr<const Variant> > args;
+  std::vector<scoped_refptr<const Variant> > args;
 
-  memory::scoped_refptr<const Variant> var(new Variant(1.0));
+  scoped_refptr<const Variant> var(new Variant(1.0));
   args.push_back(var.ptr());
   args.push_back(var.ptr());
 
-  memory::scoped_refptr<Invokable> object;
+  scoped_refptr<Invokable> object;
   EXPECT_EQ(Point3::Create(args, object.Receive()),
             Invokable::RESULT_ERR_ARG_SIZE);
 

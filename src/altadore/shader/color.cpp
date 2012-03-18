@@ -1,18 +1,17 @@
 #include "altadore/shader/color.h"
 
 #include <algorithm>
-#include "bonavista/logging/assert.h"
 #include "chaparral/executer/variant.h"
 
 Invokable::Result Color::Create(
-    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const std::vector<scoped_refptr<const Variant> >& args,
     Invokable** object) {
-  ASSERT(object);
+  DCHECK(object);
 
   if (args.size() != 0 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
-  memory::scoped_refptr<Color> color;
+  scoped_refptr<Color> color;
   if (args.size() == 0) {
     color.Reset(new Color());
   } else {
@@ -30,9 +29,9 @@ Color::Color() : r_(0.0), g_(0.0), b_(0.0) {
 }
 
 Color::Color(double r, double g, double b) : r_(r), g_(g), b_(b) {
-  DASSERT(r >= 0);
-  DASSERT(g >= 0);
-  DASSERT(b >= 0);
+  DCHECK(r >= 0);
+  DCHECK(g >= 0);
+  DCHECK(b >= 0);
   Saturate();
 }
 
@@ -44,13 +43,13 @@ Color::Color(const Color& c) : r_(c.r_), g_(c.g_), b_(c.b_) {
 
 Invokable::Result Color::Invoke(
     const std::string& name,
-    const std::vector<memory::scoped_refptr<const Variant> >& args,
+    const std::vector<scoped_refptr<const Variant> >& args,
     const Variant** var) {
   return RESULT_ERR_NAME;
 }
 
 Color Color::operator*(double d) const {
-  DASSERT(d >= 0);
+  DCHECK(d >= 0);
   return Color(r_ * d, g_ * d, b_ * d);
 }
 

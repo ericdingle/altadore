@@ -1,8 +1,8 @@
 #include "altadore/scene_interp/scene_parser.h"
 
 #include "altadore/scene_interp/scene_lexer.h"
+#include "bonavista/base/macros.h"
 #include "bonavista/testing/test_case.h"
-#include "bonavista/util/macros.h"
 #include "chaparral/lexer/token_stream.h"
 #include "chaparral/parser/ast_node.h"
 
@@ -14,9 +14,9 @@ TEST_CASE(SceneParserTest) {
   }
 
   SceneLexer lexer_;
-  memory::scoped_ptr<TokenStream> stream_;
-  memory::scoped_ptr<Parser> parser_;
-  memory::scoped_ptr<const ASTNode> root_;
+  scoped_ptr<TokenStream> stream_;
+  scoped_ptr<Parser> parser_;
+  scoped_ptr<const ASTNode> root_;
 };
 
 TEST(SceneParserTest, ParseEmpty) {

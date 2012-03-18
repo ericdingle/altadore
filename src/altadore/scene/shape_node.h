@@ -3,15 +3,15 @@
 
 #include "altadore/algebra/matrix4.h"
 #include "altadore/scene/scene_node.h"
+#include "bonavista/base/macros.h"
 #include "bonavista/memory/scoped_refptr.h"
-#include "bonavista/util/macros.h"
 
 class Shape;
 
 class ShapeNode : public SceneNode {
  public:
   static Result Create(
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       Invokable** object);
 
   ShapeNode(const Shape* shape, const Material* material);
@@ -19,7 +19,7 @@ class ShapeNode : public SceneNode {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var);
 
   virtual void CalculateTransforms(const Matrix4& parent_transform);
@@ -32,8 +32,8 @@ class ShapeNode : public SceneNode {
   const Matrix4& transform_inverse_transpose() const { return transform_inverse_transpose_; }
 
  private:
-  const memory::scoped_refptr<const Shape> shape_;
-  const memory::scoped_refptr<const Material> material_;
+  const scoped_refptr<const Shape> shape_;
+  const scoped_refptr<const Material> material_;
 
   Matrix4 transform_;
   Matrix4 transform_inverse_;

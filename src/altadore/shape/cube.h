@@ -2,12 +2,12 @@
 #define ALTADORE_SHAPE_CUBE_H_
 
 #include "altadore/shape/shape.h"
-#include "bonavista/util/macros.h"
+#include "bonavista/base/macros.h"
 
 class Cube : public Shape {
  public:
   static Result Create(
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       Invokable** object);
 
   Cube();
@@ -15,7 +15,7 @@ class Cube : public Shape {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var);
 
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const;

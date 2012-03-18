@@ -1,13 +1,13 @@
 #ifndef ALTADORE_SHADER_COLOR_H_
 #define ALTADORE_SHADER_COLOR_H_
 
-#include "bonavista/util/types.h"
+#include "bonavista/base/types.h"
 #include "chaparral/executer/invokable.h"
 
 class Color : public Invokable {
  public:
   static Result Create(
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       Invokable** object);
 
   Color();
@@ -18,7 +18,7 @@ class Color : public Invokable {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<memory::scoped_refptr<const Variant> >& args,
+      const std::vector<scoped_refptr<const Variant> >& args,
       const Variant** var);
 
   Color operator*(double d) const;

@@ -1,8 +1,8 @@
 #include "altadore/image/bitmap.h"
 
 #include <string.h>
-#include "bonavista/io/io.h"
-#include "bonavista/io/scoped_file.h"
+#include "bonavista/file/scoped_file.h"
+#include "bonavista/file/util.h"
 
 Bitmap::Bitmap(uint width, uint height) : width_(width), height_(height) {
   uint size = width * height;
@@ -13,22 +13,22 @@ Bitmap::~Bitmap() {
 }
 
 void Bitmap::Set(uint x, uint y, const Color& color) {
-  DASSERT(x < width_);
-  DASSERT(y < height_);
+  DCHECK(x < width_);
+  DCHECK(y < height_);
 
   uint offset = width_ * y + x;
   data_[offset] = color;
 }
 
 void Bitmap::AntiAlias() {
-  DASSERT(width_ % 2 == 0);
-  DASSERT(height_ % 2 == 0);
+  DCHECK(width_ % 2 == 0);
+  DCHECK(height_ % 2 == 0);
 
   uint new_width = width_ / 2;
   uint new_height = height_ / 2;
 
   uint size = new_width * new_height;
-  memory::scoped_array<Color> new_data(new Color[size]);
+  scoped_array<Color> new_data(new Color[size]);
 
   for (uint x = 0; x < width_; x += 2) {
     for (uint y = 0; y < height_; y += 2) {
@@ -58,7 +58,7 @@ void Bitmap::AntiAlias() {
 }
 
 bool Bitmap::Save(const char* file_name) const {
-  io::scoped_FILE file(io::OpenFile(file_name, "wb"));
+  scoped_FILE file(OpenFile(file_name, "wb"));
   if (file.ptr() == NULL)
     return false;
 
