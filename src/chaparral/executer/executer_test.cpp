@@ -136,3 +136,16 @@ TEST(ExecuterTest, ExecuteTError) {
   EXPECT_FALSE(executer_->ExecuteT(&d));
   EXPECT_FALSE(executer_->error().empty());
 }
+
+TEST(ExecuterTest, ExecuteAll) {
+  Init("1 2 3 4 5");
+  EXPECT_TRUE(executer_->ExecuteAll());
+  scoped_ptr<const Token> token;
+  EXPECT_TRUE(stream_->GetNextToken(token.Receive()));
+  EXPECT_TRUE(token->IsType(TestLexer::TYPE_END_OF_INPUT));
+}
+
+TEST(ExecuterTest, ExecuteAllError) {
+  Init("1 3 5 7 9");
+  EXPECT_FALSE(executer_->ExecuteAll());
+}

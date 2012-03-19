@@ -18,6 +18,7 @@ class Executer {
   bool Execute(const Variant** var);
   template <typename T>
   bool ExecuteT(T* out);
+  bool ExecuteAll();
 
   const Token::Position& position() const;
   const std::string& error() const;

@@ -26,6 +26,17 @@ bool Executer::Execute(const Variant** var) {
   return ExecuteASTNode(node.ptr(), var);
 }
 
+bool Executer::ExecuteAll() {
+  scoped_refptr<const Variant> var;
+
+  do {
+    if (!Execute(var.Receive()))
+      return false;
+  } while (var.ptr() != NULL);
+
+  return true;
+}
+
 const Token::Position& Executer::position() const {
   return position_;
 }
