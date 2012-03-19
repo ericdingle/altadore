@@ -155,11 +155,12 @@ TEST(SceneParserTest, ParseFunctionError) {
     "a.5();",
     "a.b(*);",
     "a.b(5;",
-    "a.b(5,);"
+    "a.b(5,);",
+    "a.b(5,*);"
   };
 
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
-    Init("a();");
+    Init(inputs[i]);
     EXPECT_FALSE(parser_->Parse(root_.Receive()));
     EXPECT_FALSE(parser_->error().empty());
   }

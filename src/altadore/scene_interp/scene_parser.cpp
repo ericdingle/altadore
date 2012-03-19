@@ -193,7 +193,8 @@ bool SceneParser::ParseFunction(const Token* token, const ASTNode* left,
       if (!look_ahead_token_->IsType(SceneLexer::TYPE_COMMA))
         break;
 
-      CHECK(ConsumeToken(SceneLexer::TYPE_COMMA));
+      if (!ConsumeToken(SceneLexer::TYPE_COMMA))
+        return false;
     }
   }
 
