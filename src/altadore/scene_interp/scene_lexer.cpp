@@ -18,7 +18,7 @@ bool SceneLexer::GetToken(const std::string& input,
 
   if (IsAlpha(c))
     return GetIdentifierToken(input, index, type, value, count, error);
-  if (IsDigit(c))
+  if (c == '-' || IsDigit(c))
     return GetNumberToken(input, index, type, value, count, error);
 
   int t = -1;
@@ -75,6 +75,11 @@ bool SceneLexer::GetNumberToken(const std::string& input,
                                 std::string* error) const {
   const uint length = input.length();
   const uint start = index;
+
+  if (input[index] == '-' && (++index >= length || !IsDigit(input[index]))) {
+    *error = "Expecting digit";
+    return false;
+  }
 
   if (input[index] == '0') {
     ++index;

@@ -58,6 +58,7 @@ TEST(SceneLexerTest, TokenizeNumber) {
   const char* inputs[] = {
     "0", "1", "12", "123",
     "0.1", "12.3", "12.34",
+    "-1", "-12.3"
   };
 
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
@@ -70,7 +71,7 @@ TEST(SceneLexerTest, TokenizeNumber) {
 }
 
 TEST(SceneLexerTest, TokenizeNumberError) {
-  const char* inputs[] = { "01", "1." };
+  const char* inputs[] = { "01", "1.", "-", "-a" };
 
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
     input_ = inputs[i];
