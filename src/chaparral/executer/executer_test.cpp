@@ -90,22 +90,28 @@ TEST_CASE(ExecuterTest) {
 
 TEST(ExecuterTest, Empty) {
   Init("");
+  EXPECT_FALSE(executer_->HasInput());
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
   EXPECT_NULL(var_.ptr());
+  EXPECT_FALSE(executer_->HasInput());
 }
 
 TEST(ExecuterTest, BadToken) {
   Init("a");
+  EXPECT_TRUE(executer_->HasInput());
   EXPECT_FALSE(executer_->Execute(var_.Receive()));
   EXPECT_FALSE(executer_->error().empty());
+  EXPECT_TRUE(executer_->HasInput());
 }
 
 TEST(ExecuterTest, Execute) {
   Init("5");
+  EXPECT_TRUE(executer_->HasInput());
   EXPECT_TRUE(executer_->Execute(var_.Receive()));
   uint i = 0;
   EXPECT_TRUE(var_->Get(&i));
   EXPECT_EQ(i, 5);
+  EXPECT_FALSE(executer_->HasInput());
 }
 
 TEST(ExecuterTest, ExecuteError) {
