@@ -3,5 +3,6 @@
 #include <stdio.h>
 
 void FileCloseFunc::operator()(FILE* file) const {
-  fclose(file);
+  if (file)
+    fclose(file);
 }
