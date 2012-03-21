@@ -33,6 +33,7 @@ class TestLexer : public Lexer {
 TEST(TokenStreamTest, GetNextToken) {
   TestLexer lexer;
   TokenStream token_stream(&lexer, "a bc\nde  ");
+  EXPECT_TRUE(token_stream.HasInput());
 
   scoped_ptr<const Token> token;
   EXPECT_TRUE(token_stream.GetNextToken(token.Receive()));
@@ -76,4 +77,5 @@ TEST(TokenStreamTest, GetNextToken) {
   EXPECT_EQ(token->value(), "(end of input)");
   EXPECT_EQ(token->position().line, 2);
   EXPECT_EQ(token->position().column, 5);
+  EXPECT_FALSE(token_stream.HasInput());
 }
