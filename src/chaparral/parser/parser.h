@@ -18,12 +18,15 @@ class Parser {
 
   virtual bool Parse(const ASTNode** root);
 
+  bool HasInput() const;
+
   const Token::Position& position() const;
   const std::string& error() const;
 
- protected:
+ private:
   bool Init();
 
+ protected:
   bool GetNextToken(const Token** token);
   bool ParseExpression(uint binding_power, const ASTNode** root);
   bool ConsumeToken(int type);
@@ -41,7 +44,7 @@ class Parser {
   std::string error_;
 
  private:
-  TokenStream* token_stream_;
+  TokenStream* const token_stream_;
 
   DISALLOW_COPY_AND_ASSIGN(Parser);
 };
