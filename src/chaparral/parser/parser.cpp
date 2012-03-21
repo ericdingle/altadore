@@ -33,6 +33,12 @@ bool Parser::Parse(const ASTNode** root) {
   return true;
 }
 
+bool Parser::HasInput() const {
+  return look_ahead_token_.ptr() ?
+      !look_ahead_token_->IsType(Lexer::TYPE_END_OF_INPUT) :
+      token_stream_->HasInput();
+}
+
 const Token::Position& Parser::position() const {
   return position_;
 }

@@ -29,12 +29,15 @@ bool Executer::Execute(const Variant** var) {
 bool Executer::ExecuteAll() {
   scoped_refptr<const Variant> var;
 
-  do {
+  while (HasInput())
     if (!Execute(var.Receive()))
       return false;
-  } while (var.ptr() != NULL);
 
   return true;
+}
+
+bool Executer::HasInput() const {
+  return parser_->HasInput();
 }
 
 const Token::Position& Executer::position() const {

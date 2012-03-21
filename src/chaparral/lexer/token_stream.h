@@ -14,6 +14,8 @@ class TokenStream {
 
   bool GetNextToken(const Token** token);
 
+  bool HasInput() const;
+
   const Token::Position& position() const;
   const std::string& error() const;
 

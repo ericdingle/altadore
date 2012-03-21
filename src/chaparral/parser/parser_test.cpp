@@ -100,23 +100,29 @@ TEST_CASE(ParserTest) {
 
 TEST(ParserTest, Empty) {
   Init("");
+  EXPECT_FALSE(parser_->HasInput());
   EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NULL(root_.ptr());
+  EXPECT_FALSE(parser_->HasInput());
 }
 
 TEST(ParserTest, BadToken) {
   Init("a");
+  EXPECT_TRUE(parser_->HasInput());
   EXPECT_FALSE(parser_->Parse(root_.Receive()));
   EXPECT_FALSE(parser_->error().empty());
+  EXPECT_TRUE(parser_->HasInput());
 }
 
 TEST(ParserTest, Prefix) {
   Init("1");
+  EXPECT_TRUE(parser_->HasInput());
   EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NOT_NULL(root_.ptr());
   EXPECT_TRUE(root_->token()->IsType(TestLexer::TYPE_DIGIT));
   EXPECT_EQ(root_->children().size(), 0);
 
+  EXPECT_FALSE(parser_->HasInput());
   EXPECT_TRUE(parser_->Parse(root_.Receive()));
   EXPECT_NULL(root_.ptr());
 }

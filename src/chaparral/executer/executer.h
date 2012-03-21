@@ -20,6 +20,8 @@ class Executer {
   bool ExecuteT(T* out);
   bool ExecuteAll();
 
+  bool HasInput() const;
+
   const Token::Position& position() const;
   const std::string& error() const;
 
@@ -34,7 +36,7 @@ class Executer {
   std::string error_;
 
  private:
-  Parser* parser_;
+  Parser* const parser_;
 
   DISALLOW_COPY_AND_ASSIGN(Executer);
 };

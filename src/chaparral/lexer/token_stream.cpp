@@ -14,7 +14,7 @@ bool TokenStream::GetNextToken(const Token** token) {
   DCHECK(token);
 
   // Consume the white space.
-  while (index_ < input_.length()) {
+  while (HasInput()) {
     const char& c = input_[index_];
     if (c <= ' ') {
       ++index_;
@@ -30,7 +30,7 @@ bool TokenStream::GetNextToken(const Token** token) {
   }
 
   // If we've reached the end, we return an end of input token.
-  if (index_ == input_.length()) {
+  if (!HasInput()) {
     *token = new Token(Lexer::TYPE_END_OF_INPUT, "(end of input)", position_);
     return true;
   }
@@ -49,6 +49,10 @@ bool TokenStream::GetNextToken(const Token** token) {
   position_.column += count;
 
   return true;
+}
+
+bool TokenStream::HasInput() const {
+  return index_ < input_.length();
 }
 
 const Token::Position& TokenStream::position() const {
