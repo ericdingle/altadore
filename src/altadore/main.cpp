@@ -20,8 +20,8 @@ int main(int argc, char* argv[]) {
 
   std::string output_file = cmd_line.GetFlag("output-file");
   if (output_file.empty()) {
-    printf("Missing --output-file flag.\n");
-    return 1;
+    size_t pos = input_file.rfind('.');
+    output_file = input_file.substr(0, pos) + ".bmp";
   }
 
   std::string input;
