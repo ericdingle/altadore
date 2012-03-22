@@ -12,6 +12,7 @@
 int main(int argc, char* argv[]) {
   CommandLine cmd_line(argc, argv);
 
+  // Check flags.
   std::string input_file = cmd_line.GetFlag("input-file");
   if (input_file.empty()) {
     printf("Missing --input-file flag.\n");
@@ -24,12 +25,30 @@ int main(int argc, char* argv[]) {
     output_file = input_file.substr(0, pos) + ".bmp";
   }
 
+  std::string width_str = cmd_line.GetFlag("width");
+  int width = atoi(width_str.c_str());
+  if (width == 0) {
+    printf("Invalid --width.\n");
+    return 1;
+  }
+
+  std::string height_str = cmd_line.GetFlag("height");
+  int height = atoi(height_str.c_str());
+  if (height == 0) {
+    printf("Invalid --height.\n");
+    return 1;
+  }
+
+  bool anti_alias = cmd_line.HasFlag("anti-alias");
+
+  // Read input file.
   std::string input;
   if (!ReadFile(input_file.c_str(), &input)) {
     printf("Could not input read file.\n");
     return 1;
   }
 
+  // Execute scene.
   SceneLexer lexer;
   TokenStream stream(&lexer, input);
   SceneParser parser(&stream);
@@ -47,9 +66,10 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  // Render scene.
   root->CalculateTransforms(Matrix4());
   RayTracer ray_tracer(root.ptr(), lights.ptr());
-  if (!ray_tracer.Render(output_file.c_str(), 600, 400, false)) {
+  if (!ray_tracer.Render(output_file.c_str(), width, height, anti_alias)) {
     printf("Could not render!");
     return 1;
   }
