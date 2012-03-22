@@ -7,6 +7,8 @@
     'type': 'executable',
     'dependencies': [
       'ray_tracer/ray_tracer.gyp:ray_tracer_lib',
+      'scene_interp/scene_interp.gyp:scene_interp_lib',
+      '../bonavista/base/base.gyp:base_lib',
     ],
     'sources': [
       'main.cpp',
