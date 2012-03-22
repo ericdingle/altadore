@@ -76,6 +76,10 @@ TEST(TransformNodeTest, InvokeAddChild) {
   TransformNode node;
   EXPECT_EQ(node.Invoke("AddChild", args_, var_.Receive()),
             Invokable::RESULT_OK);
+
+  scoped_refptr<Invokable> obj;
+  EXPECT_TRUE(var_->Get(obj.Receive()));
+  EXPECT_EQ(obj.ptr(), object_.ptr());
 }
 
 TEST(TransformNodeTest, InvokeAddChildError) {

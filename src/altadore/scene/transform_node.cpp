@@ -27,7 +27,7 @@ Invokable::Result TransformNode::Invoke(
     const std::vector<scoped_refptr<const Variant> >& args,
     const Variant** var) {
   if (name == "AddChild")
-    return InvokeAddChild(args);
+    return InvokeAddChild(args, var);
   else if (name == "Rotate")
     return InvokeRotate(args);
   else if (name == "Scale")
@@ -39,7 +39,8 @@ Invokable::Result TransformNode::Invoke(
 }
 
 Invokable::Result TransformNode::InvokeAddChild(
-    const std::vector<scoped_refptr<const Variant> >& args) {
+    const std::vector<scoped_refptr<const Variant> >& args,
+    const Variant** var) {
   if (args.size() != 1)
     return RESULT_ERR_ARG_SIZE;
 
@@ -51,6 +52,10 @@ Invokable::Result TransformNode::InvokeAddChild(
     return RESULT_ERR_ARG_TYPE;
 
   AddChild(node);
+
+  scoped_refptr<Variant> var_ref(new Variant(object.ptr()));
+  *var = var_ref.Release();
+
   return RESULT_OK;
 }
 

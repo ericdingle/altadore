@@ -38,7 +38,8 @@ class TransformNode : public SceneNode {
 
  private:
   Result InvokeAddChild(
-      const std::vector<scoped_refptr<const Variant> >& args);
+      const std::vector<scoped_refptr<const Variant> >& args,
+      const Variant** var);
   Result InvokeRotate(
       const std::vector<scoped_refptr<const Variant> >& args);
   Result InvokeScale(
