@@ -37,6 +37,11 @@ bool CommandLine::HasFlag(const std::string& flag) {
 }
 
 std::string CommandLine::GetFlag(const std::string& flag) {
+  return GetFlag(flag, "");
+}
+
+std::string CommandLine::GetFlag(const std::string& flag,
+                                 const std::string& def) {
   FlagMap::const_iterator pair = flags_.find(flag);
-  return pair == flags_.end() ? "" : pair->second;
+  return pair == flags_.end() ? def : pair->second;
 }
