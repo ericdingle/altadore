@@ -16,6 +16,7 @@ class CommandLine {
 
   bool HasFlag(const std::string& flag);
   std::string GetFlag(const std::string& flag);
+  std::string GetFlag(const std::string& flag, const std::string& def);
 
  private:
   std::string program_;
