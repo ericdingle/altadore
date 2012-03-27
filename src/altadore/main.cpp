@@ -25,14 +25,14 @@ int main(int argc, char* argv[]) {
     output_file = input_file.substr(0, pos) + ".bmp";
   }
 
-  std::string width_str = cmd_line.GetFlag("width");
+  std::string width_str = cmd_line.GetFlag("width", "600");
   int width = atoi(width_str.c_str());
   if (width == 0) {
     printf("Invalid --width.\n");
     return 1;
   }
 
-  std::string height_str = cmd_line.GetFlag("height");
+  std::string height_str = cmd_line.GetFlag("height", "400");
   int height = atoi(height_str.c_str());
   if (height == 0) {
     printf("Invalid --height.\n");
