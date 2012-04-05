@@ -96,10 +96,11 @@ Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, co
   // color += diffuse_intensity[i] * light_color[i]
   for (uint i = 0; i < lights_->lights().size(); ++i) {
     Vector3 light_dir = *lights_->lights()[i]->position() - point;
+    double max_t = light_dir.Length();
     light_dir.Normalize();
     Ray light_ray(point, light_dir);
 
-    if (root_->HasIntersection(light_ray))
+    if (root_->HasIntersection(light_ray, max_t))
       continue;
 
     double diffuse_intensity = light_dir.Dot(normal);
@@ -127,10 +128,11 @@ Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Ve
   // color += specular_intensity[i] * light_color[i]
   for (uint i = 0; i < lights_->lights().size(); ++i) {
     Vector3 light_dir = *lights_->lights()[i]->position() - point;
+    double max_t = light_dir.Length();
     light_dir.Normalize();
     Ray light_ray(point, light_dir);
 
-    if (root_->HasIntersection(light_ray))
+    if (root_->HasIntersection(light_ray, max_t))
       continue;
 
     Vector3 reflection = -light_dir + normal * 2 * light_dir.Dot(normal);

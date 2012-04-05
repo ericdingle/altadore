@@ -14,7 +14,7 @@ class Shape : public Invokable {
   virtual ~Shape();
 
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const =0;
-  virtual bool HasIntersection(const Ray& ray) const =0;
+  virtual bool HasIntersection(const Ray& ray, double max_t) const =0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(Shape);

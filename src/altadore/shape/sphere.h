@@ -19,7 +19,7 @@ class Sphere : public Shape {
       const Variant** var);
 
   virtual bool FindIntersection(const Ray& r, double* t, Point3* point, Vector3* normal) const;
-  virtual bool HasIntersection(const Ray& ray) const;
+  virtual bool HasIntersection(const Ray& ray, double max_t) const;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(Sphere);

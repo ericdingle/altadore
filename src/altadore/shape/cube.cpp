@@ -70,14 +70,14 @@ bool Cube::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* n
   return *t != std::numeric_limits<double>::max();
 }
 
-bool Cube::HasIntersection(const Ray& ray) const {
+bool Cube::HasIntersection(const Ray& ray, double max_t) const {
   const Point3& origin = ray.origin();
   const Vector3& direction = ray.direction();
 
   for (int i = 0; i < 3; ++i) {
     for (int j = -1; j <= 1; j += 2) {
       double t = (j - origin[i]) / direction[i];
-      if (t >= kEpsilon) {
+      if (t >= kEpsilon && t <= max_t) {
         uint k = (i + 1) % 3;
         double y = origin[k] + direction[k] * t;
 

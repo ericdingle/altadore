@@ -164,9 +164,9 @@ bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point, V
   return *t != std::numeric_limits<double>::max();
 }
 
-bool TransformNode::HasIntersection(const Ray& ray) const {
+bool TransformNode::HasIntersection(const Ray& ray, double max_t) const {
   for (uint i = 0; i < children_.size(); ++i) {
-    if (children_[i]->HasIntersection(ray)) {
+    if (children_[i]->HasIntersection(ray, max_t)) {
       return true;
     }
   }

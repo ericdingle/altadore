@@ -26,7 +26,7 @@ class TestSceneNode : public SceneNode {
     return intersection_;
   }
 
-  bool HasIntersection(const Ray& ray) const {
+  bool HasIntersection(const Ray& ray, double max_t) const {
     return intersection_;
   }
 
@@ -237,8 +237,8 @@ TEST(TransformNodeTest, HasIntersection) {
 
   TransformNode node;
   node.AddChild(new TestSceneNode(false));
-  EXPECT_FALSE(node.HasIntersection(ray));
+  EXPECT_FALSE(node.HasIntersection(ray, 0));
 
   node.AddChild(new TestSceneNode(true));
-  EXPECT_TRUE(node.HasIntersection(ray));
+  EXPECT_TRUE(node.HasIntersection(ray, 0));
 }

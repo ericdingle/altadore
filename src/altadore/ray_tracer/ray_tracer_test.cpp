@@ -31,7 +31,7 @@ class TestSceneNode : public SceneNode {
     return false;
   }
 
-  bool HasIntersection(const Ray& ray) const {
+  bool HasIntersection(const Ray& ray, double max_t) const {
     return has_intersection_;
   }
 

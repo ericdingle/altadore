@@ -50,8 +50,9 @@ TEST(CubeTest, HasIntersection) {
   Cube cube;
 
   Ray ray1(Point3(0, 0, 2), Vector3(0, 0, -1));
-  EXPECT_TRUE(cube.HasIntersection(ray1));
+  EXPECT_TRUE(cube.HasIntersection(ray1, 2));
+  EXPECT_FALSE(cube.HasIntersection(ray1, 0.5));
 
   Ray ray2(Point3(0, 0, 2), Vector3(0, 0, 1));
-  EXPECT_FALSE(cube.HasIntersection(ray2));
+  EXPECT_FALSE(cube.HasIntersection(ray2, 20));
 }

@@ -30,7 +30,7 @@ class TransformNode : public SceneNode {
 
   virtual void CalculateTransforms(const Matrix4& parent_transform);
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const;
-  virtual bool HasIntersection(const Ray& ray) const;
+  virtual bool HasIntersection(const Ray& ray, double max_t) const;
 
  protected:
   const std::vector<scoped_refptr<SceneNode> >& children() { return children_; }

@@ -72,8 +72,8 @@ bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vecto
   return true;
 }
 
-bool ShapeNode::HasIntersection(const Ray& ray) const {
+bool ShapeNode::HasIntersection(const Ray& ray, double max_t) const {
   Point3 origin = transform_inverse_ * ray.origin();
   Vector3 direction = transform_inverse_ * ray.direction();
-  return shape_->HasIntersection(Ray(origin, direction));
+  return shape_->HasIntersection(Ray(origin, direction), max_t);
 }

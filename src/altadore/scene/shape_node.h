@@ -24,7 +24,7 @@ class ShapeNode : public SceneNode {
 
   virtual void CalculateTransforms(const Matrix4& parent_transform);
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const;
-  virtual bool HasIntersection(const Ray& ray) const;
+  virtual bool HasIntersection(const Ray& ray, double max_t) const;
 
  protected:
   const Matrix4& transform() const { return transform_; }

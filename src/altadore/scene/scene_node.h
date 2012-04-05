@@ -15,7 +15,7 @@ class SceneNode : public Invokable {
 
   virtual void CalculateTransforms(const Matrix4& parent_transform) =0;
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const =0;
-  virtual bool HasIntersection(const Ray& ray) const =0;
+  virtual bool HasIntersection(const Ray& ray, double max_t) const =0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SceneNode);

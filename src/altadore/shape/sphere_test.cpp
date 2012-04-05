@@ -50,8 +50,9 @@ TEST(SphereTest, HasIntersection) {
   Sphere sphere;
 
   Ray ray1(Point3(0, 0, 2), Vector3(0, 0, -1));
-  EXPECT_TRUE(sphere.HasIntersection(ray1));
+  EXPECT_TRUE(sphere.HasIntersection(ray1, 2));
+  EXPECT_FALSE(sphere.HasIntersection(ray1, 0.5));
 
   Ray ray2(Point3(0, 0, 2), Vector3(0, 0, 1));
-  EXPECT_FALSE(sphere.HasIntersection(ray2));
+  EXPECT_FALSE(sphere.HasIntersection(ray2, 20));
 }

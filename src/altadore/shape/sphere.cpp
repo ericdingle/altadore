@@ -108,13 +108,13 @@ bool Sphere::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3*
   return true;
 }
 
-bool Sphere::HasIntersection(const Ray& ray) const {
+bool Sphere::HasIntersection(const Ray& ray, double max_t) const {
   const Point3& origin = ray.origin();
   const Vector3& direction = ray.direction();
 
   // Find the point on the line closest to the sphere's origin.
   double t = -direction.Dot(Vector3(origin)) / direction.Dot(direction);
-  if (t < kEpsilon)
+  if (t < kEpsilon || t > max_t)
     return false;
 
   // Use Vector3's dot method to calculate the squared length.

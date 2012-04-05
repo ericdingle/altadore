@@ -28,7 +28,7 @@ class TestShape : public Shape {
     return intersection_;
   }
 
-  bool HasIntersection(const Ray& ray) const {
+  bool HasIntersection(const Ray& ray, double max_t) const {
     return intersection_;
   }
 
@@ -134,8 +134,8 @@ TEST(ShapeNodeTest, HasIntersection) {
   Ray ray(point, Vector3());
 
   ShapeNode node1(new TestShape(true), material_.ptr());
-  EXPECT_TRUE(node1.HasIntersection(ray));
+  EXPECT_TRUE(node1.HasIntersection(ray, 0));
 
   ShapeNode node2(new TestShape(false), material_.ptr());
-  EXPECT_FALSE(node2.HasIntersection(ray));
+  EXPECT_FALSE(node2.HasIntersection(ray, 0));
 }
