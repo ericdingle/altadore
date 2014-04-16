@@ -1,7 +1,7 @@
 #ifndef ALTADORE_IMAGE_BITMAP_H_
 #define ALTADORE_IMAGE_BITMAP_H_
 
-#include "bonavista/memory/scoped_array.h"
+#include <memory>
 #include "bonavista/base/macros.h"
 #include "bonavista/base/types.h"
 
@@ -75,12 +75,12 @@ class Bitmap {
 
   uint width() const { return width_; }
   uint height() const { return height_; }
-  Color* data() const { return data_.ptr(); }
+  const Color* data() const { return data_.get(); }
 
  private:
   uint width_;
   uint height_;
-  scoped_array<Color> data_;
+  std::unique_ptr<Color[]> data_;
 
   DISALLOW_COPY_AND_ASSIGN(Bitmap);
 };

@@ -6,7 +6,6 @@
     'target_name': 'algebra_lib',
     'type': 'static_library',
     'dependencies': [
-      '../../bonavista/memory/memory.gyp:memory_lib',
       '../../chaparral/executer/executer.gyp:executer_lib',
     ],
     'sources': [

@@ -7,36 +7,36 @@ TEST_CASE(ColorTest) {
 };
 
 TEST(ColorTest, Create) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<Invokable> object;
-  EXPECT_EQ(Color::Create(args, object.Receive()), Invokable::RESULT_OK);
-  EXPECT_NOT_NULL(object.ptr());
+  std::shared_ptr<Invokable> object;
+  EXPECT_EQ(Color::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.get());
 
-  scoped_refptr<const Variant> var(new Variant(1.0));
-  args.push_back(var.ptr());
-  args.push_back(var.ptr());
-  args.push_back(var.ptr());
+  std::shared_ptr<const Variant> var(new Variant(1.0));
+  args.push_back(var);
+  args.push_back(var);
+  args.push_back(var);
 
-  EXPECT_EQ(Color::Create(args, object.Receive()), Invokable::RESULT_OK);
-  EXPECT_NOT_NULL(object.ptr());
+  EXPECT_EQ(Color::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.get());
 }
 
 TEST(ColorTest, CreateError) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<const Variant> var(new Variant(1.0));
-  args.push_back(var.ptr());
-  args.push_back(var.ptr());
+  std::shared_ptr<const Variant> var(new Variant(1.0));
+  args.push_back(var);
+  args.push_back(var);
 
-  scoped_refptr<Invokable> object;
-  EXPECT_EQ(Color::Create(args, object.Receive()),
+  std::shared_ptr<Invokable> object;
+  EXPECT_EQ(Color::Create(args, &object),
             Invokable::RESULT_ERR_ARG_SIZE);
 
-  var.Reset(new Variant(2));
-  args.push_back(var.ptr());
+  var.reset(new Variant(2));
+  args.push_back(var);
 
-  EXPECT_EQ(Color::Create(args, object.Receive()),
+  EXPECT_EQ(Color::Create(args, &object),
             Invokable::RESULT_ERR_ARG_TYPE);
 }
 

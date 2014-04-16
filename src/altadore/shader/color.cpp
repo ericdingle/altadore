@@ -4,24 +4,24 @@
 #include "chaparral/executer/variant.h"
 
 Invokable::Result Color::Create(
-    const std::vector<scoped_refptr<const Variant> >& args,
-    Invokable** object) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
   if (args.size() != 0 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
-  scoped_refptr<Color> color;
+  std::shared_ptr<Color> color;
   if (args.size() == 0) {
-    color.Reset(new Color());
+    color.reset(new Color());
   } else {
     double r, g, b;
     if (!args[0]->Get(&r) || !args[1]->Get(&g) || !args[2]->Get(&b))
       return RESULT_ERR_ARG_TYPE;
-    color.Reset(new Color(r, g, b));
+    color.reset(new Color(r, g, b));
   }
 
-  *object = color.Release();
+  *object = color;
   return RESULT_OK;
 }
 
@@ -43,8 +43,8 @@ Color::Color(const Color& c) : r_(c.r_), g_(c.g_), b_(c.b_) {
 
 Invokable::Result Color::Invoke(
     const std::string& name,
-    const std::vector<scoped_refptr<const Variant> >& args,
-    const Variant** var) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }
 

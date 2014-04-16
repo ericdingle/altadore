@@ -47,15 +47,14 @@ int GetRoots(double a, double b, double c, double roots[2]) {
 }  // namespace
 
 Invokable::Result Sphere::Create(
-    const std::vector<scoped_refptr<const Variant> >& args,
-    Invokable** object) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
   if (args.size() != 0)
     return RESULT_ERR_ARG_SIZE;
 
-  scoped_refptr<Sphere> sphere(new Sphere());
-  *object = sphere.Release();
+  object->reset(new Sphere());
   return RESULT_OK;
 }
 
@@ -67,8 +66,8 @@ Sphere::~Sphere() {
 
 Invokable::Result Sphere::Invoke(
     const std::string& name,
-    const std::vector<scoped_refptr<const Variant> >& args,
-    const Variant** var) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }
 

@@ -89,10 +89,10 @@ TEST(BitmapTest, Save) {
   EXPECT_TRUE(bitmap.Save(FILE_NAME));
 
   scoped_FILE file(OpenFile(FILE_NAME, "rb"));
-  EXPECT_NOT_NULL(file.ptr());
+  EXPECT_NOT_NULL(file.get());
 
   TestBitmap::HeaderMagic header_magic_buffer, header_magic;
-  EXPECT_EQ(fread(&header_magic_buffer, sizeof(TestBitmap::HeaderMagic), 1, file.ptr()), 1);
+  EXPECT_EQ(fread(&header_magic_buffer, sizeof(TestBitmap::HeaderMagic), 1, file.get()), 1);
   EXPECT_EQ(memcmp(&header_magic_buffer, &header_magic, sizeof(TestBitmap::HeaderMagic)), 0);
 
   // 6 byte wide rows, padded by 2 bytes, times 3 rows
@@ -102,27 +102,27 @@ TEST(BitmapTest, Save) {
                      sizeof(TestBitmap::Header) +
                      sizeof(TestBitmap::InfoHeader) +
                      data_size;
-  EXPECT_EQ(fread(&header_buffer, sizeof(TestBitmap::Header), 1, file.ptr()), 1);
+  EXPECT_EQ(fread(&header_buffer, sizeof(TestBitmap::Header), 1, file.get()), 1);
   EXPECT_EQ(memcmp(&header_buffer, &header, sizeof(TestBitmap::Header)), 0);
 
   TestBitmap::InfoHeader info_header_buffer, info_header;
   info_header.width = 2;
   info_header.height = 3;
   info_header.data_size = data_size;
-  EXPECT_EQ(fread(&info_header_buffer, sizeof(TestBitmap::InfoHeader), 1, file.ptr()), 1);
+  EXPECT_EQ(fread(&info_header_buffer, sizeof(TestBitmap::InfoHeader), 1, file.get()), 1);
   EXPECT_EQ(memcmp(&info_header_buffer, &info_header, sizeof(TestBitmap::InfoHeader)), 0);
 
   // 4 black pixels followed by 2 white.
   TestBitmap::Color color_buffer, black;
   for (uint y = 0; y < 3; ++y) {
     for (uint x = 0; x < 2; ++x) {
-      EXPECT_EQ(fread(&color_buffer, sizeof(TestBitmap::Color), 1, file.ptr()), 1);
+      EXPECT_EQ(fread(&color_buffer, sizeof(TestBitmap::Color), 1, file.get()), 1);
       if (y == 2) {
         EXPECT_EQ(memcmp(&color_buffer, &white, sizeof(TestBitmap::Color)), 0);
       } else {
         EXPECT_EQ(memcmp(&color_buffer, &black, sizeof(TestBitmap::Color)), 0);
       }
     }
-    EXPECT_EQ(fseek(file.ptr(), 2, SEEK_CUR), 0);
+    EXPECT_EQ(fseek(file.get(), 2, SEEK_CUR), 0);
   }
 }

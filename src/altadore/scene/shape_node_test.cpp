@@ -16,8 +16,8 @@ class TestShape : public Shape {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<scoped_refptr<const Variant> >& args,
-      const Variant** var) {
+      const std::vector<std::shared_ptr<const Variant> >& args,
+      std::shared_ptr<const Variant>* var) {
     return RESULT_ERR_NAME;
   }
 
@@ -38,13 +38,14 @@ class TestShape : public Shape {
 
 class TestShapeNode : public ShapeNode {
  public:
-  TestShapeNode(const Shape* shape, const Material* material) : ShapeNode(shape, material) {
+  TestShapeNode(const std::shared_ptr<const Shape>& shape,
+                const std::shared_ptr<const Material>& material) : ShapeNode(shape, material) {
   }
 
   Result Invoke(
       const std::string& name,
-      const std::vector<scoped_refptr<const Variant> >& args,
-      const Variant** var) {
+      const std::vector<std::shared_ptr<const Variant> >& args,
+      std::shared_ptr<const Variant>* var) {
     return RESULT_ERR_NAME;
   }
 
@@ -58,49 +59,49 @@ class TestShapeNode : public ShapeNode {
 TEST_CASE(ShapeNodeTest) {
  protected:
   void SetUp() {
-    material_.Reset(new Material(new Color(), 1, 1));
+    material_.reset(new Material(std::make_shared<Color>(), 1, 1));
   }
 
-  scoped_refptr<Material> material_;
+  std::shared_ptr<Material> material_;
 };
 
 TEST(ShapeNodeTest, Create) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<const Variant> var;
-  scoped_refptr<Invokable> object;
+  std::shared_ptr<const Variant> var;
+  std::shared_ptr<Invokable> object;
 
-  object.Reset(new Cube());
-  var.Reset(new Variant(object.ptr()));
-  args.push_back(var.ptr());
+  object.reset(new Cube());
+  var.reset(new Variant(object));
+  args.push_back(var);
 
-  object.Reset(new Material(new Color(), 1, 1));
-  var.Reset(new Variant(object.ptr()));
-  args.push_back(var.ptr());
+  object.reset(new Material(std::make_shared<Color>(), 1, 1));
+  var.reset(new Variant(object));
+  args.push_back(var);
 
-  EXPECT_EQ(ShapeNode::Create(args, object.Receive()), Invokable::RESULT_OK);
-  EXPECT_NOT_NULL(object.ptr());
+  EXPECT_EQ(ShapeNode::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.get());
 }
 
 TEST(ShapeNodeTest, CreateError) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<Invokable> object;
-  EXPECT_EQ(ShapeNode::Create(args, object.Receive()),
+  std::shared_ptr<Invokable> object;
+  EXPECT_EQ(ShapeNode::Create(args, &object),
             Invokable::RESULT_ERR_ARG_SIZE);
 
-  scoped_refptr<const Variant> var(new Variant(1.0));
-  args.push_back(var.ptr());
-  args.push_back(var.ptr());
+  std::shared_ptr<const Variant> var(new Variant(1.0));
+  args.push_back(var);
+  args.push_back(var);
 
-  EXPECT_EQ(ShapeNode::Create(args, object.Receive()),
+  EXPECT_EQ(ShapeNode::Create(args, &object),
             Invokable::RESULT_ERR_ARG_TYPE);
 }
 
 TEST(ShapeNodeTest, CalcTransforms) {
   Matrix4 transform = Matrix4::GetScaling(2);
 
-  TestShapeNode node(new TestShape(true), material_.ptr());
+  TestShapeNode node(std::make_shared<TestShape>(true), material_);
   node.CalculateTransforms(transform);
   EXPECT_TRUE(node.transform() == transform);
   EXPECT_TRUE(node.transform_inverse() == transform.GetInverse());
@@ -117,15 +118,15 @@ TEST(ShapeNodeTest, FindIntersection) {
   Vector3 normal;
   const Material* material;
 
-  ShapeNode node1(new TestShape(true), material_.ptr());
+  ShapeNode node1(std::make_shared<TestShape>(true), material_);
   node1.CalculateTransforms(Matrix4::GetScaling(2));
   EXPECT_TRUE(node1.FindIntersection(ray, &t, &point, &normal, &material));
   EXPECT_EQ(t, 1);
   EXPECT_TRUE(point == Point3(1, 1, 1));
   EXPECT_TRUE(normal == Vector3(1, 0, 0));
-  EXPECT_EQ(material, material_.ptr());
+  EXPECT_EQ(material, material_.get());
 
-  ShapeNode node2(new TestShape(false), material_.ptr());
+  ShapeNode node2(std::make_shared<TestShape>(false), material_);
   EXPECT_FALSE(node2.FindIntersection(ray, &t, &point, &normal, &material));
 }
 
@@ -133,9 +134,9 @@ TEST(ShapeNodeTest, HasIntersection) {
   Point3 point;
   Ray ray(point, Vector3());
 
-  ShapeNode node1(new TestShape(true), material_.ptr());
+  ShapeNode node1(std::make_shared<TestShape>(true), material_);
   EXPECT_TRUE(node1.HasIntersection(ray, 0));
 
-  ShapeNode node2(new TestShape(false), material_.ptr());
+  ShapeNode node2(std::make_shared<TestShape>(false), material_);
   EXPECT_FALSE(node2.HasIntersection(ray, 0));
 }

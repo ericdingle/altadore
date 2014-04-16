@@ -1,8 +1,8 @@
 #include "altadore/scene_interp/scene_parser.h"
 
+#include <memory>
 #include "altadore/scene_interp/scene_lexer.h"
 #include "bonavista/logging/string_format.h"
-#include "bonavista/memory/scoped_ptr.h"
 #include "chaparral/parser/ast_node.h"
 
 SceneParser::SceneParser(TokenStream* token_stream) : Parser(token_stream) {
@@ -11,14 +11,14 @@ SceneParser::SceneParser(TokenStream* token_stream) : Parser(token_stream) {
 SceneParser::~SceneParser() {
 }
 
-bool SceneParser::Parse(const ASTNode** root) {
+bool SceneParser::Parse(std::unique_ptr<const ASTNode>* root) {
   DCHECK(root);
 
-  scoped_ptr<const ASTNode> node;
-  if (!Parser::Parse(node.Receive()))
+  std::unique_ptr<const ASTNode> node;
+  if (!Parser::Parse(&node))
     return false;
 
-  if (node.ptr()) {
+  if (node.get()) {
     if (node->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS)) {
       position_ = node->token()->position();
       error_ = "Unexpected function call";
@@ -29,7 +29,7 @@ bool SceneParser::Parse(const ASTNode** root) {
       return false;
   }
 
-  *root = node.Release();
+  *root = std::move(node);
   return true;
 }
 
@@ -46,149 +46,134 @@ uint SceneParser::GetBindingPower(int type) const {
   }
 }
 
-bool SceneParser::ParsePrefixToken(const Token* token, const ASTNode** root) {
-  DCHECK(token);
+bool SceneParser::ParsePrefixToken(std::unique_ptr<const Token> token,
+                                   std::unique_ptr<const ASTNode>* root) {
   DCHECK(root);
-
-  scoped_ptr<const Token> token_holder(token);
 
   if (token->IsType(SceneLexer::TYPE_IDENTIFIER) ||
       token->IsType(SceneLexer::TYPE_NUMBER)) {
-    *root = new ASTNode(token_holder.Release());
+    root->reset(new ASTNode(std::move(token)));
     return true;
   }
 
   if (token->IsType(SceneLexer::TYPE_NEW))
-    return ParseNewObject(token_holder.Release(), root);
+    return ParseNewObject(std::move(token), root);
 
   position_ = token->position();
   error_ = StringFormat("Unexpected token: %s", token->value().c_str());
   return false;
 }
 
-bool SceneParser::ParseInfixToken(const Token* token, const ASTNode* left,
-                                  const ASTNode** root) {
-  DCHECK(token);
-  DCHECK(left);
+bool SceneParser::ParseInfixToken(std::unique_ptr<const Token> token,
+                                  std::unique_ptr<const ASTNode> left,
+                                  std::unique_ptr<const ASTNode>* root) {
   DCHECK(root);
-
-  scoped_ptr<const Token> token_holder(token);
-  scoped_ptr<const ASTNode> left_holder(left);
 
   if (token->IsType(SceneLexer::TYPE_DOT))
-    return ParseDotAccessor(token_holder.Release(), left_holder.Release(), root);
+    return ParseDotAccessor(std::move(token), std::move(left), root);
 
   if (token->IsType(SceneLexer::TYPE_EQUAL))
-    return ParseAssignment(token_holder.Release(), left_holder.Release(), root);
+    return ParseAssignment(std::move(token), std::move(left), root);
 
   if (token->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS))
-    return ParseFunction(token_holder.Release(), left_holder.Release(), root);
+    return ParseFunction(std::move(token), std::move(left), root);
 
   position_ = token->position();
   error_ = StringFormat("Unexpected token: %s", token->value().c_str());
   return false;
 }
 
-bool SceneParser::ParseNewObject(const Token* token, const ASTNode** root) {
-  DCHECK(token);
+bool SceneParser::ParseNewObject(std::unique_ptr<const Token> token,
+                                 std::unique_ptr<const ASTNode>* root) {
   DCHECK(root);
 
-  scoped_ptr<ASTNode> node(new ASTNode(token));
+  std::unique_ptr<ASTNode> node(new ASTNode(std::move(token)));
 
-  scoped_ptr<const ASTNode> right;
-  if (!ParseExpression(0, right.Receive()))
+  std::unique_ptr<const ASTNode> right;
+  if (!ParseExpression(0, &right))
     return false;
   if (!right->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS)) {
     position_ = right->token()->position();
     error_ = "Expecting function call on right of new";
     return false;
   }
-  node->AddChild(right.Release());
+  node->AddChild(std::move(right));
 
-  *root = node.Release();
+  *root = std::move(node);
   return true;
 }
 
-bool SceneParser::ParseDotAccessor(const Token* token, const ASTNode* left,
-                                   const ASTNode** root) {
-  DCHECK(token);
-  DCHECK(left);
+bool SceneParser::ParseDotAccessor(std::unique_ptr<const Token> token,
+                                   std::unique_ptr<const ASTNode> left,
+                                   std::unique_ptr<const ASTNode>* root) {
   DCHECK(root);
 
-  scoped_ptr<const ASTNode> left_holder(left);
-
-  scoped_ptr<ASTNode> node(new ASTNode(token));
+  std::unique_ptr<ASTNode> node(new ASTNode(std::move(token)));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
     position_ = left->token()->position();
     error_ = "Expecting identifier on left of dot accessor";
     return false;
   }
-  node->AddChild(left_holder.Release());
+  node->AddChild(std::move(left));
 
-  scoped_ptr<const ASTNode> right;
-  if (!ParseExpression(GetBindingPower(token->type()), right.Receive()))
+  std::unique_ptr<const ASTNode> right;
+  if (!ParseExpression(GetBindingPower(node->token()->type()), &right))
     return false;
   if (!right->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS)) {
     position_ = right->token()->position();
     error_ = "Expecting function call on right of dot accessor";
     return false;
   }
-  node->AddChild(right.Release());
+  node->AddChild(std::move(right));
 
-  *root = node.Release();
+  *root = std::move(node);
   return true;
 }
 
-bool SceneParser::ParseAssignment(const Token* token, const ASTNode* left,
-                                  const ASTNode** root) {
-  DCHECK(token);
-  DCHECK(left);
+bool SceneParser::ParseAssignment(std::unique_ptr<const Token> token,
+                                  std::unique_ptr<const ASTNode> left,
+                                  std::unique_ptr<const ASTNode>* root) {
   DCHECK(root);
 
-  scoped_ptr<const ASTNode> left_holder(left);
-
-  scoped_ptr<ASTNode> node(new ASTNode(token));
+  std::unique_ptr<ASTNode> node(new ASTNode(std::move(token)));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
     position_ = left->token()->position();
     error_ = "Expecting identifier on left of assignment";
     return false;
   }
-  node->AddChild(left_holder.Release());
+  node->AddChild(std::move(left));
 
-  scoped_ptr<const ASTNode> right;
-  if (!ParseExpression(GetBindingPower(token->type()), right.Receive()))
+  std::unique_ptr<const ASTNode> right;
+  if (!ParseExpression(GetBindingPower(node->token()->type()), &right))
     return false;
-  node->AddChild(right.Release());
+  node->AddChild(std::move(right));
 
-  *root = node.Release();
+  *root = std::move(node);
   return true;
 }
 
-bool SceneParser::ParseFunction(const Token* token, const ASTNode* left,
-                                const ASTNode** root) {
-  DCHECK(token);
-  DCHECK(left);
+bool SceneParser::ParseFunction(std::unique_ptr<const Token> token,
+                                std::unique_ptr<const ASTNode> left,
+                                std::unique_ptr<const ASTNode>* root) {
   DCHECK(root);
 
-  scoped_ptr<const ASTNode> left_holder(left);
-
-  scoped_ptr<ASTNode> node(new ASTNode(token));
+  std::unique_ptr<ASTNode> node(new ASTNode(std::move(token)));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
     position_ = left->token()->position();
     error_ = "Expecting identifier on left of function call";
     return false;
   }
-  node->AddChild(left_holder.Release());
+  node->AddChild(std::move(left));
 
   if (!look_ahead_token_->IsType(SceneLexer::TYPE_RIGHT_PARENTHESIS)) {
     while (true) {
-      scoped_ptr<const ASTNode> arg;
-      if (!ParseExpression(0, arg.Receive()))
+      std::unique_ptr<const ASTNode> arg;
+      if (!ParseExpression(0, &arg))
         return false;
-      node->AddChild(arg.Release());
+      node->AddChild(std::move(arg));
 
       if (!look_ahead_token_->IsType(SceneLexer::TYPE_COMMA))
         break;
@@ -201,6 +186,6 @@ bool SceneParser::ParseFunction(const Token* token, const ASTNode* left,
   if (!ConsumeToken(SceneLexer::TYPE_RIGHT_PARENTHESIS))
     return false;
 
-  *root = node.Release();
+  *root = std::move(node);
   return true;
 }

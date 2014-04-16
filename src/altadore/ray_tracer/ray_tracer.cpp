@@ -7,9 +7,9 @@
 #include "altadore/ray_tracer/ray_tracer_constants.h"
 #include "altadore/shader/material.h"
 
-RayTracer::RayTracer(const TransformNode* root, const LightVector* lights) : root_(root), lights_(lights) {
-  DCHECK(root);
-  DCHECK(lights);
+RayTracer::RayTracer(const std::shared_ptr<const TransformNode>& root,
+                     const std::shared_ptr<const LightVector>& lights)
+    : root_(root), lights_(lights) {
 }
 
 RayTracer::~RayTracer() {

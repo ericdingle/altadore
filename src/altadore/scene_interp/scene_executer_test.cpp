@@ -18,10 +18,9 @@ class Object : public Invokable {
  public:
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<scoped_refptr<const Variant> >& args,
-      const Variant** var) {
-    scoped_refptr<const Variant> var_ref(new Variant(5));
-    *var = var_ref.Release();
+      const std::vector<std::shared_ptr<const Variant> >& args,
+      std::shared_ptr<const Variant>* var) {
+    var->reset(new Variant(5));
     return name == "pass" ? RESULT_OK : RESULT_ERR_NAME;
   }
 };
@@ -29,17 +28,17 @@ class Object : public Invokable {
 TEST_CASE(SceneExecuterTest) {
  protected:
   void Init(const char* input) {
-    stream_.Reset(new TokenStream(&lexer_, input));
-    parser_.Reset(new SceneParser(stream_.ptr()));
-    executer_.Reset(new SceneExecuter(parser_.ptr()));
+    stream_.reset(new TokenStream(&lexer_, input));
+    parser_.reset(new SceneParser(stream_.get()));
+    executer_.reset(new SceneExecuter(parser_.get()));
   }
 
   SceneLexer lexer_;
-  scoped_ptr<TokenStream> stream_;
-  scoped_ptr<Parser> parser_;
-  scoped_ptr<SceneExecuter> executer_;
-  scoped_refptr<const Variant> var_;
-  scoped_refptr<Invokable> object_;
+  std::unique_ptr<TokenStream> stream_;
+  std::unique_ptr<Parser> parser_;
+  std::unique_ptr<SceneExecuter> executer_;
+  std::shared_ptr<const Variant> var_;
+  std::shared_ptr<Invokable> object_;
 };
 
 TEST(SceneExecuterTest, Constants) {
@@ -53,9 +52,9 @@ TEST(SceneExecuterTest, Constants) {
 TEST(SceneExecuterTest, ExecuteDotAccessor) {
   Init("obj.pass(1);");
 
-  object_.Reset(new Object());
-  var_.Reset(new Variant(object_.ptr()));
-  executer_->SetVar("obj", var_.ptr());
+  object_.reset(new Object());
+  var_.reset(new Variant(object_));
+  executer_->SetVar("obj", var_);
 
   int i;
   EXPECT_TRUE(executer_->ExecuteT(&i));
@@ -65,28 +64,28 @@ TEST(SceneExecuterTest, ExecuteDotAccessor) {
 TEST(SceneExecuterTest, ExecuteDotAccessorError) {
   Init("obj.pass(1);");
 
-  var_.Reset(new Variant(5));
-  executer_->SetVar("obj", var_.ptr());
+  var_.reset(new Variant(5));
+  executer_->SetVar("obj", var_);
 
-  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 
   Init("obj.pass(a);");
 
-  object_.Reset(new Object());
-  var_.Reset(new Variant(object_.ptr()));
-  executer_->SetVar("obj", var_.ptr());
+  object_.reset(new Object());
+  var_.reset(new Variant(object_));
+  executer_->SetVar("obj", var_);
 
-  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 
   Init("obj.fail(1);");
 
-  object_.Reset(new Object());
-  var_.Reset(new Variant(object_.ptr()));
-  executer_->SetVar("obj", var_.ptr());
+  object_.reset(new Object());
+  var_.reset(new Variant(object_));
+  executer_->SetVar("obj", var_);
 
-  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 }
 
@@ -99,15 +98,15 @@ TEST(SceneExecuterTest, ExecuteAssignment) {
 
 TEST(SceneExecuterTest, ExecuteAssignmentError) {
   Init("a=b;");
-  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 }
 
 TEST(SceneExecuterTest, ExecuteIdentifier) {
   Init("a;");
 
-  var_.Reset(new Variant(5));
-  executer_->SetVar("a", var_.ptr());
+  var_.reset(new Variant(5));
+  executer_->SetVar("a", var_);
 
   int i;
   EXPECT_TRUE(executer_->ExecuteT(&i));
@@ -116,59 +115,59 @@ TEST(SceneExecuterTest, ExecuteIdentifier) {
 
 TEST(SceneExecuterTest, ExecuteIdentifierError) {
   Init("a;");
-  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 }
 
 TEST(SceneExecuterTest, ExecuteNew) {
   Init("new Color();");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object_.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Color*>(object_.ptr()));
+  EXPECT_TRUE(executer_->Execute(&var_));
+  EXPECT_TRUE(var_->Get(&object_));
+  EXPECT_NOT_NULL(dynamic_cast<Color*>(object_.get()));
 
   Init("new Cube();");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object_.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Cube*>(object_.ptr()));
+  EXPECT_TRUE(executer_->Execute(&var_));
+  EXPECT_TRUE(var_->Get(&object_));
+  EXPECT_NOT_NULL(dynamic_cast<Cube*>(object_.get()));
 
   Init("new Light(new Point3(1.0, 2.0, 3.0), new Color(0.1, 0.2, 0.3));");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object_.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Light*>(object_.ptr()));
+  EXPECT_TRUE(executer_->Execute(&var_));
+  EXPECT_TRUE(var_->Get(&object_));
+  EXPECT_NOT_NULL(dynamic_cast<Light*>(object_.get()));
 
   Init("new Material(new Color(), 25.0, 1.0);");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object_.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Material*>(object_.ptr()));
+  EXPECT_TRUE(executer_->Execute(&var_));
+  EXPECT_TRUE(var_->Get(&object_));
+  EXPECT_NOT_NULL(dynamic_cast<Material*>(object_.get()));
 
   Init("new Point3();");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object_.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object_.ptr()));
+  EXPECT_TRUE(executer_->Execute(&var_));
+  EXPECT_TRUE(var_->Get(&object_));
+  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object_.get()));
 
   Init("new ShapeNode(new Cube(), new Material(new Color(), 25.0, 1.0));");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object_.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<ShapeNode*>(object_.ptr()));
+  EXPECT_TRUE(executer_->Execute(&var_));
+  EXPECT_TRUE(var_->Get(&object_));
+  EXPECT_NOT_NULL(dynamic_cast<ShapeNode*>(object_.get()));
 
   Init("new Sphere();");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object_.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<Sphere*>(object_.ptr()));
+  EXPECT_TRUE(executer_->Execute(&var_));
+  EXPECT_TRUE(var_->Get(&object_));
+  EXPECT_NOT_NULL(dynamic_cast<Sphere*>(object_.get()));
 
   Init("new TransformNode();");
-  EXPECT_TRUE(executer_->Execute(var_.Receive()));
-  EXPECT_TRUE(var_->Get(object_.Receive()));
-  EXPECT_NOT_NULL(dynamic_cast<TransformNode*>(object_.ptr()));
+  EXPECT_TRUE(executer_->Execute(&var_));
+  EXPECT_TRUE(var_->Get(&object_));
+  EXPECT_NOT_NULL(dynamic_cast<TransformNode*>(object_.get()));
 }
 
 TEST(SceneExecuterTest, ExecuteNewError) {
   Init("new Color(a);");
-  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 
   Init("new Blah();");
-  EXPECT_FALSE(executer_->Execute(var_.Receive()));
+  EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 }
 

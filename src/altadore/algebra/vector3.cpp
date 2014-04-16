@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include "altadore/algebra/point3.h"
+#include "bonavista/base/macros.h"
 
 Vector3::Vector3() {
   v_[0] = 0.0;

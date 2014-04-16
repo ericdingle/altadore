@@ -1,22 +1,23 @@
 #ifndef ALTADORE_SHAPE_CUBE_H_
 #define ALTADORE_SHAPE_CUBE_H_
 
+#include <memory>
 #include "altadore/shape/shape.h"
 #include "bonavista/base/macros.h"
 
 class Cube : public Shape {
  public:
   static Result Create(
-      const std::vector<scoped_refptr<const Variant> >& args,
-      Invokable** object);
+      const std::vector<std::shared_ptr<const Variant> >& args,
+      std::shared_ptr<Invokable>* object);
 
   Cube();
   virtual ~Cube();
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<scoped_refptr<const Variant> >& args,
-      const Variant** var);
+      const std::vector<std::shared_ptr<const Variant> >& args,
+      std::shared_ptr<const Variant>* var);
 
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const;
   virtual bool HasIntersection(const Ray& ray, double max_t) const;

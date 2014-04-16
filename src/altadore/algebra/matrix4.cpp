@@ -5,6 +5,7 @@
 #include "altadore/algebra/algebra_constants.h"
 #include "altadore/algebra/point3.h"
 #include "altadore/algebra/vector3.h"
+#include "bonavista/base/macros.h"
 
 Matrix4 Matrix4::GetRotation(Axis axis, double angle) {
   Matrix4 ret;

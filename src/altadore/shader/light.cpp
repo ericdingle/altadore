@@ -3,35 +3,34 @@
 #include "chaparral/executer/variant.h"
 
 Invokable::Result Light::Create(
-    const std::vector<scoped_refptr<const Variant> >& args,
-    Invokable** object) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
   if (args.size() != 2)
     return RESULT_ERR_ARG_SIZE;
 
-  scoped_refptr<Invokable> position_object;
-  if (!args[0]->Get(position_object.Receive()))
+  std::shared_ptr<Invokable> position_object;
+  if (!args[0]->Get(&position_object))
     return RESULT_ERR_ARG_TYPE;
-  Point3* position = dynamic_cast<Point3*>(position_object.ptr());
-  if (!position)
-    return RESULT_ERR_ARG_TYPE;
-
-  scoped_refptr<Invokable> color_object;
-  if (!args[1]->Get(color_object.Receive()))
-    return RESULT_ERR_ARG_TYPE;
-  Color* color = dynamic_cast<Color*>(color_object.ptr());
-  if (!color)
+  std::shared_ptr<Point3> position = std::dynamic_pointer_cast<Point3>(position_object);
+  if (!position.get())
     return RESULT_ERR_ARG_TYPE;
 
-  scoped_refptr<Light> light(new Light(position, color));
-  *object = light.Release();
+  std::shared_ptr<Invokable> color_object;
+  if (!args[1]->Get(&color_object))
+    return RESULT_ERR_ARG_TYPE;
+  std::shared_ptr<Color> color = std::dynamic_pointer_cast<Color>(color_object);
+  if (!color.get())
+    return RESULT_ERR_ARG_TYPE;
+
+  object->reset(new Light(position, color));
   return RESULT_OK;
 }
 
-Light::Light(const Point3* position, const Color* color) : position_(position), color_(color) {
-  DCHECK(position);
-  DCHECK(color);
+Light::Light(const std::shared_ptr<const Point3>& position,
+             const std::shared_ptr<const Color>& color)
+    : position_(position), color_(color) {
 }
 
 Light::~Light() {
@@ -39,7 +38,7 @@ Light::~Light() {
 
 Invokable::Result Light::Invoke(
     const std::string& name,
-    const std::vector<scoped_refptr<const Variant> >& args,
-    const Variant** var) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }

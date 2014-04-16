@@ -6,15 +6,14 @@
 #include "chaparral/executer/variant.h"
 
 Invokable::Result Cube::Create(
-    const std::vector<scoped_refptr<const Variant> >& args,
-    Invokable** object) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
   if (args.size() != 0)
     return RESULT_ERR_ARG_SIZE;
 
-  scoped_refptr<Cube> cube(new Cube());
-  *object = cube.Release();
+  object->reset(new Cube());;
   return RESULT_OK;
 }
 
@@ -26,8 +25,8 @@ Cube::~Cube() {
 
 Invokable::Result Cube::Invoke(
     const std::string& name,
-    const std::vector<scoped_refptr<const Variant> >& args,
-    const Variant** var) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }
 

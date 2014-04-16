@@ -6,7 +6,7 @@
 
 Bitmap::Bitmap(uint width, uint height) : width_(width), height_(height) {
   uint size = width * height;
-  data_.Reset(new Color[size]);
+  data_.reset(new Color[size]);
 }
 
 Bitmap::~Bitmap() {
@@ -28,7 +28,7 @@ void Bitmap::AntiAlias() {
   uint new_height = height_ / 2;
 
   uint size = new_width * new_height;
-  scoped_array<Color> new_data(new Color[size]);
+  std::unique_ptr<Color[]> new_data(new Color[size]);
 
   for (uint x = 0; x < width_; x += 2) {
     for (uint y = 0; y < height_; y += 2) {
@@ -54,16 +54,16 @@ void Bitmap::AntiAlias() {
 
   width_ = new_width;
   height_ = new_height;
-  data_.Reset(new_data.Release());
+  data_.reset(new_data.release());
 }
 
 bool Bitmap::Save(const char* file_name) const {
   scoped_FILE file(OpenFile(file_name, "wb"));
-  if (file.ptr() == NULL)
+  if (file.get() == NULL)
     return false;
 
   HeaderMagic header_magic;
-  if (fwrite(&header_magic, sizeof(HeaderMagic), 1, file.ptr()) != 1)
+  if (fwrite(&header_magic, sizeof(HeaderMagic), 1, file.get()) != 1)
     return false;
 
   // The row size must be 4-byte aligned.
@@ -76,23 +76,23 @@ bool Bitmap::Save(const char* file_name) const {
                      sizeof(Header) +
                      sizeof(InfoHeader) +
                      data_size;
-  if (fwrite(&header, sizeof(Header), 1, file.ptr()) != 1)
+  if (fwrite(&header, sizeof(Header), 1, file.get()) != 1)
     return false;
 
   InfoHeader info_header;
   info_header.width = width_;
   info_header.height = height_;
   info_header.data_size = data_size;
-  if (fwrite(&info_header, sizeof(InfoHeader), 1, file.ptr()) != 1)
+  if (fwrite(&info_header, sizeof(InfoHeader), 1, file.get()) != 1)
     return false;
 
   // Bitmap format requires that the rows be written in reverse order.
-  static char zero_buffer[] = {NULL, NULL, NULL};
+  static char zero_buffer[] = {'\0', '\0', '\0'};
   for (int y = height_ - 1; y >= 0; --y) {
     uint offset = y * width_;
-    if (fwrite(data_.ptr() + offset, row_size, 1, file.ptr()) != 1)
+    if (fwrite(data_.get() + offset, row_size, 1, file.get()) != 1)
       return false;
-    if (padding != 0 && fwrite(zero_buffer, padding, 1, file.ptr()) != 1)
+    if (padding != 0 && fwrite(zero_buffer, padding, 1, file.get()) != 1)
       return false;
   }
 

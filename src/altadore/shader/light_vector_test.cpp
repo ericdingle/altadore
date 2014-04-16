@@ -7,36 +7,37 @@ TEST_CASE(LightVectorTest) {
 };
 
 TEST(LightVectorTest, Invoke) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<const Variant> var;
-  scoped_refptr<Invokable> object;
+  std::shared_ptr<const Variant> var;
+  std::shared_ptr<Invokable> object;
 
-  object.Reset(new Light(new Point3(1.0, 2.0, 3.0), new Color(0.1, 0.2, 0.3)));
-  var.Reset(new Variant(object.ptr()));
-  args.push_back(var.ptr());
+  object.reset(new Light(std::make_shared<Point3>(1.0, 2.0, 3.0),
+                         std::make_shared<Color>(0.1, 0.2, 0.3)));
+  var.reset(new Variant(object));
+  args.push_back(var);
 
   LightVector lights;
-  EXPECT_EQ(lights.Invoke("AddLight", args, var.Receive()), Invokable::RESULT_OK);
-  EXPECT_NOT_NULL(object.ptr());
+  EXPECT_EQ(lights.Invoke("AddLight", args, &var), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.get());
 }
 
 TEST(LightVectorTest, InvokeError) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<const Variant> var;
+  std::shared_ptr<const Variant> var;
 
   LightVector lights;
-  EXPECT_EQ(lights.Invoke("blah", args, var.Receive()),
+  EXPECT_EQ(lights.Invoke("blah", args, &var),
             Invokable::RESULT_ERR_NAME);
 
-  EXPECT_EQ(lights.Invoke("AddLight", args, var.Receive()),
+  EXPECT_EQ(lights.Invoke("AddLight", args, &var),
             Invokable::RESULT_ERR_ARG_SIZE);
 
-  var.Reset(new Variant(2.0));
-  args.push_back(var.ptr());
+  var.reset(new Variant(2.0));
+  args.push_back(var);
 
-  EXPECT_EQ(lights.Invoke("AddLight", args, var.Receive()),
+  EXPECT_EQ(lights.Invoke("AddLight", args, &var),
             Invokable::RESULT_ERR_ARG_TYPE);
 }
 
@@ -47,6 +48,7 @@ TEST(LightVectorTest, Constructor) {
 
 TEST(LightVectorTest, AddLight) {
   LightVector lights;
-  lights.AddLight(new Light(new Point3(), new Color()));
+  lights.AddLight(std::make_shared<Light>(std::make_shared<Point3>(),
+                                          std::make_shared<Color>()));
   EXPECT_EQ(lights.lights().size(), 1);
 }

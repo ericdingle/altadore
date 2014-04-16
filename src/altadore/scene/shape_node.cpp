@@ -5,36 +5,34 @@
 #include "chaparral/executer/variant.h"
 
 Invokable::Result ShapeNode::Create(
-    const std::vector<scoped_refptr<const Variant> >& args,
-    Invokable** object) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
   if (args.size() != 2)
     return RESULT_ERR_ARG_SIZE;
 
-  scoped_refptr<Invokable> shape_object;
-  if (!args[0]->Get(shape_object.Receive()))
+  std::shared_ptr<Invokable> shape_object;
+  if (!args[0]->Get(&shape_object))
     return RESULT_ERR_ARG_TYPE;
-  Shape* shape = dynamic_cast<Shape*>(shape_object.ptr());
-  if (!shape)
-    return RESULT_ERR_ARG_TYPE;
-
-  scoped_refptr<Invokable> material_object;
-  if (!args[1]->Get(material_object.Receive()))
-    return RESULT_ERR_ARG_TYPE;
-  Material* material = dynamic_cast<Material*>(material_object.ptr());
-  if (!material)
+  std::shared_ptr<Shape> shape = std::dynamic_pointer_cast<Shape>(shape_object);
+  if (!shape.get())
     return RESULT_ERR_ARG_TYPE;
 
-  scoped_refptr<ShapeNode> node(new ShapeNode(shape, material));
-  *object = node.Release();
+  std::shared_ptr<Invokable> material_object;
+  if (!args[1]->Get(&material_object))
+    return RESULT_ERR_ARG_TYPE;
+  std::shared_ptr<Material> material = std::dynamic_pointer_cast<Material>(material_object);
+  if (!material.get())
+    return RESULT_ERR_ARG_TYPE;
+
+  object->reset(new ShapeNode(shape, material));
   return RESULT_OK;
 }
 
-ShapeNode::ShapeNode(const Shape* shape, const Material* material)
+ShapeNode::ShapeNode(const std::shared_ptr<const Shape>& shape,
+                     const std::shared_ptr<const Material>& material)
     : SceneNode(), shape_(shape), material_(material) {
-  DCHECK(shape);
-  DCHECK(material);
 }
 
 ShapeNode::~ShapeNode() {
@@ -42,8 +40,8 @@ ShapeNode::~ShapeNode() {
 
 Invokable::Result ShapeNode::Invoke(
     const std::string& name,
-    const std::vector<scoped_refptr<const Variant> >& args,
-    const Variant** var) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }
 
@@ -53,7 +51,8 @@ void ShapeNode::CalculateTransforms(const Matrix4& parent_transform) {
   transform_inverse_transpose_ = transform_inverse_.GetTranspose();
 }
 
-bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
+bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point,
+                                 Vector3* normal, const Material** material) const {
   DCHECK(t);
   DCHECK(point);
   DCHECK(normal);
@@ -68,7 +67,7 @@ bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vecto
   *point = transform_ * *point;
   *normal = transform_inverse_transpose_ * *normal;
   normal->Normalize();
-  *material = material_.ptr();
+  *material = material_.get();
   return true;
 }
 

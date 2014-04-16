@@ -8,21 +8,21 @@ TEST_CASE(SphereTest) {
 };
 
 TEST(SphereTest, Create) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<Invokable> object;
-  EXPECT_EQ(Sphere::Create(args, object.Receive()), Invokable::RESULT_OK);
-  EXPECT_NOT_NULL(object.ptr());
+  std::shared_ptr<Invokable> object;
+  EXPECT_EQ(Sphere::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.get());
 }
 
 TEST(SphereTest, CreateError) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<const Variant> var(new Variant(1.0));
-  args.push_back(var.ptr());
+  std::shared_ptr<const Variant> var(new Variant(1.0));
+  args.push_back(var);
 
-  scoped_refptr<Invokable> object;
-  EXPECT_EQ(Sphere::Create(args, object.Receive()),
+  std::shared_ptr<Invokable> object;
+  EXPECT_EQ(Sphere::Create(args, &object),
             Invokable::RESULT_ERR_ARG_SIZE);
 }
 

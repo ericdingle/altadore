@@ -5,24 +5,24 @@
 #include "chaparral/executer/variant.h"
 
 Invokable::Result Point3::Create(
-    const std::vector<scoped_refptr<const Variant> >& args,
-    Invokable** object) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
   if (args.size() != 0 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
-  scoped_refptr<Point3> point;
+  shared_ptr<Point3> point;
   if (args.size() == 0) {
-    point.Reset(new Point3());
+    point.reset(new Point3());
   } else {
     double x, y, z;
     if (!args[0]->Get(&x) || !args[1]->Get(&y) || !args[2]->Get(&z))
       return RESULT_ERR_ARG_TYPE;
-    point.Reset(new Point3(x, y, z));
+    point.reset(new Point3(x, y, z));
   }
 
-  *object = point.Release();
+  *object = point;
   return RESULT_OK;
 }
 
@@ -55,8 +55,8 @@ Point3& Point3::operator=(const Point3& p) {
 
 Invokable::Result Point3::Invoke(
     const std::string& name,
-    const std::vector<scoped_refptr<const Variant> >& args,
-    const Variant** var) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }
 

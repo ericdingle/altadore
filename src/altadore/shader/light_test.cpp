@@ -7,43 +7,46 @@ TEST_CASE(LightTest) {
 };
 
 TEST(LightTest, Create) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<const Variant> var;
-  scoped_refptr<Invokable> object;
+  std::shared_ptr<const Variant> var;
+  std::shared_ptr<Invokable> object;
 
-  object.Reset(new Point3(0.1, 0.2, 0.3));
-  var.Reset(new Variant(object.ptr()));
-  args.push_back(var.ptr());
+  object.reset(new Point3(0.1, 0.2, 0.3));
+  var.reset(new Variant(object));
+  args.push_back(var);
 
-  object.Reset(new Color(0.1, 0.2, 0.3));
-  var.Reset(new Variant(object.ptr()));
-  args.push_back(var.ptr());
+  object.reset(new Color(0.1, 0.2, 0.3));
+  var.reset(new Variant(object));
+  args.push_back(var);
 
-  EXPECT_EQ(Light::Create(args, object.Receive()), Invokable::RESULT_OK);
-  EXPECT_NOT_NULL(object.ptr());
+  EXPECT_EQ(Light::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_NOT_NULL(object.get());
 }
 
 TEST(LightTest, CreateError) {
-  std::vector<scoped_refptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant> > args;
 
-  scoped_refptr<Invokable> object;
-  EXPECT_EQ(Light::Create(args, object.Receive()),
+  std::shared_ptr<Invokable> object;
+  EXPECT_EQ(Light::Create(args, &object),
             Invokable::RESULT_ERR_ARG_SIZE);
 
-  scoped_refptr<const Variant> var(new Variant(1.0));
-  args.push_back(var.ptr());
-  args.push_back(var.ptr());
+  std::shared_ptr<const Variant> var(new Variant(1.0));
+  args.push_back(var);
+  args.push_back(var);
 
-  EXPECT_EQ(Light::Create(args, object.Receive()),
+  EXPECT_EQ(Light::Create(args, &object),
             Invokable::RESULT_ERR_ARG_TYPE);
 }
+
 TEST(LightTest, Constructor) {
-  Light light(new Point3(1.0, 2.0, 3.0), new Color(0.1, 0.2, 0.3));
+  Light light(std::make_shared<Point3>(1.0, 2.0, 3.0),
+              std::make_shared<Color>(0.1, 0.2, 0.3));
 }
 
 TEST(LightTest, Position) {
-  Light light(new Point3(1.0, 2.0, 3.0), new Color());
+  Light light(std::make_shared<Point3>(1.0, 2.0, 3.0),
+              std::make_shared<Color>());
   const Point3* point = light.position();
   EXPECT_EQ((*point)[0], 1.0);
   EXPECT_EQ((*point)[1], 2.0);
@@ -51,7 +54,8 @@ TEST(LightTest, Position) {
 }
 
 TEST(LightTest, Color) {
-  Light light(new Point3(), new Color(0.1, 0.2, 0.3));
+  Light light(std::make_shared<Point3>(),
+              std::make_shared<Color>(0.1, 0.2, 0.3));
   const Color* color = light.color();
   EXPECT_EQ(color->r(), 0.1);
   EXPECT_EQ(color->g(), 0.2);

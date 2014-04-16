@@ -4,15 +4,14 @@
 #include "chaparral/executer/variant.h"
 
 Invokable::Result TransformNode::Create(
-    const std::vector<scoped_refptr<const Variant> >& args,
-    Invokable** object) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
   if (args.size() != 0)
     return RESULT_ERR_ARG_SIZE;
 
-  scoped_refptr<TransformNode> node(new TransformNode());
-  *object = node.Release();
+  object->reset(new TransformNode());
   return RESULT_OK;
 }
 
@@ -24,8 +23,8 @@ TransformNode::~TransformNode() {
 
 Invokable::Result TransformNode::Invoke(
     const std::string& name,
-    const std::vector<scoped_refptr<const Variant> >& args,
-    const Variant** var) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<const Variant>* var) {
   if (name == "AddChild")
     return InvokeAddChild(args, var);
   else if (name == "Rotate")
@@ -39,28 +38,27 @@ Invokable::Result TransformNode::Invoke(
 }
 
 Invokable::Result TransformNode::InvokeAddChild(
-    const std::vector<scoped_refptr<const Variant> >& args,
-    const Variant** var) {
+    const std::vector<std::shared_ptr<const Variant> >& args,
+    std::shared_ptr<const Variant>* var) {
   if (args.size() != 1)
     return RESULT_ERR_ARG_SIZE;
 
-  scoped_refptr<Invokable> object;
-  if (!args[0]->Get(object.Receive()))
+  std::shared_ptr<Invokable> object;
+  if (!args[0]->Get(&object))
     return RESULT_ERR_ARG_TYPE;
-  SceneNode* node = dynamic_cast<SceneNode*>(object.ptr());
-  if (!node)
+  std::shared_ptr<SceneNode> node = std::dynamic_pointer_cast<SceneNode>(object);
+  if (!node.get())
     return RESULT_ERR_ARG_TYPE;
 
   AddChild(node);
 
-  scoped_refptr<Variant> var_ref(new Variant(object.ptr()));
-  *var = var_ref.Release();
+  var->reset(new Variant(object));
 
   return RESULT_OK;
 }
 
 Invokable::Result TransformNode::InvokeRotate(
-    const std::vector<scoped_refptr<const Variant> >& args) {
+    const std::vector<std::shared_ptr<const Variant> >& args) {
   if (args.size() != 2)
     return RESULT_ERR_ARG_SIZE;
 
@@ -78,7 +76,7 @@ Invokable::Result TransformNode::InvokeRotate(
 }
 
 Invokable::Result TransformNode::InvokeScale(
-    const std::vector<scoped_refptr<const Variant> >& args) {
+    const std::vector<std::shared_ptr<const Variant> >& args) {
   if (args.size() != 1 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
@@ -98,7 +96,7 @@ Invokable::Result TransformNode::InvokeScale(
 }
 
 Invokable::Result TransformNode::InvokeTranslate(
-    const std::vector<scoped_refptr<const Variant> >& args) {
+    const std::vector<std::shared_ptr<const Variant> >& args) {
   if (args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
@@ -110,8 +108,7 @@ Invokable::Result TransformNode::InvokeTranslate(
   return RESULT_OK;
 }
 
-void TransformNode::AddChild(SceneNode* child) {
-  DCHECK(child);
+void TransformNode::AddChild(const std::shared_ptr<SceneNode>& child) {
   children_.push_back(child);
 }
 
@@ -139,7 +136,8 @@ void TransformNode::CalculateTransforms(const Matrix4& parent_transform) {
   }
 }
 
-bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal, const Material** material) const {
+bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point,
+                                     Vector3* normal, const Material** material) const {
   DCHECK(t);
   DCHECK(point);
   DCHECK(normal);
