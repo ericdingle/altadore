@@ -1,3 +1,4 @@
+#include <memory>
 #include "altadore/ray_tracer/ray_tracer.h"
 #include "altadore/scene/transform_node.h"
 #include "altadore/scene_interp/scene_executer.h"
@@ -6,7 +7,6 @@
 #include "altadore/shader/light_vector.h"
 #include "bonavista/base/command_line.h"
 #include "bonavista/file/util.h"
-#include "bonavista/memory/scoped_refptr.h"
 #include "chaparral/lexer/token_stream.h"
 
 int main(int argc, char* argv[]) {
@@ -54,11 +54,13 @@ int main(int argc, char* argv[]) {
   SceneParser parser(&stream);
   SceneExecuter executer(&parser);
 
-  scoped_refptr<TransformNode> root(new TransformNode());
-  executer.SetVar("root", new Variant(dynamic_cast<Invokable*>(root.ptr())));
+  std::shared_ptr<TransformNode> root(new TransformNode());
+  executer.SetVar("root", std::make_shared<Variant>(
+      std::dynamic_pointer_cast<Invokable>(root)));
 
-  scoped_refptr<LightVector> lights(new LightVector());
-  executer.SetVar("lights", new Variant(dynamic_cast<Invokable*>(lights.ptr())));
+  std::shared_ptr<LightVector> lights(new LightVector());
+  executer.SetVar("lights", std::make_shared<Variant>(
+      std::dynamic_pointer_cast<Invokable>(lights)));
 
   if (!executer.ExecuteAll()) {
     printf("Error: %s at line %d, column %d\n", executer.error().c_str(),
@@ -68,7 +70,7 @@ int main(int argc, char* argv[]) {
 
   // Render scene.
   root->CalculateTransforms(Matrix4());
-  RayTracer ray_tracer(root.ptr(), lights.ptr());
+  RayTracer ray_tracer(root, lights);
   if (!ray_tracer.Render(output_file.c_str(), width, height, anti_alias)) {
     printf("Could not render!");
     return 1;
