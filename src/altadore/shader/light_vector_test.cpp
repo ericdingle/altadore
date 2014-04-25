@@ -18,7 +18,7 @@ TEST(LightVectorTest, Invoke) {
   args.push_back(var);
 
   LightVector lights;
-  EXPECT_EQ(lights.Invoke("AddLight", args, &var), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, lights.Invoke("AddLight", args, &var));
   EXPECT_NOT_NULL(object.get());
 }
 
@@ -28,27 +28,25 @@ TEST(LightVectorTest, InvokeError) {
   std::shared_ptr<const Variant> var;
 
   LightVector lights;
-  EXPECT_EQ(lights.Invoke("blah", args, &var),
-            Invokable::RESULT_ERR_NAME);
-
-  EXPECT_EQ(lights.Invoke("AddLight", args, &var),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_NAME, lights.Invoke("blah", args, &var));
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE,
+            lights.Invoke("AddLight", args, &var));
 
   var.reset(new Variant(2.0));
   args.push_back(var);
 
-  EXPECT_EQ(lights.Invoke("AddLight", args, &var),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE,
+            lights.Invoke("AddLight", args, &var));
 }
 
 TEST(LightVectorTest, Constructor) {
   LightVector lights;
-  EXPECT_EQ(lights.lights().size(), 0);
+  EXPECT_EQ(0u, lights.lights().size());
 }
 
 TEST(LightVectorTest, AddLight) {
   LightVector lights;
   lights.AddLight(std::make_shared<Light>(std::make_shared<Point3>(),
                                           std::make_shared<Color>()));
-  EXPECT_EQ(lights.lights().size(), 1);
+  EXPECT_EQ(1u, lights.lights().size());
 }

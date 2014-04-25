@@ -79,7 +79,7 @@ TEST(ShapeNodeTest, Create) {
   var.reset(new Variant(object));
   args.push_back(var);
 
-  EXPECT_EQ(ShapeNode::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, ShapeNode::Create(args, &object));
   EXPECT_NOT_NULL(object.get());
 }
 
@@ -87,15 +87,13 @@ TEST(ShapeNodeTest, CreateError) {
   std::vector<std::shared_ptr<const Variant> > args;
 
   std::shared_ptr<Invokable> object;
-  EXPECT_EQ(ShapeNode::Create(args, &object),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, ShapeNode::Create(args, &object));
 
   std::shared_ptr<const Variant> var(new Variant(1.0));
   args.push_back(var);
   args.push_back(var);
 
-  EXPECT_EQ(ShapeNode::Create(args, &object),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, ShapeNode::Create(args, &object));
 }
 
 TEST(ShapeNodeTest, CalcTransforms) {
@@ -121,10 +119,10 @@ TEST(ShapeNodeTest, FindIntersection) {
   ShapeNode node1(std::make_shared<TestShape>(true), material_);
   node1.CalculateTransforms(Matrix4::GetScaling(2));
   EXPECT_TRUE(node1.FindIntersection(ray, &t, &point, &normal, &material));
-  EXPECT_EQ(t, 1);
+  EXPECT_EQ(1, t);
   EXPECT_TRUE(point == Point3(1, 1, 1));
   EXPECT_TRUE(normal == Vector3(1, 0, 0));
-  EXPECT_EQ(material, material_.get());
+  EXPECT_EQ(material_.get(), material);
 
   ShapeNode node2(std::make_shared<TestShape>(false), material_);
   EXPECT_FALSE(node2.FindIntersection(ray, &t, &point, &normal, &material));

@@ -11,7 +11,7 @@ TEST(CubeTest, Create) {
   std::vector<std::shared_ptr<const Variant> > args;
 
   std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Cube::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, Cube::Create(args, &object));
   EXPECT_NOT_NULL(object.get());
 }
 
@@ -22,8 +22,7 @@ TEST(CubeTest, CreateError) {
   args.push_back(var);
 
   std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Cube::Create(args, &object),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, Cube::Create(args, &object));
 }
 
 TEST(CubeTest, FindIntersection) {
@@ -34,13 +33,13 @@ TEST(CubeTest, FindIntersection) {
 
   Ray ray1(Point3(0, 0, 2), Vector3(0, 0, -1));
   EXPECT_TRUE(cube.FindIntersection(ray1, &t, &point, &normal));
-  EXPECT_EQ(t, 1);
-  EXPECT_EQ(point[0], 0);
-  EXPECT_EQ(point[1], 0);
-  EXPECT_EQ(point[2], 1);
-  EXPECT_EQ(normal[0], 0);
-  EXPECT_EQ(normal[1], 0);
-  EXPECT_EQ(normal[2], 1);
+  EXPECT_EQ(1, t);
+  EXPECT_EQ(0, point[0]);
+  EXPECT_EQ(0, point[1]);
+  EXPECT_EQ(1, point[2]);
+  EXPECT_EQ(0, normal[0]);
+  EXPECT_EQ(0, normal[1]);
+  EXPECT_EQ(1, normal[2]);
 
   Ray ray2(Point3(0, 0, 2), Vector3(0, 0, 1));
   EXPECT_FALSE(cube.FindIntersection(ray2, &t, &point, &normal));

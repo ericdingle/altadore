@@ -46,7 +46,7 @@ TEST(SceneExecuterTest, Constants) {
 
   double d;
   EXPECT_TRUE(executer_->ExecuteT(&d));
-  EXPECT_EQ(d, Matrix4::AXIS_X);
+  EXPECT_EQ(Matrix4::AXIS_X, d);
 }
 
 TEST(SceneExecuterTest, ExecuteDotAccessor) {
@@ -58,7 +58,7 @@ TEST(SceneExecuterTest, ExecuteDotAccessor) {
 
   int i;
   EXPECT_TRUE(executer_->ExecuteT(&i));
-  EXPECT_EQ(i, 5);
+  EXPECT_EQ(5, i);
 }
 
 TEST(SceneExecuterTest, ExecuteDotAccessorError) {
@@ -93,7 +93,7 @@ TEST(SceneExecuterTest, ExecuteAssignment) {
   Init("a=1;");
   double d;
   EXPECT_TRUE(executer_->ExecuteT(&d));
-  EXPECT_EQ(d, 1);
+  EXPECT_EQ(1, d);
 }
 
 TEST(SceneExecuterTest, ExecuteAssignmentError) {
@@ -110,7 +110,7 @@ TEST(SceneExecuterTest, ExecuteIdentifier) {
 
   int i;
   EXPECT_TRUE(executer_->ExecuteT(&i));
-  EXPECT_EQ(i, 5);
+  EXPECT_EQ(5, i);
 }
 
 TEST(SceneExecuterTest, ExecuteIdentifierError) {
@@ -175,5 +175,5 @@ TEST(SceneExecuterTest, ExecuteNumber) {
   Init("1;");
   double d;
   EXPECT_TRUE(executer_->ExecuteT(&d));
-  EXPECT_EQ(d, 1);
+  EXPECT_EQ(1, d);
 }

@@ -11,7 +11,7 @@ TEST(Point3Test, Create) {
   std::vector<std::shared_ptr<const Variant> > args;
 
   std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Point3::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, Point3::Create(args, &object));
   EXPECT_NOT_NULL(object.get());
 
   std::shared_ptr<const Variant> var(new Variant(1.0));
@@ -19,7 +19,7 @@ TEST(Point3Test, Create) {
   args.push_back(var);
   args.push_back(var);
 
-  EXPECT_EQ(Point3::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, Point3::Create(args, &object));
   EXPECT_NOT_NULL(object.get());
 }
 
@@ -31,26 +31,24 @@ TEST(Point3Test, CreateError) {
   args.push_back(var);
 
   std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Point3::Create(args, &object),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, Point3::Create(args, &object));
 
   var.reset(new Variant(2));
   args.push_back(var);
 
-  EXPECT_EQ(Point3::Create(args, &object),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, Point3::Create(args, &object));
 }
 
 TEST(Point3Test, Constructor) {
   Point3 point1;
-  EXPECT_EQ(point1[0], 0);
-  EXPECT_EQ(point1[1], 0);
-  EXPECT_EQ(point1[2], 0);
+  EXPECT_EQ(0, point1[0]);
+  EXPECT_EQ(0, point1[1]);
+  EXPECT_EQ(0, point1[2]);
 
   Point3 point2(1.0, 2.0, 3.0);
-  EXPECT_EQ(point2[0], 1.0);
-  EXPECT_EQ(point2[1], 2.0);
-  EXPECT_EQ(point2[2], 3.0);
+  EXPECT_EQ(1, point2[0]);
+  EXPECT_EQ(2, point2[1]);
+  EXPECT_EQ(3, point2[2]);
 }
 
 TEST(Point3Test, CopyConstructor) {

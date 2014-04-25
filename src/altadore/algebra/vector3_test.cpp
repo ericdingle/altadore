@@ -8,14 +8,14 @@ TEST_CASE(Vector3Test) {
 
 TEST(Vector3Test, Constructor) {
   Vector3 vector1;
-  EXPECT_EQ(vector1[0], 0);
-  EXPECT_EQ(vector1[1], 0);
-  EXPECT_EQ(vector1[2], 0);
+  EXPECT_EQ(0, vector1[0]);
+  EXPECT_EQ(0, vector1[1]);
+  EXPECT_EQ(0, vector1[2]);
 
   Vector3 vector2(1.0, 2.0, 3.0);
-  EXPECT_EQ(vector2[0], 1.0);
-  EXPECT_EQ(vector2[1], 2.0);
-  EXPECT_EQ(vector2[2], 3.0);
+  EXPECT_EQ(1, vector2[0]);
+  EXPECT_EQ(2, vector2[1]);
+  EXPECT_EQ(3, vector2[2]);
 }
 
 TEST(Vector3Test, CopyConstructorVector3) {
@@ -81,18 +81,18 @@ TEST(Vector3Test, CrossProduct) {
 TEST(Vector3Test, DotProduct) {
   Vector3 vector1(2, 4, 8);
   Vector3 vector2(1, 5, -1);
-  EXPECT_EQ(vector1.Dot(vector2), 14);
+  EXPECT_EQ(14, vector1.Dot(vector2));
 }
 
 TEST(Vector3Test, Length) {
   Vector3 vector(9, 2, 6);
-  EXPECT_EQ(vector.Length(), 11);
+  EXPECT_EQ(11, vector.Length());
 }
 
 TEST(Vector3Test, Normalize) {
   Vector3 vector1(9, 2, 6);
   Vector3 vector2(vector1);
   vector2.Normalize();
-  EXPECT_EQ(vector2.Length(), 1);
+  EXPECT_EQ(1, vector2.Length());
   EXPECT_EQ(vector1[0] / vector2[0], vector1[1] / vector2[1]);
 }

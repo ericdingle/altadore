@@ -32,26 +32,26 @@ TEST(SceneLexerTest, TokenizeOperator) {
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
     input_ = inputs[i];
     EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-    EXPECT_EQ(type_, types[i]);
-    EXPECT_EQ(value_, input_);
-    EXPECT_EQ(count_, 1);
+    EXPECT_EQ(types[i], type_);
+    EXPECT_EQ(input_, value_);
+    EXPECT_EQ(1u, count_);
   }
 }
 
 TEST(SceneLexerTest, TokenizeNew) {
   input_ = "new";
   EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-  EXPECT_EQ(type_, SceneLexer::TYPE_NEW);
-  EXPECT_EQ(value_, input_);
-  EXPECT_EQ(count_, input_.length());
+  EXPECT_EQ(SceneLexer::TYPE_NEW, type_);
+  EXPECT_EQ(input_, value_);
+  EXPECT_EQ(input_.length(), count_);
 }
 
 TEST(SceneLexerTest, TokenizeIdentifier) {
   input_ = "adf9f3q_ue0";
   EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-  EXPECT_EQ(type_, SceneLexer::TYPE_IDENTIFIER);
-  EXPECT_EQ(value_, input_);
-  EXPECT_EQ(count_, input_.length());
+  EXPECT_EQ(SceneLexer::TYPE_IDENTIFIER, type_);
+  EXPECT_EQ(input_, value_);
+  EXPECT_EQ(input_.length(), count_);
 }
 
 TEST(SceneLexerTest, TokenizeNumber) {
@@ -64,9 +64,9 @@ TEST(SceneLexerTest, TokenizeNumber) {
   for (uint i = 0; i < ARRAY_SIZE(inputs); ++i) {
     input_ = inputs[i];
     EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-    EXPECT_EQ(type_, SceneLexer::TYPE_NUMBER);
-    EXPECT_EQ(value_, input_);
-    EXPECT_EQ(count_, input_.length());
+    EXPECT_EQ(SceneLexer::TYPE_NUMBER, type_);
+    EXPECT_EQ(input_, value_);
+    EXPECT_EQ(input_.length(), count_);
   }
 }
 

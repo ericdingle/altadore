@@ -53,7 +53,7 @@ TEST(SceneParserTest, ParseNewObject) {
   Init("new a();");
   EXPECT_TRUE(parser_->Parse(&root_));
   EXPECT_TRUE(root_->token()->IsType(SceneLexer::TYPE_NEW));
-  EXPECT_EQ(root_->children().size(), 1);
+  EXPECT_EQ(1u, root_->children().size());
 
   EXPECT_TRUE(root_->children()[0]->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS));
 }
@@ -68,7 +68,7 @@ TEST(SceneParserTest, ParseDotAccessor) {
   Init("a.b();");
   EXPECT_TRUE(parser_->Parse(&root_));
   EXPECT_TRUE(root_->token()->IsType(SceneLexer::TYPE_DOT));
-  EXPECT_EQ(root_->children().size(), 2);
+  EXPECT_EQ(2u, root_->children().size());
 
   EXPECT_TRUE(root_->children()[0]->token()->IsType(SceneLexer::TYPE_IDENTIFIER));
   EXPECT_TRUE(root_->children()[1]->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS));
@@ -92,7 +92,7 @@ TEST(SceneParserTest, ParseAssignment) {
   Init("a = 5;");
   EXPECT_TRUE(parser_->Parse(&root_));
   EXPECT_TRUE(root_->token()->IsType(SceneLexer::TYPE_EQUAL));
-  EXPECT_EQ(root_->children().size(), 2);
+  EXPECT_EQ(2u, root_->children().size());
 
   EXPECT_TRUE(root_->children()[0]->token()->IsType(SceneLexer::TYPE_IDENTIFIER));
   EXPECT_TRUE(root_->children()[1]->token()->IsType(SceneLexer::TYPE_NUMBER));
@@ -116,24 +116,24 @@ TEST(SceneParserTest, ParseFunction) {
   EXPECT_TRUE(parser_->Parse(&root_));
   EXPECT_TRUE(root_->token()->IsType(SceneLexer::TYPE_DOT));
 
-  EXPECT_EQ(root_->children().size(), 2);
+  EXPECT_EQ(2u, root_->children().size());
   EXPECT_TRUE(root_->children()[1]->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS));
 
   const std::vector<std::unique_ptr<const ASTNode> >& children1 =
       root_->children()[1]->children();
-  EXPECT_EQ(children1.size(), 1);
+  EXPECT_EQ(1u, children1.size());
   EXPECT_TRUE(children1[0]->token()->IsType(SceneLexer::TYPE_IDENTIFIER));
 
   Init("a.b(1);");
   EXPECT_TRUE(parser_->Parse(&root_));
   EXPECT_TRUE(root_->token()->IsType(SceneLexer::TYPE_DOT));
 
-  EXPECT_EQ(root_->children().size(), 2);
+  EXPECT_EQ(2u, root_->children().size());
   EXPECT_TRUE(root_->children()[1]->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS));
 
   const std::vector<std::unique_ptr<const ASTNode> >& children2 =
       root_->children()[1]->children();
-  EXPECT_EQ(children2.size(), 2);
+  EXPECT_EQ(2u, children2.size());
   EXPECT_TRUE(children2[0]->token()->IsType(SceneLexer::TYPE_IDENTIFIER));
   EXPECT_TRUE(children2[1]->token()->IsType(SceneLexer::TYPE_NUMBER));
 
@@ -141,12 +141,12 @@ TEST(SceneParserTest, ParseFunction) {
   EXPECT_TRUE(parser_->Parse(&root_));
   EXPECT_TRUE(root_->token()->IsType(SceneLexer::TYPE_DOT));
 
-  EXPECT_EQ(root_->children().size(), 2);
+  EXPECT_EQ(2u, root_->children().size());
   EXPECT_TRUE(root_->children()[1]->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS));
 
   const std::vector<std::unique_ptr<const ASTNode> >& children3 =
       root_->children()[1]->children();
-  EXPECT_EQ(children3.size(), 3);
+  EXPECT_EQ(3u, children3.size());
   EXPECT_TRUE(children3[0]->token()->IsType(SceneLexer::TYPE_IDENTIFIER));
   EXPECT_TRUE(children3[1]->token()->IsType(SceneLexer::TYPE_NUMBER));
   EXPECT_TRUE(children3[2]->token()->IsType(SceneLexer::TYPE_NUMBER));

@@ -10,7 +10,7 @@ TEST(ColorTest, Create) {
   std::vector<std::shared_ptr<const Variant> > args;
 
   std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Color::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, Color::Create(args, &object));
   EXPECT_NOT_NULL(object.get());
 
   std::shared_ptr<const Variant> var(new Variant(1.0));
@@ -18,7 +18,7 @@ TEST(ColorTest, Create) {
   args.push_back(var);
   args.push_back(var);
 
-  EXPECT_EQ(Color::Create(args, &object), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, Color::Create(args, &object));
   EXPECT_NOT_NULL(object.get());
 }
 
@@ -30,26 +30,24 @@ TEST(ColorTest, CreateError) {
   args.push_back(var);
 
   std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Color::Create(args, &object),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, Color::Create(args, &object));
 
   var.reset(new Variant(2));
   args.push_back(var);
 
-  EXPECT_EQ(Color::Create(args, &object),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, Color::Create(args, &object));
 }
 
 TEST(ColorTest, Constructor) {
   Color color1;
-  EXPECT_EQ(color1.r(), 0);
-  EXPECT_EQ(color1.g(), 0);
-  EXPECT_EQ(color1.b(), 0);
+  EXPECT_EQ(0, color1.r());
+  EXPECT_EQ(0, color1.g());
+  EXPECT_EQ(0, color1.b());
 
   Color color2(0.5, 1.0, 1.5);
-  EXPECT_EQ(color2.r(), 0.5);
-  EXPECT_EQ(color2.g(), 1.0);
-  EXPECT_EQ(color2.b(), 1.0);
+  EXPECT_EQ(0.5, color2.r());
+  EXPECT_EQ(1, color2.g());
+  EXPECT_EQ(1, color2.b());
 }
 
 TEST(ColorTest, CopyConstructor) {

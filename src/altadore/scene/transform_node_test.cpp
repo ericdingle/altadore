@@ -58,16 +58,14 @@ TEST_CASE(TransformNodeTest) {
 };
 
 TEST(TransformNodeTest, Create) {
-  EXPECT_EQ(TransformNode::Create(args_, &object_),
-            Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, TransformNode::Create(args_, &object_));
   EXPECT_NOT_NULL(object_.get());
 }
 
 TEST(TransformNodeTest, CreateError) {
   args_.push_back(std::make_shared<Variant>(1.0));
-
-  EXPECT_EQ(TransformNode::Create(args_, &object_),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE,
+            TransformNode::Create(args_, &object_));
 }
 
 TEST(TransformNodeTest, InvokeAddChild) {
@@ -75,23 +73,22 @@ TEST(TransformNodeTest, InvokeAddChild) {
   args_.push_back(std::make_shared<Variant>(object_));
 
   TransformNode node;
-  EXPECT_EQ(node.Invoke("AddChild", args_, &var_),
-            Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, node.Invoke("AddChild", args_, &var_));
 
   std::shared_ptr<Invokable> obj;
   EXPECT_TRUE(var_->Get(&obj));
-  EXPECT_EQ(obj.get(), object_.get());
+  EXPECT_EQ(object_.get(), obj.get());
 }
 
 TEST(TransformNodeTest, InvokeAddChildError) {
   TransformNode node;
-  EXPECT_EQ(node.Invoke("AddChild", args_, &var_),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE,
+            node.Invoke("AddChild", args_, &var_));
 
   args_.push_back(std::make_shared<Variant>(1.0));
 
-  EXPECT_EQ(node.Invoke("AddChild", args_, &var_),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE,
+            node.Invoke("AddChild", args_, &var_));
 }
 
 TEST(TransformNodeTest, InvokeRotate) {
@@ -99,54 +96,50 @@ TEST(TransformNodeTest, InvokeRotate) {
   args_.push_back(std::make_shared<Variant>(45.0));
 
   TransformNode node;
-  EXPECT_EQ(node.Invoke("Rotate", args_, &var_), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, node.Invoke("Rotate", args_, &var_));
 }
 
 TEST(TransformNodeTest, InvokeRotateError) {
   TransformNode node;
-  EXPECT_EQ(node.Invoke("Rotate", args_, &var_),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE,
+            node.Invoke("Rotate", args_, &var_));
 
   args_.push_back(std::make_shared<Variant>(1));
   args_.push_back(std::make_shared<Variant>(45.0));
 
-  EXPECT_EQ(node.Invoke("Rotate", args_, &var_),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE,
+            node.Invoke("Rotate", args_, &var_));
 
   args_[0] = std::make_shared<Variant>(3.0);
 
-  EXPECT_EQ(node.Invoke("Rotate", args_, &var_),
-            Invokable::RESULT_ERR_FAIL);
+  EXPECT_EQ(Invokable::RESULT_ERR_FAIL, node.Invoke("Rotate", args_, &var_));
 }
 
 TEST(TransformNodeTest, InvokeScale) {
   args_.push_back(std::make_shared<Variant>(1.0));
 
   TransformNode node;
-  EXPECT_EQ(node.Invoke("Scale", args_, &var_), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, node.Invoke("Scale", args_, &var_));
 
   args_.push_back(std::make_shared<Variant>(2.0));
   args_.push_back(std::make_shared<Variant>(3.0));
 
-  EXPECT_EQ(node.Invoke("Scale", args_, &var_), Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, node.Invoke("Scale", args_, &var_));
 }
 
 TEST(TransformNodeTest, InvokeScaleError) {
   TransformNode node;
-  EXPECT_EQ(node.Invoke("Scale", args_, &var_),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, node.Invoke("Scale", args_, &var_));
 
   args_.push_back(std::make_shared<Variant>(1));
 
-  EXPECT_EQ(node.Invoke("Scale", args_, &var_),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, node.Invoke("Scale", args_, &var_));
 
   args_[0] = std::make_shared<Variant>(1.0);
   args_.push_back(std::make_shared<Variant>(2.0));
   args_.push_back(std::make_shared<Variant>(3));
 
-  EXPECT_EQ(node.Invoke("Scale", args_, &var_),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, node.Invoke("Scale", args_, &var_));
 }
 
 TEST(TransformNodeTest, InvokeTranslate) {
@@ -155,33 +148,31 @@ TEST(TransformNodeTest, InvokeTranslate) {
   args_.push_back(std::make_shared<Variant>(3.0));
 
   TransformNode node;
-  EXPECT_EQ(node.Invoke("Translate", args_, &var_),
-            Invokable::RESULT_OK);
+  EXPECT_EQ(Invokable::RESULT_OK, node.Invoke("Translate", args_, &var_));
 }
 
 TEST(TransformNodeTest, InvokeTranslateError) {
   TransformNode node;
-  EXPECT_EQ(node.Invoke("Translate", args_, &var_),
-            Invokable::RESULT_ERR_ARG_SIZE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE,
+            node.Invoke("Translate", args_, &var_));
 
   args_.push_back(std::make_shared<Variant>(1.0));
   args_.push_back(std::make_shared<Variant>(2.0));
   args_.push_back(std::make_shared<Variant>(3));
 
-  EXPECT_EQ(node.Invoke("Translate", args_, &var_),
-            Invokable::RESULT_ERR_ARG_TYPE);
+  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE,
+            node.Invoke("Translate", args_, &var_));
 }
 
 TEST(TransformNodeTest, InvokeError) {
   TransformNode node;
-  EXPECT_EQ(node.Invoke("a", args_, &var_),
-            Invokable::RESULT_ERR_NAME);
+  EXPECT_EQ(Invokable::RESULT_ERR_NAME, node.Invoke("a", args_, &var_));
 }
 
 TEST(TransformNodeTest, AddChild) {
   TestTransformNode node;
   node.AddChild(std::make_shared<TransformNode>());
-  EXPECT_EQ(node.children().size(), 1);
+  EXPECT_EQ(1u, node.children().size());
 }
 
 TEST(TransformNodeTest, Transform) {
@@ -225,11 +216,11 @@ TEST(TransformNodeTest, FindIntersection) {
 
   node.AddChild(std::make_shared<TestSceneNode>(true));
   EXPECT_TRUE(node.FindIntersection(ray, &t, &point, &normal, &material));
-  EXPECT_EQ(t, 8);
+  EXPECT_EQ(8, t);
 
   node.AddChild(std::make_shared<TestSceneNode>(true));
   EXPECT_TRUE(node.FindIntersection(ray, &t, &point, &normal, &material));
-  EXPECT_EQ(t, 5);
+  EXPECT_EQ(5, t);
 }
 
 TEST(TransformNodeTest, HasIntersection) {

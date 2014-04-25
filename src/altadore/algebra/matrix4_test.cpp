@@ -157,9 +157,9 @@ TEST(Matrix4Test, PointMultiplication) {
   };
 
   Point3 result = Matrix4(d) * Point3(1, 2, 3);
-  EXPECT_EQ(result[0], 18);
-  EXPECT_EQ(result[1], 17);
-  EXPECT_EQ(result[2], 46);
+  EXPECT_EQ(18, result[0]);
+  EXPECT_EQ(17, result[1]);
+  EXPECT_EQ(46, result[2]);
 }
 
 TEST(Matrix4Test, VectorMultiplication) {
@@ -171,7 +171,7 @@ TEST(Matrix4Test, VectorMultiplication) {
   };
 
   Vector3 result = Matrix4(d) * Vector3(1, 2, 3);
-  EXPECT_EQ(result[0], 14);
-  EXPECT_EQ(result[1], 16);
-  EXPECT_EQ(result[2], 38);
+  EXPECT_EQ(14, result[0]);
+  EXPECT_EQ(16, result[1]);
+  EXPECT_EQ(38, result[2]);
 }
