@@ -1,13 +1,14 @@
-#ifndef ALTADORE_ALGEBRA_RAY_H_
-#define ALTADORE_ALGEBRA_RAY_H_
+#ifndef ALGEBRA_RAY_H_
+#define ALGEBRA_RAY_H_
 
-#include "altadore/algebra/point3.h"
-#include "altadore/algebra/vector3.h"
-#include "bonavista/base/macros.h"
+#include "algebra/point3.h"
+#include "algebra/vector3.h"
 
 class Ray {
  public:
   Ray(const Point3& origin, const Vector3& direction);
+  Ray(const Ray&) = delete;
+  Ray& operator=(const Ray&) = delete;
   ~Ray();
 
   const Point3& origin() const { return origin_; }
@@ -17,8 +18,6 @@ class Ray {
  private:
   const Point3 origin_;
   Vector3 direction_;
-
-  DISALLOW_COPY_AND_ASSIGN(Ray);
 };
 
-#endif
+#endif  // ALGEBRA_RAY_H_

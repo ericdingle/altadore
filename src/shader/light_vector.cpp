@@ -1,6 +1,6 @@
-#include "altadore/shader/light_vector.h"
+#include "shader/light_vector.h"
 
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 LightVector::LightVector() {
 }
@@ -10,7 +10,7 @@ LightVector::~LightVector() {
 
 Invokable::Result LightVector::Invoke(
     const std::string& name,
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
   DCHECK(var);
 

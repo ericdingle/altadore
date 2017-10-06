@@ -1,15 +1,16 @@
-#ifndef ALTADORE_RAY_TRACER_RAY_TRACER_H_
-#define ALTADORE_RAY_TRACER_RAY_TRACER_H_
+#ifndef RAY_TRACER_RAY_TRACER_H_
+#define RAY_TRACER_RAY_TRACER_H_
 
 #include <memory>
-#include "altadore/scene/transform_node.h"
-#include "altadore/shader/light_vector.h"
-#include "bonavista/base/macros.h"
+#include "scene/transform_node.h"
+#include "shader/light_vector.h"
 
 class RayTracer {
  public:
   RayTracer(const std::shared_ptr<const TransformNode>& root,
             const std::shared_ptr<const LightVector>& lights);
+  RayTracer(const RayTracer&) = delete;
+  RayTracer operator=(const RayTracer&) = delete;
   ~RayTracer();
 
   bool Render(const char* file_name, int width, int height, bool anti_alias);
@@ -22,8 +23,6 @@ class RayTracer {
  private:
   std::shared_ptr<const TransformNode> root_;
   std::shared_ptr<const LightVector> lights_;
-
-  DISALLOW_COPY_AND_ASSIGN(RayTracer);
 };
 
-#endif
+#endif  // RAY_TRACER_RAY_TRACER_H_

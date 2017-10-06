@@ -1,7 +1,6 @@
-#include "altadore/algebra/vector3.h"
+#include "algebra/vector3.h"
 
-#include "altadore/algebra/point3.h"
-#include "bonavista/testing/test_case.h"
+#include "algebra/point3.h"
 
 TEST_CASE(Vector3Test) {
 };

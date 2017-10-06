@@ -1,10 +1,10 @@
-#include "altadore/scene/transform_node.h"
+#include "scene/transform_node.h"
 
 #include <limits>
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 Invokable::Result TransformNode::Create(
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
@@ -23,7 +23,7 @@ TransformNode::~TransformNode() {
 
 Invokable::Result TransformNode::Invoke(
     const std::string& name,
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
   if (name == "AddChild")
     return InvokeAddChild(args, var);
@@ -38,7 +38,7 @@ Invokable::Result TransformNode::Invoke(
 }
 
 Invokable::Result TransformNode::InvokeAddChild(
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
   if (args.size() != 1)
     return RESULT_ERR_ARG_SIZE;
@@ -58,7 +58,7 @@ Invokable::Result TransformNode::InvokeAddChild(
 }
 
 Invokable::Result TransformNode::InvokeRotate(
-    const std::vector<std::shared_ptr<const Variant> >& args) {
+    const std::vector<std::shared_ptr<const Variant>>& args) {
   if (args.size() != 2)
     return RESULT_ERR_ARG_SIZE;
 
@@ -76,7 +76,7 @@ Invokable::Result TransformNode::InvokeRotate(
 }
 
 Invokable::Result TransformNode::InvokeScale(
-    const std::vector<std::shared_ptr<const Variant> >& args) {
+    const std::vector<std::shared_ptr<const Variant>>& args) {
   if (args.size() != 1 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
@@ -96,7 +96,7 @@ Invokable::Result TransformNode::InvokeScale(
 }
 
 Invokable::Result TransformNode::InvokeTranslate(
-    const std::vector<std::shared_ptr<const Variant> >& args) {
+    const std::vector<std::shared_ptr<const Variant>>& args) {
   if (args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 

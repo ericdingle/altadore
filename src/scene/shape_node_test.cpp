@@ -1,11 +1,10 @@
-#include "altadore/scene/shape_node.h"
+#include "scene/shape_node.h"
 
-#include "altadore/shape/shape.h"
-#include "altadore/shader/color.h"
-#include "altadore/shader/material.h"
-#include "altadore/shape/cube.h"
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/variant.h"
+#include "shape/shape.h"
+#include "shader/color.h"
+#include "shader/material.h"
+#include "shape/cube.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 namespace {
 
@@ -16,7 +15,7 @@ class TestShape : public Shape {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var) {
     return RESULT_ERR_NAME;
   }
@@ -44,7 +43,7 @@ class TestShapeNode : public ShapeNode {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var) {
     return RESULT_ERR_NAME;
   }
@@ -66,7 +65,7 @@ TEST_CASE(ShapeNodeTest) {
 };
 
 TEST(ShapeNodeTest, Create) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var;
   std::shared_ptr<Invokable> object;
@@ -84,7 +83,7 @@ TEST(ShapeNodeTest, Create) {
 }
 
 TEST(ShapeNodeTest, CreateError) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, ShapeNode::Create(args, &object));

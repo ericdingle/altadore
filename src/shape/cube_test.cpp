@@ -1,14 +1,13 @@
-#include "altadore/shape/cube.h"
+#include "shape/cube.h"
 
-#include "altadore/algebra/ray.h"
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/variant.h"
+#include "algebra/ray.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 TEST_CASE(CubeTest) {
 };
 
 TEST(CubeTest, Create) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_OK, Cube::Create(args, &object));
@@ -16,7 +15,7 @@ TEST(CubeTest, Create) {
 }
 
 TEST(CubeTest, CreateError) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var(new Variant(1.0));
   args.push_back(var);

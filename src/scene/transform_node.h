@@ -1,23 +1,24 @@
-#ifndef ALTADORE_SCENE_TRANSFORM_NODE_H_
-#define ALTADORE_SCENE_TRANSFORM_NODE_H_
+#ifndef SCENE_TRANSFORM_NODE_H_
+#define SCENE_TRANSFORM_NODE_H_
 
 #include <memory>
-#include "altadore/algebra/matrix4.h"
-#include "altadore/scene/scene_node.h"
-#include "bonavista/base/macros.h"
+#include "algebra/matrix4.h"
+#include "scene/scene_node.h"
 
 class TransformNode : public SceneNode {
  public:
   static Result Create(
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<Invokable>* object);
 
   TransformNode();
+  TransformNode(const TransformNode&) = delete;
+  TransformNode& operator=(const TransformNode&) = delete;
   virtual ~TransformNode();
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var);
 
   void AddChild(const std::shared_ptr<SceneNode>& node);
@@ -33,24 +34,22 @@ class TransformNode : public SceneNode {
   virtual bool HasIntersection(const Ray& ray, double max_t) const;
 
  protected:
-  const std::vector<std::shared_ptr<SceneNode> >& children() { return children_; }
+  const std::vector<std::shared_ptr<SceneNode>>& children() { return children_; }
   const Matrix4& transform() { return transform_; }
 
  private:
   Result InvokeAddChild(
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var);
   Result InvokeRotate(
-      const std::vector<std::shared_ptr<const Variant> >& args);
+      const std::vector<std::shared_ptr<const Variant>>& args);
   Result InvokeScale(
-      const std::vector<std::shared_ptr<const Variant> >& args);
+      const std::vector<std::shared_ptr<const Variant>>& args);
   Result InvokeTranslate(
-      const std::vector<std::shared_ptr<const Variant> >& args);
+      const std::vector<std::shared_ptr<const Variant>>& args);
 
-  std::vector<std::shared_ptr<SceneNode> > children_;
+  std::vector<std::shared_ptr<SceneNode>> children_;
   Matrix4 transform_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransformNode);
 };
 
-#endif
+#endif  // SCENE_TRANSFORM_NODE_H_

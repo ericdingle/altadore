@@ -1,11 +1,10 @@
-#include "altadore/algebra/matrix4.h"
+#include "algebra/matrix4.h"
 
 #include <math.h>
 #include <string.h>
-#include "altadore/algebra/algebra_constants.h"
-#include "altadore/algebra/point3.h"
-#include "altadore/algebra/vector3.h"
-#include "bonavista/base/macros.h"
+#include "algebra/algebra_constants.h"
+#include "algebra/point3.h"
+#include "algebra/vector3.h"
 
 Matrix4 Matrix4::GetRotation(Axis axis, double angle) {
   Matrix4 ret;

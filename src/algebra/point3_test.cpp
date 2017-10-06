@@ -1,14 +1,13 @@
-#include "altadore/algebra/point3.h"
+#include "algebra/point3.h"
 
-#include "altadore/algebra/vector3.h"
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/variant.h"
+#include "algebra/vector3.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 TEST_CASE(Point3Test) {
 };
 
 TEST(Point3Test, Create) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_OK, Point3::Create(args, &object));
@@ -24,7 +23,7 @@ TEST(Point3Test, Create) {
 }
 
 TEST(Point3Test, CreateError) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var(new Variant(1.0));
   args.push_back(var);

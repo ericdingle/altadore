@@ -1,14 +1,13 @@
-#ifndef ALTADORE_SHADER_COLOR_H_
-#define ALTADORE_SHADER_COLOR_H_
+#ifndef SHADER_COLOR_H_
+#define SHADER_COLOR_H_
 
 #include <memory>
-#include "bonavista/base/types.h"
-#include "chaparral/executer/invokable.h"
+#include "third_party/chaparral/src/executer/invokable.h"
 
 class Color : public Invokable {
  public:
   static Result Create(
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<Invokable>* object);
 
   Color();
@@ -19,7 +18,7 @@ class Color : public Invokable {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var);
 
   Color operator*(double d) const;
@@ -43,4 +42,4 @@ class Color : public Invokable {
   void operator=(const Color&);
 };
 
-#endif
+#endif  // SHADER_COLOR_H_

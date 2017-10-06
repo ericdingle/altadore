@@ -1,9 +1,8 @@
-#include "altadore/algebra/vector3.h"
+#include "algebra/vector3.h"
 
 #include <math.h>
 #include <string.h>
-#include "altadore/algebra/point3.h"
-#include "bonavista/base/macros.h"
+#include "algebra/point3.h"
 
 Vector3::Vector3() {
   v_[0] = 0.0;

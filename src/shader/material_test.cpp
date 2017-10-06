@@ -1,13 +1,12 @@
-#include "altadore/shader/material.h"
+#include "shader/material.h"
 
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 TEST_CASE(MaterialTest) {
 };
 
 TEST(MaterialTest, Create) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var;
   std::shared_ptr<Invokable> object;
@@ -27,7 +26,7 @@ TEST(MaterialTest, Create) {
 }
 
 TEST(MaterialTest, CreateError) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, Material::Create(args, &object));

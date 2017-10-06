@@ -1,4 +1,4 @@
-#include "altadore/shape/shape.h"
+#include "shape/shape.h"
 
 Shape::Shape() {
 }

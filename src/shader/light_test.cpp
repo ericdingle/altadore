@@ -1,13 +1,12 @@
-#include "altadore/shader/light.h"
+#include "shader/light.h"
 
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 TEST_CASE(LightTest) {
 };
 
 TEST(LightTest, Create) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var;
   std::shared_ptr<Invokable> object;
@@ -25,7 +24,7 @@ TEST(LightTest, Create) {
 }
 
 TEST(LightTest, CreateError) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, Light::Create(args, &object));

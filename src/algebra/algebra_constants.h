@@ -1,7 +1,6 @@
-#ifndef ALTADORE_ALGEBRA_ALGEBRA_CONTANTS_H_
-#define ALTADORE_ALGEBRA_ALGEBRA_CONTANTS_H_
+#ifndef ALGEBRA_ALGEBRA_CONTANTS_H_
+#define ALGEBRA_ALGEBRA_CONTANTS_H_
 
 extern const double kPi;
 
-#endif
-
+#endif  // https://github.com/ericdingle/altadore.git

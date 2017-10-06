@@ -1,9 +1,9 @@
-#include "altadore/shape/sphere.h"
+#include "shape/sphere.h"
 
 #include <math.h>
-#include "altadore/algebra/ray.h"
-#include "altadore/shape/shape_constants.h"
-#include "chaparral/executer/variant.h"
+#include "algebra/ray.h"
+#include "shape/shape_constants.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 namespace {
 
@@ -47,7 +47,7 @@ int GetRoots(double a, double b, double c, double roots[2]) {
 }  // namespace
 
 Invokable::Result Sphere::Create(
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
@@ -66,7 +66,7 @@ Sphere::~Sphere() {
 
 Invokable::Result Sphere::Invoke(
     const std::string& name,
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }

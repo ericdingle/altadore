@@ -1,18 +1,17 @@
-#ifndef ALTADORE_ALGEBRA_POINT3_H_
-#define ALTADORE_ALGEBRA_POINT3_H_
+#ifndef ALGEBRA_POINT3_H_
+#define ALGEBRA_POINT3_H_
 
 #include <memory>
 #include <string>
 #include <vector>
-#include "bonavista/base/types.h"
-#include "chaparral/executer/invokable.h"
+#include "third_party/chaparral/src/executer/invokable.h"
 
 class Vector3;
 
 class Point3 : public Invokable {
  public:
   static Result Create(
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<Invokable>* object);
 
   Point3();
@@ -24,7 +23,7 @@ class Point3 : public Invokable {
 
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var);
 
   double& operator[](uint i);
@@ -39,4 +38,4 @@ class Point3 : public Invokable {
   double p_[3];
 };
 
-#endif
+#endif  // ALGEBRA_POINT3_H_

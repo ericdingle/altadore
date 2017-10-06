@@ -1,6 +1,5 @@
-#include "altadore/scene_interp/scene_lexer.h"
+#include "scene_interp/scene_lexer.h"
 
-#include "bonavista/logging/string_format.h"
 
 SceneLexer::SceneLexer() {
 }

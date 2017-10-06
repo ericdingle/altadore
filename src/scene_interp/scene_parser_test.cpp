@@ -1,10 +1,8 @@
-#include "altadore/scene_interp/scene_parser.h"
+#include "scene_interp/scene_parser.h"
 
-#include "altadore/scene_interp/scene_lexer.h"
-#include "bonavista/base/macros.h"
-#include "bonavista/testing/test_case.h"
-#include "chaparral/lexer/token_stream.h"
-#include "chaparral/parser/ast_node.h"
+#include "scene_interp/scene_lexer.h"
+#include "third_party/bonavista/src/lexer/token_stream.h"
+#include "third_party/bonavista/src/parser/ast_node.h"
 
 TEST_CASE(SceneParserTest) {
  protected:
@@ -119,7 +117,7 @@ TEST(SceneParserTest, ParseFunction) {
   EXPECT_EQ(2u, root_->children().size());
   EXPECT_TRUE(root_->children()[1]->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS));
 
-  const std::vector<std::unique_ptr<const ASTNode> >& children1 =
+  const std::vector<std::unique_ptr<const ASTNode>>& children1 =
       root_->children()[1]->children();
   EXPECT_EQ(1u, children1.size());
   EXPECT_TRUE(children1[0]->token()->IsType(SceneLexer::TYPE_IDENTIFIER));
@@ -131,7 +129,7 @@ TEST(SceneParserTest, ParseFunction) {
   EXPECT_EQ(2u, root_->children().size());
   EXPECT_TRUE(root_->children()[1]->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS));
 
-  const std::vector<std::unique_ptr<const ASTNode> >& children2 =
+  const std::vector<std::unique_ptr<const ASTNode>>& children2 =
       root_->children()[1]->children();
   EXPECT_EQ(2u, children2.size());
   EXPECT_TRUE(children2[0]->token()->IsType(SceneLexer::TYPE_IDENTIFIER));
@@ -144,7 +142,7 @@ TEST(SceneParserTest, ParseFunction) {
   EXPECT_EQ(2u, root_->children().size());
   EXPECT_TRUE(root_->children()[1]->token()->IsType(SceneLexer::TYPE_LEFT_PARENTHESIS));
 
-  const std::vector<std::unique_ptr<const ASTNode> >& children3 =
+  const std::vector<std::unique_ptr<const ASTNode>>& children3 =
       root_->children()[1]->children();
   EXPECT_EQ(3u, children3.size());
   EXPECT_TRUE(children3[0]->token()->IsType(SceneLexer::TYPE_IDENTIFIER));

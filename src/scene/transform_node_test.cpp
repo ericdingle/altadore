@@ -1,7 +1,6 @@
-#include "altadore/scene/transform_node.h"
+#include "scene/transform_node.h"
 
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 namespace {
 
@@ -12,7 +11,7 @@ class TestSceneNode : public SceneNode {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var) {
     return RESULT_ERR_NAME;
   }
@@ -52,7 +51,7 @@ class TestTransformNode : public TransformNode {
 
 TEST_CASE(TransformNodeTest) {
  protected:
-  std::vector<std::shared_ptr<const Variant> > args_;
+  std::vector<std::shared_ptr<const Variant>> args_;
   std::shared_ptr<const Variant> var_;
   std::shared_ptr<Invokable> object_;
 };

@@ -1,11 +1,11 @@
-#include "altadore/ray_tracer/ray_tracer.h"
+#include "ray_tracer/ray_tracer.h"
 
 #include <math.h>
-#include "altadore/algebra/algebra_constants.h"
-#include "altadore/algebra/matrix4.h"
-#include "altadore/image/bitmap.h"
-#include "altadore/ray_tracer/ray_tracer_constants.h"
-#include "altadore/shader/material.h"
+#include "algebra/algebra_constants.h"
+#include "algebra/matrix4.h"
+#include "image/bitmap.h"
+#include "ray_tracer/ray_tracer_constants.h"
+#include "shader/material.h"
 
 RayTracer::RayTracer(const std::shared_ptr<const TransformNode>& root,
                      const std::shared_ptr<const LightVector>& lights)

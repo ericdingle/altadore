@@ -1,6 +1,5 @@
-#include "altadore/algebra/ray.h"
+#include "algebra/ray.h"
 
-#include "bonavista/testing/test_case.h"
 
 TEST_CASE(RayTest) {
 };

@@ -1,7 +1,5 @@
-#include "altadore/scene_interp/scene_lexer.h"
+#include "scene_interp/scene_lexer.h"
 
-#include "bonavista/base/macros.h"
-#include "bonavista/testing/test_case.h"
 
 TEST_CASE(SceneLexerTest) {
  protected:

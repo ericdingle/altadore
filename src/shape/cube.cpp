@@ -1,12 +1,12 @@
-#include "altadore/shape/cube.h"
+#include "shape/cube.h"
 
 #include <limits>
-#include "altadore/algebra/ray.h"
-#include "altadore/shape/shape_constants.h"
-#include "chaparral/executer/variant.h"
+#include "algebra/ray.h"
+#include "shape/shape_constants.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 Invokable::Result Cube::Create(
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
@@ -25,7 +25,7 @@ Cube::~Cube() {
 
 Invokable::Result Cube::Invoke(
     const std::string& name,
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }

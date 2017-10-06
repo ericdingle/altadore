@@ -1,16 +1,17 @@
-#ifndef ALTADORE_SCENE_INTERP_EXECUTER_H_
-#define ALTADORE_SCENE_INTERP_EXECUTER_H_
+#ifndef SCENE_INTERP_EXECUTER_H_
+#define SCENE_INTERP_EXECUTER_H_
 
 #include <map>
 #include <memory>
 #include <string>
-#include "bonavista/base/macros.h"
-#include "chaparral/executer/executer.h"
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/executer.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 class SceneExecuter : public Executer {
  public:
-  SceneExecuter(Parser* parser);
+  explicit SceneExecuter(Parser* parser);
+  SceneExecuter(const SceneExecuter&) = delete;
+  SceneExecuter& operator=(const SceneExecuter&) = delete;
   virtual ~SceneExecuter();
 
   void SetVar(const std::string& name,
@@ -30,9 +31,7 @@ class SceneExecuter : public Executer {
   bool ExecuteNew(const ASTNode* node, std::shared_ptr<const Variant>* var);
   bool ExecuteNumber(const ASTNode* node, std::shared_ptr<const Variant>* var);
 
-  std::map<std::string, std::shared_ptr<const Variant> > var_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SceneExecuter);
+  std::map<std::string, std::shared_ptr<const Variant>> var_map_;
 };
 
-#endif
+#endif  // SCENE_INTERP_EXECUTER_H_

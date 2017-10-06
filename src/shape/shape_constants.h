@@ -1,6 +1,6 @@
-#ifndef ALTADORE_SHAPE_SHAPE_CONSTANTS_H_
-#define ALTADORE_SHAPE_SHAPE_CONSTANTS_H_
+#ifndef SHAPE_SHAPE_CONSTANTS_H_
+#define SHAPE_SHAPE_CONSTANTS_H_
 
 extern const double kEpsilon;
 
-#endif
+#endif  // SHAPE_SHAPE_CONSTANTS_H_

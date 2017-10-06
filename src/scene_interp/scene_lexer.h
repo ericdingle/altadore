@@ -1,12 +1,13 @@
-#ifndef ALTADORE_SCENE_INTERP_SCENE_LEXER_H_
-#define ALTADORE_SCENE_INTERP_SCENE_LEXER_H_
+#ifndef SCENE_INTERP_SCENE_LEXER_H_
+#define SCENE_INTERP_SCENE_LEXER_H_
 
-#include "bonavista/base/macros.h"
-#include "chaparral/lexer/lexer.h"
+#include "third_party/bonavista/src/lexer/lexer.h"
 
 class SceneLexer : public Lexer {
  public:
   SceneLexer();
+  SceneLexer(const SceneLexer&) = delete;
+  SceneLexer& operator=(const SceneLexer&) = delete;
   virtual ~SceneLexer();
 
   enum Type {
@@ -42,8 +43,6 @@ class SceneLexer : public Lexer {
                       std::string* value,
                       uint* count,
                       std::string* error) const;
-
-  DISALLOW_COPY_AND_ASSIGN(SceneLexer);
 };
 
-#endif
+#endif  // SCENE_INTERP_SCENE_LEXER_H_

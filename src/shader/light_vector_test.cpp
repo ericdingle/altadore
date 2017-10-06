@@ -1,13 +1,12 @@
-#include "altadore/shader/light_vector.h"
+#include "shader/light_vector.h"
 
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 TEST_CASE(LightVectorTest) {
 };
 
 TEST(LightVectorTest, Invoke) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var;
   std::shared_ptr<Invokable> object;
@@ -23,7 +22,7 @@ TEST(LightVectorTest, Invoke) {
 }
 
 TEST(LightVectorTest, InvokeError) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var;
 

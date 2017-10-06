@@ -1,4 +1,4 @@
-#include "altadore/scene/scene_node.h"
+#include "scene/scene_node.h"
 
 SceneNode::SceneNode() {
 }

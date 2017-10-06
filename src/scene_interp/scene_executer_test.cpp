@@ -1,24 +1,23 @@
-#include "altadore/scene_interp/scene_executer.h"
+#include "scene_interp/scene_executer.h"
 
-#include "altadore/algebra/point3.h"
-#include "altadore/scene_interp/scene_lexer.h"
-#include "altadore/scene_interp/scene_parser.h"
-#include "altadore/scene/shape_node.h"
-#include "altadore/scene/transform_node.h"
-#include "altadore/shader/color.h"
-#include "altadore/shader/light.h"
-#include "altadore/shader/material.h"
-#include "altadore/shape/cube.h"
-#include "altadore/shape/sphere.h"
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/invokable.h"
-#include "chaparral/lexer/token_stream.h"
+#include "algebra/point3.h"
+#include "scene_interp/scene_lexer.h"
+#include "scene_interp/scene_parser.h"
+#include "scene/shape_node.h"
+#include "scene/transform_node.h"
+#include "shader/color.h"
+#include "shader/light.h"
+#include "shader/material.h"
+#include "shape/cube.h"
+#include "shape/sphere.h"
+#include "third_party/chaparral/src/executer/invokable.h"
+#include "third_party/bonavista/src/lexer/token_stream.h"
 
 class Object : public Invokable {
  public:
   virtual Result Invoke(
       const std::string& name,
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var) {
     var->reset(new Variant(5));
     return name == "pass" ? RESULT_OK : RESULT_ERR_NAME;

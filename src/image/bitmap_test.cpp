@@ -1,9 +1,6 @@
-#include "altadore/image/bitmap.h"
+#include "image/bitmap.h"
 
 #include <string.h>
-#include "bonavista/file/scoped_file.h"
-#include "bonavista/file/util.h"
-#include "bonavista/testing/test_case.h"
 
 const char* FILE_NAME = "test.bmp";
 

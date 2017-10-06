@@ -1,13 +1,12 @@
-#include "altadore/shader/color.h"
+#include "shader/color.h"
 
-#include "bonavista/testing/test_case.h"
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 TEST_CASE(ColorTest) {
 };
 
 TEST(ColorTest, Create) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_OK, Color::Create(args, &object));
@@ -23,7 +22,7 @@ TEST(ColorTest, Create) {
 }
 
 TEST(ColorTest, CreateError) {
-  std::vector<std::shared_ptr<const Variant> > args;
+  std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var(new Variant(1.0));
   args.push_back(var);

@@ -1,9 +1,8 @@
-#include "altadore/scene_interp/scene_parser.h"
+#include "scene_interp/scene_parser.h"
 
 #include <memory>
-#include "altadore/scene_interp/scene_lexer.h"
-#include "bonavista/logging/string_format.h"
-#include "chaparral/parser/ast_node.h"
+#include "scene_interp/scene_lexer.h"
+#include "third_party/bonavista/src/parser/ast_node.h"
 
 SceneParser::SceneParser(TokenStream* token_stream) : Parser(token_stream) {
 }

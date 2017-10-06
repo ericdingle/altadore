@@ -1,9 +1,7 @@
-#ifndef ALTADORE_IMAGE_BITMAP_H_
-#define ALTADORE_IMAGE_BITMAP_H_
+#ifndef IMAGE_BITMAP_H_
+#define IMAGE_BITMAP_H_
 
 #include <memory>
-#include "bonavista/base/macros.h"
-#include "bonavista/base/types.h"
 
 class Bitmap {
  public:
@@ -18,6 +16,8 @@ class Bitmap {
   };
 
   Bitmap(uint width, uint height);
+  Bitmap(const Bitmap&) = delete;
+  Bitmap& operator=(const Bitmap&) = delete;
   ~Bitmap();
 
   void Set(uint x, uint y, const Color& color);
@@ -81,8 +81,6 @@ class Bitmap {
   uint width_;
   uint height_;
   std::unique_ptr<Color[]> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(Bitmap);
 };
 
-#endif
+#endif  // IMAGE_BITMAP_H_

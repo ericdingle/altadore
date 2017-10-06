@@ -1,11 +1,11 @@
-#include "altadore/scene/shape_node.h"
+#include "scene/shape_node.h"
 
-#include "altadore/shader/material.h"
-#include "altadore/shape/shape.h"
-#include "chaparral/executer/variant.h"
+#include "shader/material.h"
+#include "shape/shape.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 Invokable::Result ShapeNode::Create(
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
@@ -40,7 +40,7 @@ ShapeNode::~ShapeNode() {
 
 Invokable::Result ShapeNode::Invoke(
     const std::string& name,
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }

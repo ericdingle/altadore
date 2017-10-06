@@ -1,11 +1,11 @@
-#include "altadore/algebra/point3.h"
+#include "algebra/point3.h"
 
 #include <string.h>
-#include "altadore/algebra/vector3.h"
-#include "chaparral/executer/variant.h"
+#include "algebra/vector3.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 Invokable::Result Point3::Create(
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
@@ -55,7 +55,7 @@ Point3& Point3::operator=(const Point3& p) {
 
 Invokable::Result Point3::Invoke(
     const std::string& name,
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }

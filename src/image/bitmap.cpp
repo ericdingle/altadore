@@ -1,8 +1,6 @@
-#include "altadore/image/bitmap.h"
+#include "image/bitmap.h"
 
 #include <string.h>
-#include "bonavista/file/scoped_file.h"
-#include "bonavista/file/util.h"
 
 Bitmap::Bitmap(uint width, uint height) : width_(width), height_(height) {
   uint size = width * height;

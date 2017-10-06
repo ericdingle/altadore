@@ -1,10 +1,10 @@
-#include "altadore/shader/color.h"
+#include "shader/color.h"
 
 #include <algorithm>
-#include "chaparral/executer/variant.h"
+#include "third_party/chaparral/src/executer/variant.h"
 
 Invokable::Result Color::Create(
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
   DCHECK(object);
 
@@ -43,7 +43,7 @@ Color::Color(const Color& c) : r_(c.r_), g_(c.g_), b_(c.b_) {
 
 Invokable::Result Color::Invoke(
     const std::string& name,
-    const std::vector<std::shared_ptr<const Variant> >& args,
+    const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
   return RESULT_ERR_NAME;
 }

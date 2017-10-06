@@ -1,7 +1,6 @@
-#include "altadore/ray_tracer/ray_tracer.h"
+#include "ray_tracer/ray_tracer.h"
 
-#include "altadore/shader/material.h"
-#include "bonavista/testing/test_case.h"
+#include "shader/material.h"
 
 namespace {
 
@@ -16,7 +15,7 @@ class TestSceneNode : public SceneNode {
 
   Result Invoke(
       const std::string& name,
-      const std::vector<std::shared_ptr<const Variant> >& args,
+      const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var) {
     return RESULT_ERR_NAME;
   }

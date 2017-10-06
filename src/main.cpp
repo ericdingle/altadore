@@ -1,13 +1,11 @@
 #include <memory>
-#include "altadore/ray_tracer/ray_tracer.h"
-#include "altadore/scene/transform_node.h"
-#include "altadore/scene_interp/scene_executer.h"
-#include "altadore/scene_interp/scene_lexer.h"
-#include "altadore/scene_interp/scene_parser.h"
-#include "altadore/shader/light_vector.h"
-#include "bonavista/base/command_line.h"
-#include "bonavista/file/util.h"
-#include "chaparral/lexer/token_stream.h"
+#include "ray_tracer/ray_tracer.h"
+#include "scene/transform_node.h"
+#include "scene_interp/scene_executer.h"
+#include "scene_interp/scene_lexer.h"
+#include "scene_interp/scene_parser.h"
+#include "shader/light_vector.h"
+#include "third_party/bonavista/src/lexer/token_stream.h"
 
 int main(int argc, char* argv[]) {
   CommandLine cmd_line(argc, argv);
