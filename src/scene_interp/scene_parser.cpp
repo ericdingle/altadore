@@ -11,8 +11,6 @@ SceneParser::~SceneParser() {
 }
 
 bool SceneParser::Parse(std::unique_ptr<const ASTNode>* root) {
-  DCHECK(root);
-
   std::unique_ptr<const ASTNode> node;
   if (!Parser::Parse(&node))
     return false;
@@ -32,7 +30,7 @@ bool SceneParser::Parse(std::unique_ptr<const ASTNode>* root) {
   return true;
 }
 
-uint SceneParser::GetBindingPower(int type) const {
+int SceneParser::GetBindingPower(int type) const {
   switch (type) {
     case SceneLexer::TYPE_DOT:
       return 20;
@@ -47,8 +45,6 @@ uint SceneParser::GetBindingPower(int type) const {
 
 bool SceneParser::ParsePrefixToken(std::unique_ptr<const Token> token,
                                    std::unique_ptr<const ASTNode>* root) {
-  DCHECK(root);
-
   if (token->IsType(SceneLexer::TYPE_IDENTIFIER) ||
       token->IsType(SceneLexer::TYPE_NUMBER)) {
     root->reset(new ASTNode(std::move(token)));
@@ -59,15 +55,13 @@ bool SceneParser::ParsePrefixToken(std::unique_ptr<const Token> token,
     return ParseNewObject(std::move(token), root);
 
   position_ = token->position();
-  error_ = StringFormat("Unexpected token: %s", token->value().c_str());
+  error_ = "Unexpected token: %s" + token->value();
   return false;
 }
 
 bool SceneParser::ParseInfixToken(std::unique_ptr<const Token> token,
                                   std::unique_ptr<const ASTNode> left,
                                   std::unique_ptr<const ASTNode>* root) {
-  DCHECK(root);
-
   if (token->IsType(SceneLexer::TYPE_DOT))
     return ParseDotAccessor(std::move(token), std::move(left), root);
 
@@ -78,14 +72,12 @@ bool SceneParser::ParseInfixToken(std::unique_ptr<const Token> token,
     return ParseFunction(std::move(token), std::move(left), root);
 
   position_ = token->position();
-  error_ = StringFormat("Unexpected token: %s", token->value().c_str());
+  error_ = "Unexpected token: %s" + token->value();
   return false;
 }
 
 bool SceneParser::ParseNewObject(std::unique_ptr<const Token> token,
                                  std::unique_ptr<const ASTNode>* root) {
-  DCHECK(root);
-
   std::unique_ptr<ASTNode> node(new ASTNode(std::move(token)));
 
   std::unique_ptr<const ASTNode> right;
@@ -105,8 +97,6 @@ bool SceneParser::ParseNewObject(std::unique_ptr<const Token> token,
 bool SceneParser::ParseDotAccessor(std::unique_ptr<const Token> token,
                                    std::unique_ptr<const ASTNode> left,
                                    std::unique_ptr<const ASTNode>* root) {
-  DCHECK(root);
-
   std::unique_ptr<ASTNode> node(new ASTNode(std::move(token)));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
@@ -133,8 +123,6 @@ bool SceneParser::ParseDotAccessor(std::unique_ptr<const Token> token,
 bool SceneParser::ParseAssignment(std::unique_ptr<const Token> token,
                                   std::unique_ptr<const ASTNode> left,
                                   std::unique_ptr<const ASTNode>* root) {
-  DCHECK(root);
-
   std::unique_ptr<ASTNode> node(new ASTNode(std::move(token)));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {
@@ -156,8 +144,6 @@ bool SceneParser::ParseAssignment(std::unique_ptr<const Token> token,
 bool SceneParser::ParseFunction(std::unique_ptr<const Token> token,
                                 std::unique_ptr<const ASTNode> left,
                                 std::unique_ptr<const ASTNode>* root) {
-  DCHECK(root);
-
   std::unique_ptr<ASTNode> node(new ASTNode(std::move(token)));
 
   if (!left->token()->IsType(SceneLexer::TYPE_IDENTIFIER)) {

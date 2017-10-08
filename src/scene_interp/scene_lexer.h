@@ -23,25 +23,25 @@ class SceneLexer : public Lexer {
   };
 
   virtual bool GetToken(const std::string& input,
-                        uint index,
+                        int index,
                         int* type,
                         std::string* value,
-                        uint* count,
+                        int* count,
                         std::string* error) const;
 
  private:
   bool GetIdentifierToken(const std::string& input,
-                          uint index,
+                          int index,
                           int* type,
                           std::string* value,
-                          uint* count,
+                          int* count,
                           std::string* error) const;
 
   bool GetNumberToken(const std::string& input,
-                      uint index,
+                      int index,
                       int* type,
                       std::string* value,
-                      uint* count,
+                      int* count,
                       std::string* error) const;
 };
 

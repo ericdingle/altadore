@@ -8,10 +8,6 @@
 namespace {
 
 void GetCoefficients(const Ray& ray, double* a, double* b, double* c) {
-  DCHECK(a);
-  DCHECK(b);
-  DCHECK(c);
-
   const Vector3& d = ray.direction();
   const Point3& o = ray.origin();
 
@@ -49,8 +45,6 @@ int GetRoots(double a, double b, double c, double roots[2]) {
 Invokable::Result Sphere::Create(
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
-  DCHECK(object);
-
   if (args.size() != 0)
     return RESULT_ERR_ARG_SIZE;
 
@@ -72,9 +66,6 @@ Invokable::Result Sphere::Invoke(
 }
 
 bool Sphere::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {
-  DCHECK(point);
-  DCHECK(normal);
-
   double a, b, c;
   GetCoefficients(ray, &a, &b, &c);
 

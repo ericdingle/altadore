@@ -1,9 +1,7 @@
 #include "shader/material.h"
 
 #include "third_party/chaparral/src/executer/variant.h"
-
-TEST_CASE(MaterialTest) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(MaterialTest, Create) {
   std::vector<std::shared_ptr<const Variant>> args;
@@ -22,7 +20,7 @@ TEST(MaterialTest, Create) {
   args.push_back(var);
 
   EXPECT_EQ(Invokable::RESULT_OK, Material::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 }
 
 TEST(MaterialTest, CreateError) {

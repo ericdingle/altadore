@@ -5,8 +5,6 @@
 Invokable::Result Light::Create(
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
-  DCHECK(object);
-
   if (args.size() != 2)
     return RESULT_ERR_ARG_SIZE;
 

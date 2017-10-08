@@ -5,6 +5,7 @@
 #include "shader/material.h"
 #include "shape/cube.h"
 #include "third_party/chaparral/src/executer/variant.h"
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 namespace {
 
@@ -55,7 +56,7 @@ class TestShapeNode : public ShapeNode {
 
 }  // namespace
 
-TEST_CASE(ShapeNodeTest) {
+class ShapeNodeTest : public testing::Test {
  protected:
   void SetUp() {
     material_.reset(new Material(std::make_shared<Color>(), 1, 1));
@@ -64,7 +65,7 @@ TEST_CASE(ShapeNodeTest) {
   std::shared_ptr<Material> material_;
 };
 
-TEST(ShapeNodeTest, Create) {
+TEST_F(ShapeNodeTest, Create) {
   std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<const Variant> var;
@@ -79,10 +80,10 @@ TEST(ShapeNodeTest, Create) {
   args.push_back(var);
 
   EXPECT_EQ(Invokable::RESULT_OK, ShapeNode::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 }
 
-TEST(ShapeNodeTest, CreateError) {
+TEST_F(ShapeNodeTest, CreateError) {
   std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
@@ -95,7 +96,7 @@ TEST(ShapeNodeTest, CreateError) {
   EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, ShapeNode::Create(args, &object));
 }
 
-TEST(ShapeNodeTest, CalcTransforms) {
+TEST_F(ShapeNodeTest, CalcTransforms) {
   Matrix4 transform = Matrix4::GetScaling(2);
 
   TestShapeNode node(std::make_shared<TestShape>(true), material_);
@@ -105,7 +106,7 @@ TEST(ShapeNodeTest, CalcTransforms) {
   EXPECT_TRUE(node.transform_inverse_transpose() == transform.GetInverse().GetTranspose());
 }
 
-TEST(ShapeNodeTest, FindIntersection) {
+TEST_F(ShapeNodeTest, FindIntersection) {
   Point3 origin(1, 1, 1);
   Vector3 direction(1, 0, 0);
   Ray ray(origin, direction);
@@ -127,7 +128,7 @@ TEST(ShapeNodeTest, FindIntersection) {
   EXPECT_FALSE(node2.FindIntersection(ray, &t, &point, &normal, &material));
 }
 
-TEST(ShapeNodeTest, HasIntersection) {
+TEST_F(ShapeNodeTest, HasIntersection) {
   Point3 point;
   Ray ray(point, Vector3());
 

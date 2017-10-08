@@ -1,9 +1,7 @@
 #include "shader/light_vector.h"
 
 #include "third_party/chaparral/src/executer/variant.h"
-
-TEST_CASE(LightVectorTest) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(LightVectorTest, Invoke) {
   std::vector<std::shared_ptr<const Variant>> args;
@@ -18,7 +16,7 @@ TEST(LightVectorTest, Invoke) {
 
   LightVector lights;
   EXPECT_EQ(Invokable::RESULT_OK, lights.Invoke("AddLight", args, &var));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 }
 
 TEST(LightVectorTest, InvokeError) {
@@ -40,12 +38,12 @@ TEST(LightVectorTest, InvokeError) {
 
 TEST(LightVectorTest, Constructor) {
   LightVector lights;
-  EXPECT_EQ(0u, lights.lights().size());
+  EXPECT_EQ(0, lights.lights().size());
 }
 
 TEST(LightVectorTest, AddLight) {
   LightVector lights;
   lights.AddLight(std::make_shared<Light>(std::make_shared<Point3>(),
                                           std::make_shared<Color>()));
-  EXPECT_EQ(1u, lights.lights().size());
+  EXPECT_EQ(1, lights.lights().size());
 }

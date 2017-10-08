@@ -1,9 +1,7 @@
 #include "algebra/vector3.h"
 
 #include "algebra/point3.h"
-
-TEST_CASE(Vector3Test) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(Vector3Test, Constructor) {
   Vector3 vector1;

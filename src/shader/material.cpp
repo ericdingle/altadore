@@ -1,12 +1,11 @@
 #include "shader/material.h"
 
+#include <assert.h>
 #include "third_party/chaparral/src/executer/variant.h"
 
 Invokable::Result Material::Create(
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
-  DCHECK(object);
-
   if (args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
@@ -28,7 +27,7 @@ Invokable::Result Material::Create(
 Material::Material(const std::shared_ptr<const Color>& color, double shininess,
                    double reflectivity)
     : color_(color), shininess_(shininess), reflectivity_(reflectivity) {
-  DCHECK(reflectivity >= 0 && reflectivity <= 1);
+  assert(reflectivity >= 0 && reflectivity <= 1);
 }
 
 Material::~Material() {

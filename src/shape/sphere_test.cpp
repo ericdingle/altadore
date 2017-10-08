@@ -2,16 +2,14 @@
 
 #include "algebra/ray.h"
 #include "third_party/chaparral/src/executer/variant.h"
-
-TEST_CASE(SphereTest) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(SphereTest, Create) {
   std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_OK, Sphere::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 }
 
 TEST(SphereTest, CreateError) {

@@ -1,5 +1,6 @@
 #include "algebra/vector3.h"
 
+#include <assert.h>
 #include <math.h>
 #include <string.h>
 #include "algebra/point3.h"
@@ -37,13 +38,13 @@ Vector3::Vector3(const Point3& p) {
   v_[2] = p[2];
 }
 
-double& Vector3::operator[](uint i) {
-  DCHECK(i <= 2);
+double& Vector3::operator[](int i) {
+  assert(i <= 2);
   return v_[i];
 }
 
-double Vector3::operator[](uint i) const {
-  DCHECK(i <= 2);
+double Vector3::operator[](int i) const {
+  assert(i <= 2);
   return v_[i];
 }
 

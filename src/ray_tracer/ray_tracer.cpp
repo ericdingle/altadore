@@ -1,5 +1,7 @@
 #include "ray_tracer/ray_tracer.h"
 
+#include <assert.h>
+#include <cstdint>
 #include <math.h>
 #include "algebra/algebra_constants.h"
 #include "algebra/matrix4.h"
@@ -16,8 +18,6 @@ RayTracer::~RayTracer() {
 }
 
 bool RayTracer::Render(const char* file_name, int width, int height, bool anti_alias) {
-  DCHECK(file_name);
-
   if (anti_alias) {
     width *= 2;
     height *= 2;
@@ -49,9 +49,9 @@ bool RayTracer::Render(const char* file_name, int width, int height, bool anti_a
 
       Color color = GetColor(ray);
       Bitmap::Color c;
-      c.r = static_cast<uchar>(255 * color.r());
-      c.g = static_cast<uchar>(255 * color.g());
-      c.b = static_cast<uchar>(255 * color.b());
+      c.r = static_cast<uint8_t>(255 * color.r());
+      c.g = static_cast<uint8_t>(255 * color.g());
+      c.b = static_cast<uint8_t>(255 * color.b());
       bitmap.Set(x, y, c);
     }
   }
@@ -70,8 +70,8 @@ Color RayTracer::GetColor(const Ray& ray) {
   const Material* material = NULL;
   if (!root_->FindIntersection(ray, &t, &point, &normal, &material))
     return Color();
+  assert(material);
 
-  DCHECK(material);
   double reflectivity = material->reflectivity();
   double absorptivity = 1 - reflectivity;
 
@@ -87,14 +87,12 @@ Color RayTracer::GetColor(const Ray& ray) {
 }
 
 Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, const Material* material) {
-  DCHECK(material);
-
   // color = ambient_intensity
   Color color;
   color += kAmbientIntensity;
 
   // color += diffuse_intensity[i] * light_color[i]
-  for (uint i = 0; i < lights_->lights().size(); ++i) {
+  for (int i = 0; i < lights_->lights().size(); ++i) {
     Vector3 light_dir = *lights_->lights()[i]->position() - point;
     double max_t = light_dir.Length();
     light_dir.Normalize();
@@ -117,8 +115,6 @@ Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, co
 }
 
 Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Vector3& normal, const Material* material) {
-  DCHECK(material);
-
   // color = reflected_color
   Vector3 reflected_dir = ray.direction() - normal * 2 * normal.Dot(ray.direction());
   reflected_dir.Normalize();
@@ -126,7 +122,7 @@ Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Ve
   Color color = GetColor(reflected_ray);
 
   // color += specular_intensity[i] * light_color[i]
-  for (uint i = 0; i < lights_->lights().size(); ++i) {
+  for (int i = 0; i < lights_->lights().size(); ++i) {
     Vector3 light_dir = *lights_->lights()[i]->position() - point;
     double max_t = light_dir.Length();
     light_dir.Normalize();

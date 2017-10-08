@@ -1,12 +1,13 @@
 #include "image/bitmap.h"
 
-#include <string.h>
+#include <cstdio>
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
-const char* FILE_NAME = "test.bmp";
+const char kFileName[] = "test.bmp";
 
 class TestBitmap : public Bitmap {
  public:
-  TestBitmap(uint width, uint height) : Bitmap(width, height) {
+  TestBitmap(int width, int height) : Bitmap(width, height) {
   }
 
   using Bitmap::HeaderMagic;
@@ -17,20 +18,21 @@ class TestBitmap : public Bitmap {
   using Bitmap::data;
 };
 
-TEST_CASE(BitmapTest) {
+class BitmapTest : public testing::Test {
+ protected:
   void TearDown() {
-    remove(FILE_NAME);
+    std::remove(kFileName);
   }
 };
 
-TEST(BitmapTest, Constructor) {
+TEST_F(BitmapTest, Constructor) {
   TestBitmap bitmap(2, 3);
-  EXPECT_EQ(2u, bitmap.width());
-  EXPECT_EQ(3u, bitmap.height());
-  EXPECT_NOT_NULL(bitmap.data());
+  EXPECT_EQ(2, bitmap.width());
+  EXPECT_EQ(3, bitmap.height());
+  EXPECT_NE(nullptr, bitmap.data());
 }
 
-TEST(BitmapTest, Set) {
+TEST_F(BitmapTest, Set) {
   TestBitmap bitmap(2, 3);
 
   Bitmap::Color color;
@@ -47,7 +49,7 @@ TEST(BitmapTest, Set) {
   EXPECT_EQ(0, memcmp(&bitmap.data()[5], &color, sizeof(Bitmap::Color)));
 }
 
-TEST(BitmapTest, AntiAlias) {
+TEST_F(BitmapTest, AntiAlias) {
   TestBitmap bitmap(2, 4);
 
   Bitmap::Color color;
@@ -63,8 +65,8 @@ TEST(BitmapTest, AntiAlias) {
 
   bitmap.AntiAlias();
 
-  EXPECT_EQ(1u, bitmap.width());
-  EXPECT_EQ(2u, bitmap.height());
+  EXPECT_EQ(1, bitmap.width());
+  EXPECT_EQ(2, bitmap.height());
 
   color.r = 40;
   color.g = 20;
@@ -77,43 +79,44 @@ TEST(BitmapTest, AntiAlias) {
   EXPECT_EQ(0, memcmp(&bitmap.data()[1], &color, sizeof(Bitmap::Color)));
 }
 
-TEST(BitmapTest, Save) {
+TEST_F(BitmapTest, Save) {
   Bitmap bitmap(2, 3);
   Bitmap::Color white;
   white.r = white.g = white.b = 0xFF;
   bitmap.Set(0, 0, white);
   bitmap.Set(1, 0, white);
-  EXPECT_TRUE(bitmap.Save(FILE_NAME));
+  EXPECT_TRUE(bitmap.Save(kFileName));
 
-  scoped_FILE file(OpenFile(FILE_NAME, "rb"));
-  EXPECT_NOT_NULL(file.get());
+  std::unique_ptr<std::FILE, decltype(&std::fclose)> file(
+      std::fopen(kFileName, "rb"), &std::fclose);
+  EXPECT_NE(nullptr, file.get());
 
   TestBitmap::HeaderMagic header_magic_buffer, header_magic;
-  EXPECT_EQ(1u, fread(&header_magic_buffer, sizeof(TestBitmap::HeaderMagic), 1, file.get()));
+  EXPECT_EQ(1, fread(&header_magic_buffer, sizeof(TestBitmap::HeaderMagic), 1, file.get()));
   EXPECT_EQ(0, memcmp(&header_magic_buffer, &header_magic, sizeof(TestBitmap::HeaderMagic)));
 
   // 6 byte wide rows, padded by 2 bytes, times 3 rows
-  uint data_size = (6 + 2) * 3;
+  int data_size = (6 + 2) * 3;
   TestBitmap::Header header_buffer, header;
   header.file_size = sizeof(TestBitmap::HeaderMagic) +
                      sizeof(TestBitmap::Header) +
                      sizeof(TestBitmap::InfoHeader) +
                      data_size;
-  EXPECT_EQ(1u, fread(&header_buffer, sizeof(TestBitmap::Header), 1, file.get()));
+  EXPECT_EQ(1, fread(&header_buffer, sizeof(TestBitmap::Header), 1, file.get()));
   EXPECT_EQ(0, memcmp(&header_buffer, &header, sizeof(TestBitmap::Header)));
 
   TestBitmap::InfoHeader info_header_buffer, info_header;
   info_header.width = 2;
   info_header.height = 3;
   info_header.data_size = data_size;
-  EXPECT_EQ(1u, fread(&info_header_buffer, sizeof(TestBitmap::InfoHeader), 1, file.get()));
+  EXPECT_EQ(1, fread(&info_header_buffer, sizeof(TestBitmap::InfoHeader), 1, file.get()));
   EXPECT_EQ(0, memcmp(&info_header_buffer, &info_header, sizeof(TestBitmap::InfoHeader)));
 
   // 4 black pixels followed by 2 white.
   TestBitmap::Color color_buffer, black;
-  for (uint y = 0; y < 3; ++y) {
-    for (uint x = 0; x < 2; ++x) {
-      EXPECT_EQ(1u, fread(&color_buffer, sizeof(TestBitmap::Color), 1, file.get()));
+  for (int y = 0; y < 3; ++y) {
+    for (int x = 0; x < 2; ++x) {
+      EXPECT_EQ(1, fread(&color_buffer, sizeof(TestBitmap::Color), 1, file.get()));
       if (y == 2) {
         EXPECT_EQ(0, memcmp(&color_buffer, &white, sizeof(TestBitmap::Color)));
       } else {

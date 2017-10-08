@@ -8,10 +8,10 @@ SceneLexer::~SceneLexer() {
 }
 
 bool SceneLexer::GetToken(const std::string& input,
-                          uint index,
+                          int index,
                           int* type,
                           std::string* value,
-                          uint* count,
+                          int* count,
                           std::string* error) const {
   const char& c = input[index];
 
@@ -41,18 +41,18 @@ bool SceneLexer::GetToken(const std::string& input,
     return true;
   }
 
-  *error = StringFormat("Unrecognized token: %c", c);
+  *error = std::string("Unrecognized token: ") + c;
   return false;
 }
 
 bool SceneLexer::GetIdentifierToken(const std::string& input,
-                                    uint index,
+                                    int index,
                                     int* type,
                                     std::string* value,
-                                    uint* count,
+                                    int* count,
                                     std::string* error) const {
-  const uint length = input.length();
-  const uint start = index;
+  const int length = input.length();
+  const int start = index;
 
   ++index;
   for (; index < length && (IsAlpha(input[index]) || IsDigit(input[index]) || input[index] == '_'); ++index);
@@ -67,13 +67,13 @@ bool SceneLexer::GetIdentifierToken(const std::string& input,
 }
 
 bool SceneLexer::GetNumberToken(const std::string& input,
-                                uint index,
+                                int index,
                                 int* type,
                                 std::string* value,
-                                uint* count,
+                                int* count,
                                 std::string* error) const {
-  const uint length = input.length();
-  const uint start = index;
+  const int length = input.length();
+  const int start = index;
 
   if (input[index] == '-' && (++index >= length || !IsDigit(input[index]))) {
     *error = "Expecting digit";

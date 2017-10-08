@@ -1,6 +1,7 @@
 #ifndef IMAGE_BITMAP_H_
 #define IMAGE_BITMAP_H_
 
+#include <cstdint>
 #include <memory>
 
 class Bitmap {
@@ -10,17 +11,17 @@ class Bitmap {
       r = g = b = 0;
     }
 
-    uchar b;
-    uchar g;
-    uchar r;
+    uint8_t b;
+    uint8_t g;
+    uint8_t r;
   };
 
-  Bitmap(uint width, uint height);
+  Bitmap(int width, int height);
   Bitmap(const Bitmap&) = delete;
   Bitmap& operator=(const Bitmap&) = delete;
   ~Bitmap();
 
-  void Set(uint x, uint y, const Color& color);
+  void Set(int x, int y, const Color& color);
 
   void AntiAlias();
   bool Save(const char* file_name) const;
@@ -32,7 +33,7 @@ class Bitmap {
       magic[1] = 'M';
     }
 
-    uchar magic[2];
+    char magic[2];
   };
 
   struct Header {
@@ -42,10 +43,10 @@ class Bitmap {
       data_offset = 54;
     }
 
-    uint file_size;
+    int file_size;
     ushort reserved1;
     ushort reserved2;
-    uint data_offset;
+    int data_offset;
   };
 
   struct InfoHeader {
@@ -60,26 +61,26 @@ class Bitmap {
       num_imp_colors = 0;
     }
 
-    uint info_header_size;
-    uint width;
-    uint height;
+    int info_header_size;
+    int width;
+    int height;
     ushort planes;
     ushort bpp;
-    uint compression;
-    uint data_size;
-    uint horiz_res;
-    uint vert_res;
-    uint num_colors;
-    uint num_imp_colors;
+    int compression;
+    int data_size;
+    int horiz_res;
+    int vert_res;
+    int num_colors;
+    int num_imp_colors;
   };
 
-  uint width() const { return width_; }
-  uint height() const { return height_; }
+  int width() const { return width_; }
+  int height() const { return height_; }
   const Color* data() const { return data_.get(); }
 
  private:
-  uint width_;
-  uint height_;
+  int width_;
+  int height_;
   std::unique_ptr<Color[]> data_;
 };
 

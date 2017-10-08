@@ -1,16 +1,14 @@
 #include "shader/color.h"
 
 #include "third_party/chaparral/src/executer/variant.h"
-
-TEST_CASE(ColorTest) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(ColorTest, Create) {
   std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_OK, Color::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 
   std::shared_ptr<const Variant> var(new Variant(1.0));
   args.push_back(var);
@@ -18,7 +16,7 @@ TEST(ColorTest, Create) {
   args.push_back(var);
 
   EXPECT_EQ(Invokable::RESULT_OK, Color::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 }
 
 TEST(ColorTest, CreateError) {

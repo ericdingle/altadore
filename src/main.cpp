@@ -1,4 +1,6 @@
+#include <fstream>
 #include <memory>
+#include <unistd.h>
 #include "ray_tracer/ray_tracer.h"
 #include "scene/transform_node.h"
 #include "scene_interp/scene_executer.h"
@@ -8,43 +10,60 @@
 #include "third_party/bonavista/src/lexer/token_stream.h"
 
 int main(int argc, char* argv[]) {
-  CommandLine cmd_line(argc, argv);
+  // Parse flags.
+  std::string input_file, output_file;
+  int width = 800, height = 600;
+  bool anti_alias = false;
+
+  opterr = 0;
+  for (int c = 0; c != -1; c = getopt(argc, argv, "i:o:w:h:a")) {
+    switch (c) {
+      case 'i':
+        input_file = optarg;
+        break;
+      case 'o':
+        output_file = optarg;
+        break;
+      case 'w':
+        width = atoi(optarg);
+        break;
+      case 'h':
+        height = atoi(optarg);
+        break;
+      case 'a':
+        anti_alias = true;
+        break;
+      case '?':
+        printf("Unsupported option: %c\n", optopt);
+        return 1;
+    }
+  }
 
   // Check flags.
-  std::string input_file = cmd_line.GetFlag("input-file");
   if (input_file.empty()) {
-    printf("Missing --input-file flag.\n");
+    printf("Missing input file flag.\n");
     return 1;
   }
 
-  std::string output_file = cmd_line.GetFlag("output-file");
   if (output_file.empty()) {
     size_t pos = input_file.rfind('.');
     output_file = input_file.substr(0, pos) + ".bmp";
   }
 
-  std::string width_str = cmd_line.GetFlag("width", "600");
-  int width = atoi(width_str.c_str());
   if (width == 0) {
-    printf("Invalid --width.\n");
+    printf("Invalid width.\n");
     return 1;
   }
 
-  std::string height_str = cmd_line.GetFlag("height", "400");
-  int height = atoi(height_str.c_str());
   if (height == 0) {
-    printf("Invalid --height.\n");
+    printf("Invalid height.\n");
     return 1;
   }
-
-  bool anti_alias = cmd_line.HasFlag("anti-alias");
 
   // Read input file.
-  std::string input;
-  if (!ReadFile(input_file.c_str(), &input)) {
-    printf("Could not input read file.\n");
-    return 1;
-  }
+  std::ifstream input_stream(input_file);
+  std::string input((std::istreambuf_iterator<char>(input_stream)),
+                    (std::istreambuf_iterator<char>()));
 
   // Execute scene.
   SceneLexer lexer;

@@ -12,6 +12,7 @@
 #include "shape/sphere.h"
 #include "third_party/chaparral/src/executer/invokable.h"
 #include "third_party/bonavista/src/lexer/token_stream.h"
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 class Object : public Invokable {
  public:
@@ -24,7 +25,7 @@ class Object : public Invokable {
   }
 };
 
-TEST_CASE(SceneExecuterTest) {
+class SceneExecuterTest : public testing::Test {
  protected:
   void Init(const char* input) {
     stream_.reset(new TokenStream(&lexer_, input));
@@ -40,7 +41,7 @@ TEST_CASE(SceneExecuterTest) {
   std::shared_ptr<Invokable> object_;
 };
 
-TEST(SceneExecuterTest, Constants) {
+TEST_F(SceneExecuterTest, Constants) {
   Init("AXIS_X;");
 
   double d;
@@ -48,7 +49,7 @@ TEST(SceneExecuterTest, Constants) {
   EXPECT_EQ(Matrix4::AXIS_X, d);
 }
 
-TEST(SceneExecuterTest, ExecuteDotAccessor) {
+TEST_F(SceneExecuterTest, ExecuteDotAccessor) {
   Init("obj.pass(1);");
 
   object_.reset(new Object());
@@ -60,7 +61,7 @@ TEST(SceneExecuterTest, ExecuteDotAccessor) {
   EXPECT_EQ(5, i);
 }
 
-TEST(SceneExecuterTest, ExecuteDotAccessorError) {
+TEST_F(SceneExecuterTest, ExecuteDotAccessorError) {
   Init("obj.pass(1);");
 
   var_.reset(new Variant(5));
@@ -88,20 +89,20 @@ TEST(SceneExecuterTest, ExecuteDotAccessorError) {
   EXPECT_FALSE(executer_->error().empty());
 }
 
-TEST(SceneExecuterTest, ExecuteAssignment) {
+TEST_F(SceneExecuterTest, ExecuteAssignment) {
   Init("a=1;");
   double d;
   EXPECT_TRUE(executer_->ExecuteT(&d));
   EXPECT_EQ(1, d);
 }
 
-TEST(SceneExecuterTest, ExecuteAssignmentError) {
+TEST_F(SceneExecuterTest, ExecuteAssignmentError) {
   Init("a=b;");
   EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 }
 
-TEST(SceneExecuterTest, ExecuteIdentifier) {
+TEST_F(SceneExecuterTest, ExecuteIdentifier) {
   Init("a;");
 
   var_.reset(new Variant(5));
@@ -112,55 +113,55 @@ TEST(SceneExecuterTest, ExecuteIdentifier) {
   EXPECT_EQ(5, i);
 }
 
-TEST(SceneExecuterTest, ExecuteIdentifierError) {
+TEST_F(SceneExecuterTest, ExecuteIdentifierError) {
   Init("a;");
   EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
 }
 
-TEST(SceneExecuterTest, ExecuteNew) {
+TEST_F(SceneExecuterTest, ExecuteNew) {
   Init("new Color();");
   EXPECT_TRUE(executer_->Execute(&var_));
   EXPECT_TRUE(var_->Get(&object_));
-  EXPECT_NOT_NULL(dynamic_cast<Color*>(object_.get()));
+  EXPECT_NE(nullptr, dynamic_cast<Color*>(object_.get()));
 
   Init("new Cube();");
   EXPECT_TRUE(executer_->Execute(&var_));
   EXPECT_TRUE(var_->Get(&object_));
-  EXPECT_NOT_NULL(dynamic_cast<Cube*>(object_.get()));
+  EXPECT_NE(nullptr, dynamic_cast<Cube*>(object_.get()));
 
   Init("new Light(new Point3(1.0, 2.0, 3.0), new Color(0.1, 0.2, 0.3));");
   EXPECT_TRUE(executer_->Execute(&var_));
   EXPECT_TRUE(var_->Get(&object_));
-  EXPECT_NOT_NULL(dynamic_cast<Light*>(object_.get()));
+  EXPECT_NE(nullptr, dynamic_cast<Light*>(object_.get()));
 
   Init("new Material(new Color(), 25.0, 1.0);");
   EXPECT_TRUE(executer_->Execute(&var_));
   EXPECT_TRUE(var_->Get(&object_));
-  EXPECT_NOT_NULL(dynamic_cast<Material*>(object_.get()));
+  EXPECT_NE(nullptr, dynamic_cast<Material*>(object_.get()));
 
   Init("new Point3();");
   EXPECT_TRUE(executer_->Execute(&var_));
   EXPECT_TRUE(var_->Get(&object_));
-  EXPECT_NOT_NULL(dynamic_cast<Point3*>(object_.get()));
+  EXPECT_NE(nullptr, dynamic_cast<Point3*>(object_.get()));
 
   Init("new ShapeNode(new Cube(), new Material(new Color(), 25.0, 1.0));");
   EXPECT_TRUE(executer_->Execute(&var_));
   EXPECT_TRUE(var_->Get(&object_));
-  EXPECT_NOT_NULL(dynamic_cast<ShapeNode*>(object_.get()));
+  EXPECT_NE(nullptr, dynamic_cast<ShapeNode*>(object_.get()));
 
   Init("new Sphere();");
   EXPECT_TRUE(executer_->Execute(&var_));
   EXPECT_TRUE(var_->Get(&object_));
-  EXPECT_NOT_NULL(dynamic_cast<Sphere*>(object_.get()));
+  EXPECT_NE(nullptr, dynamic_cast<Sphere*>(object_.get()));
 
   Init("new TransformNode();");
   EXPECT_TRUE(executer_->Execute(&var_));
   EXPECT_TRUE(var_->Get(&object_));
-  EXPECT_NOT_NULL(dynamic_cast<TransformNode*>(object_.get()));
+  EXPECT_NE(nullptr, dynamic_cast<TransformNode*>(object_.get()));
 }
 
-TEST(SceneExecuterTest, ExecuteNewError) {
+TEST_F(SceneExecuterTest, ExecuteNewError) {
   Init("new Color(a);");
   EXPECT_FALSE(executer_->Execute(&var_));
   EXPECT_FALSE(executer_->error().empty());
@@ -170,7 +171,7 @@ TEST(SceneExecuterTest, ExecuteNewError) {
   EXPECT_FALSE(executer_->error().empty());
 }
 
-TEST(SceneExecuterTest, ExecuteNumber) {
+TEST_F(SceneExecuterTest, ExecuteNumber) {
   Init("1;");
   double d;
   EXPECT_TRUE(executer_->ExecuteT(&d));

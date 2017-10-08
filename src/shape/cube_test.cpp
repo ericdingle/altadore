@@ -2,16 +2,14 @@
 
 #include "algebra/ray.h"
 #include "third_party/chaparral/src/executer/variant.h"
-
-TEST_CASE(CubeTest) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(CubeTest, Create) {
   std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_OK, Cube::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 }
 
 TEST(CubeTest, CreateError) {

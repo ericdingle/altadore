@@ -1,5 +1,6 @@
 #include "scene_interp/scene_executer.h"
 
+#include <assert.h>
 #include "algebra/point3.h"
 #include "scene_interp/scene_lexer.h"
 #include "scene/shape_node.h"
@@ -30,9 +31,6 @@ void SceneExecuter::SetVar(const std::string& name,
 
 bool SceneExecuter::ExecuteASTNode(const ASTNode* node,
                                    std::shared_ptr<const Variant>* var) {
-  DCHECK(node);
-  DCHECK(var);
-
   switch (node->token()->type()) {
     case SceneLexer::TYPE_DOT:
       return ExecuteDotAccessor(node, var);
@@ -45,15 +43,12 @@ bool SceneExecuter::ExecuteASTNode(const ASTNode* node,
     case SceneLexer::TYPE_NUMBER:
       return ExecuteNumber(node, var);
     default:
-      CHECK(false);
+      assert(false);
   }
 }
 
 bool SceneExecuter::ExecuteDotAccessor(const ASTNode* node,
                                        std::shared_ptr<const Variant>* var) {
-  DCHECK(node);
-  DCHECK(var);
-
   const ASTNode* obj_node = node->children()[0].get();
   std::shared_ptr<Invokable> object;
   if (!ExecuteASTNodeT(obj_node, &object))
@@ -64,7 +59,7 @@ bool SceneExecuter::ExecuteDotAccessor(const ASTNode* node,
   const std::string& name = children[0]->token()->value();
 
   std::vector<std::shared_ptr<const Variant>> args;
-  for (uint i = 1; i < children.size(); ++i) {
+  for (int i = 1; i < children.size(); ++i) {
     std::shared_ptr<const Variant> arg;
     if (!ExecuteASTNode(children[i].get(), &arg))
       return false;
@@ -83,9 +78,6 @@ bool SceneExecuter::ExecuteDotAccessor(const ASTNode* node,
 
 bool SceneExecuter::ExecuteAssignment(const ASTNode* node,
                                       std::shared_ptr<const Variant>* var) {
-  DCHECK(node);
-  DCHECK(var);
-
   const std::string& name = node->children()[0]->token()->value();
 
   std::shared_ptr<const Variant> right_var;
@@ -99,14 +91,11 @@ bool SceneExecuter::ExecuteAssignment(const ASTNode* node,
 
 bool SceneExecuter::ExecuteIdentifier(const ASTNode* node,
                                       std::shared_ptr<const Variant>* var) {
-  DCHECK(node);
-  DCHECK(var);
-
   const std::string& name = node->token()->value();
 
   if (var_map_.count(name) == 0) {
     position_ = node->token()->position();
-    error_ = StringFormat("%s is undefined", name.c_str());
+    error_ = "%s is undefined" + name;
     return false;
   }
 
@@ -116,15 +105,12 @@ bool SceneExecuter::ExecuteIdentifier(const ASTNode* node,
 
 bool SceneExecuter::ExecuteNew(const ASTNode* node,
                                std::shared_ptr<const Variant>* var) {
-  DCHECK(node);
-  DCHECK(var);
-
   const std::vector<std::unique_ptr<const ASTNode>>& children =
       node->children()[0]->children();
   const std::string& name = children[0]->token()->value();
 
   std::vector<std::shared_ptr<const Variant>> args;
-  for (uint i = 1; i < children.size(); ++i) {
+  for (int i = 1; i < children.size(); ++i) {
     std::shared_ptr<const Variant> arg;
     if (!ExecuteASTNode(children[i].get(), &arg))
       return false;
@@ -162,9 +148,6 @@ bool SceneExecuter::ExecuteNew(const ASTNode* node,
 
 bool SceneExecuter::ExecuteNumber(const ASTNode* node,
                                   std::shared_ptr<const Variant>* var) {
-  DCHECK(node);
-  DCHECK(var);
-
   double value = atof(node->token()->value().c_str());
   var->reset(new Variant(value));
   return true;

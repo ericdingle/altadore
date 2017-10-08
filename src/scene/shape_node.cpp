@@ -7,8 +7,6 @@
 Invokable::Result ShapeNode::Create(
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
-  DCHECK(object);
-
   if (args.size() != 2)
     return RESULT_ERR_ARG_SIZE;
 
@@ -53,11 +51,6 @@ void ShapeNode::CalculateTransforms(const Matrix4& parent_transform) {
 
 bool ShapeNode::FindIntersection(const Ray& ray, double* t, Point3* point,
                                  Vector3* normal, const Material** material) const {
-  DCHECK(t);
-  DCHECK(point);
-  DCHECK(normal);
-  DCHECK(material);
-
   Point3 origin = transform_inverse_ * ray.origin();
   Vector3 direction = transform_inverse_ * ray.direction();
 

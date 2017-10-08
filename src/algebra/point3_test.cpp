@@ -2,16 +2,14 @@
 
 #include "algebra/vector3.h"
 #include "third_party/chaparral/src/executer/variant.h"
-
-TEST_CASE(Point3Test) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(Point3Test, Create) {
   std::vector<std::shared_ptr<const Variant>> args;
 
   std::shared_ptr<Invokable> object;
   EXPECT_EQ(Invokable::RESULT_OK, Point3::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 
   std::shared_ptr<const Variant> var(new Variant(1.0));
   args.push_back(var);
@@ -19,7 +17,7 @@ TEST(Point3Test, Create) {
   args.push_back(var);
 
   EXPECT_EQ(Invokable::RESULT_OK, Point3::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 }
 
 TEST(Point3Test, CreateError) {

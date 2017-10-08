@@ -26,8 +26,8 @@ class Point3 : public Invokable {
       const std::vector<std::shared_ptr<const Variant>>& args,
       std::shared_ptr<const Variant>* var);
 
-  double& operator[](uint i);
-  double operator[](uint i) const;
+  double& operator[](int i);
+  double operator[](int i) const;
 
   Point3 operator+(const Vector3& v) const;
   Vector3 operator-(const Point3& p) const;

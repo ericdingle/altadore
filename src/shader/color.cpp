@@ -6,8 +6,6 @@
 Invokable::Result Color::Create(
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
-  DCHECK(object);
-
   if (args.size() != 0 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
@@ -29,9 +27,6 @@ Color::Color() : r_(0.0), g_(0.0), b_(0.0) {
 }
 
 Color::Color(double r, double g, double b) : r_(r), g_(g), b_(b) {
-  DCHECK(r >= 0);
-  DCHECK(g >= 0);
-  DCHECK(b >= 0);
   Saturate();
 }
 
@@ -49,7 +44,6 @@ Invokable::Result Color::Invoke(
 }
 
 Color Color::operator*(double d) const {
-  DCHECK(d >= 0);
   return Color(r_ * d, g_ * d, b_ * d);
 }
 

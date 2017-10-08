@@ -1,13 +1,12 @@
 #include "scene/transform_node.h"
 
+#include <assert.h>
 #include <limits>
 #include "third_party/chaparral/src/executer/variant.h"
 
 Invokable::Result TransformNode::Create(
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
-  DCHECK(object);
-
   if (args.size() != 0)
     return RESULT_ERR_ARG_SIZE;
 
@@ -131,27 +130,22 @@ void TransformNode::Translate(double x, double y, double z) {
 void TransformNode::CalculateTransforms(const Matrix4& parent_transform) {
   Matrix4 total_transform = parent_transform * transform_;
 
-  for (uint i = 0; i < children_.size(); ++i) {
+  for (int i = 0; i < children_.size(); ++i) {
     children_[i]->CalculateTransforms(total_transform);
   }
 }
 
 bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point,
                                      Vector3* normal, const Material** material) const {
-  DCHECK(t);
-  DCHECK(point);
-  DCHECK(normal);
-  DCHECK(material);
-
   *t = std::numeric_limits<double>::max();
 
-  for (uint i = 0; i < children_.size(); ++i) {
+  for (int i = 0; i < children_.size(); ++i) {
     double t2;
     Point3 point2;
     Vector3 normal2;
     const Material* material2 = NULL;
     if (children_[i]->FindIntersection(ray, &t2, &point2, &normal2, &material2) && t2 < *t) {
-      DCHECK(material2);
+      assert(material2);
       *t = t2;
       *point = point2;
       *normal = normal2;
@@ -163,7 +157,7 @@ bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point,
 }
 
 bool TransformNode::HasIntersection(const Ray& ray, double max_t) const {
-  for (uint i = 0; i < children_.size(); ++i) {
+  for (int i = 0; i < children_.size(); ++i) {
     if (children_[i]->HasIntersection(ray, max_t)) {
       return true;
     }

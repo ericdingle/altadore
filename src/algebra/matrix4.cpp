@@ -1,5 +1,6 @@
 #include "algebra/matrix4.h"
 
+#include <assert.h>
 #include <math.h>
 #include <string.h>
 #include "algebra/algebra_constants.h"
@@ -31,7 +32,7 @@ Matrix4 Matrix4::GetRotation(Axis axis, double angle) {
       ret.m_[1][1] = c;
       break;
     default:
-      DCHECK(false);
+      assert(false);
       break;
   }
 

@@ -1,8 +1,5 @@
 #include "algebra/ray.h"
-
-
-TEST_CASE(RayTest) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(RayTest, Constructor) {
   Ray ray(Point3(1.0, 2.0, 3.0), Vector3(0.1, 0.2, 0.3));

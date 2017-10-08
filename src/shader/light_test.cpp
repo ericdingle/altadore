@@ -1,9 +1,7 @@
 #include "shader/light.h"
 
 #include "third_party/chaparral/src/executer/variant.h"
-
-TEST_CASE(LightTest) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(LightTest, Create) {
   std::vector<std::shared_ptr<const Variant>> args;
@@ -20,7 +18,7 @@ TEST(LightTest, Create) {
   args.push_back(var);
 
   EXPECT_EQ(Invokable::RESULT_OK, Light::Create(args, &object));
-  EXPECT_NOT_NULL(object.get());
+  EXPECT_NE(nullptr, object.get());
 }
 
 TEST(LightTest, CreateError) {

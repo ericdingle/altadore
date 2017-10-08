@@ -3,9 +3,7 @@
 #include <math.h>
 #include "algebra/point3.h"
 #include "algebra/vector3.h"
-
-TEST_CASE(Matrix4Test) {
-};
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 TEST(Matrix4Test, GetRotation) {
   double x[][4] = {

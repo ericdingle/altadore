@@ -1,6 +1,7 @@
 #include "ray_tracer/ray_tracer.h"
 
 #include "shader/material.h"
+#include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 namespace {
 
@@ -58,7 +59,7 @@ class TestRayTracer : public RayTracer {
 
 }  // namespace
 
-TEST_CASE(RayTracerTest) {
+class RayTracerTest : public testing::Test {
  public:
   RayTracerTest() : ray_(point_, normal_) {
   }
@@ -77,7 +78,7 @@ TEST_CASE(RayTracerTest) {
   Vector3 normal_;
 };
 
-TEST(RayTracerTest, GetColor) {
+TEST_F(RayTracerTest, GetColor) {
   Material material(std::make_shared<Color>(1.0, 1.0, 1.0), 20, 0.5);
   root_->AddChild(std::make_shared<TestSceneNode>(true, false, &material));
   TestRayTracer ray_tracer(root_, lights_);
@@ -86,7 +87,7 @@ TEST(RayTracerTest, GetColor) {
   EXPECT_TRUE(color == Color(0.05, 0.05, 0.05));
 }
 
-TEST(RayTracerTest, GetColorNoIntersection) {
+TEST_F(RayTracerTest, GetColorNoIntersection) {
   root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   TestRayTracer ray_tracer(root_, lights_);
 
@@ -94,7 +95,7 @@ TEST(RayTracerTest, GetColorNoIntersection) {
   EXPECT_TRUE(color == Color());
 }
 
-TEST(RayTracerTest, GetAbsorbedColor) {
+TEST_F(RayTracerTest, GetAbsorbedColor) {
   root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   lights_->AddLight(std::make_shared<Light>(
       std::make_shared<Point3>(1.0, 0.0, 0.0),
@@ -108,7 +109,7 @@ TEST(RayTracerTest, GetAbsorbedColor) {
   EXPECT_TRUE(color == Color(0.25, 0.25, 0.25));
 }
 
-TEST(RayTracerTest, GetAbsorbedColorNoLights) {
+TEST_F(RayTracerTest, GetAbsorbedColorNoLights) {
   root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   TestRayTracer ray_tracer(root_, lights_);
 
@@ -118,7 +119,7 @@ TEST(RayTracerTest, GetAbsorbedColorNoLights) {
   EXPECT_TRUE(color == Color(0.05, 0.05, 0.05));
 }
 
-TEST(RayTracerTest, GetAbsorbedColorShadows) {
+TEST_F(RayTracerTest, GetAbsorbedColorShadows) {
   root_->AddChild(std::make_shared<TestSceneNode>(false, true, nullptr));
   lights_->AddLight(std::make_shared<Light>(std::make_shared<Point3>(),
                     std::make_shared<Color>(1.0, 1.0, 1.0)));
@@ -130,7 +131,7 @@ TEST(RayTracerTest, GetAbsorbedColorShadows) {
   EXPECT_TRUE(color == Color(0.05, 0.05, 0.05));
 }
 
-TEST(RayTracerTest, GetReflectedColor) {
+TEST_F(RayTracerTest, GetReflectedColor) {
   root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   lights_->AddLight(std::make_shared<Light>(
       std::make_shared<Point3>(-1.0, 0.0, 0.0),
@@ -146,7 +147,7 @@ TEST(RayTracerTest, GetReflectedColor) {
   EXPECT_TRUE(color == Color(0.4, 0.4, 0.4));
 }
 
-TEST(RayTracerTest, GetReflectedColorNoLights) {
+TEST_F(RayTracerTest, GetReflectedColorNoLights) {
   root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   TestRayTracer ray_tracer(root_, lights_);
 
@@ -156,7 +157,7 @@ TEST(RayTracerTest, GetReflectedColorNoLights) {
   EXPECT_TRUE(color == Color());
 }
 
-TEST(RayTracerTest, GetReflectedColorShadows) {
+TEST_F(RayTracerTest, GetReflectedColorShadows) {
   root_->AddChild(std::make_shared<TestSceneNode>(false, true, nullptr));
   lights_->AddLight(std::make_shared<Light>(std::make_shared<Point3>(),
                     std::make_shared<Color>(1.0, 1.0, 1.0)));

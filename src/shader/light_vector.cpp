@@ -12,8 +12,6 @@ Invokable::Result LightVector::Invoke(
     const std::string& name,
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<const Variant>* var) {
-  DCHECK(var);
-
   if (name != "AddLight")
     return RESULT_ERR_NAME;
 

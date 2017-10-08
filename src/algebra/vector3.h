@@ -13,8 +13,8 @@ class Vector3 {
   Vector3& operator=(const Vector3& v);
   Vector3(const Point3& p);
 
-  double& operator[](uint i);
-  double operator[](uint i) const;
+  double& operator[](int i);
+  double operator[](int i) const;
 
   Vector3 operator*(double s) const;
   Vector3 operator+(const Vector3& v) const;

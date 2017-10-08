@@ -8,8 +8,6 @@
 Invokable::Result Cube::Create(
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
-  DCHECK(object);
-
   if (args.size() != 0)
     return RESULT_ERR_ARG_SIZE;
 
@@ -31,10 +29,6 @@ Invokable::Result Cube::Invoke(
 }
 
 bool Cube::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {
-  DCHECK(t);
-  DCHECK(point);
-  DCHECK(normal);
-
   const Point3& origin = ray.origin();
   const Vector3& direction = ray.direction();
 
@@ -50,10 +44,10 @@ bool Cube::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* n
 
       double s = (j - origin[i]) / direction[i];
       if (s >= kEpsilon && s < *t) {
-        uint k = (i + 1) % 3;
+        int k = (i + 1) % 3;
         double y = origin[k] + direction[k] * s;
 
-        uint l = (i + 2) % 3;
+        int l = (i + 2) % 3;
         double z = origin[l] + direction[l] * s;
 
         if (y >= -1 && y <= 1 && z >= -1 && z <= 1) {
@@ -77,10 +71,10 @@ bool Cube::HasIntersection(const Ray& ray, double max_t) const {
     for (int j = -1; j <= 1; j += 2) {
       double t = (j - origin[i]) / direction[i];
       if (t >= kEpsilon && t <= max_t) {
-        uint k = (i + 1) % 3;
+        int k = (i + 1) % 3;
         double y = origin[k] + direction[k] * t;
 
-        uint l = (i + 2) % 3;
+        int l = (i + 2) % 3;
         double z = origin[l] + direction[l] * t;
 
         if (y >= -1 && y <= 1 && z >= -1 && z <= 1)

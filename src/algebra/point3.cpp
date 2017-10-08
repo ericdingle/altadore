@@ -1,5 +1,6 @@
 #include "algebra/point3.h"
 
+#include <assert.h>
 #include <string.h>
 #include "algebra/vector3.h"
 #include "third_party/chaparral/src/executer/variant.h"
@@ -7,12 +8,10 @@
 Invokable::Result Point3::Create(
     const std::vector<std::shared_ptr<const Variant>>& args,
     std::shared_ptr<Invokable>* object) {
-  DCHECK(object);
-
   if (args.size() != 0 && args.size() != 3)
     return RESULT_ERR_ARG_SIZE;
 
-  shared_ptr<Point3> point;
+  std::shared_ptr<Point3> point;
   if (args.size() == 0) {
     point.reset(new Point3());
   } else {
@@ -60,13 +59,13 @@ Invokable::Result Point3::Invoke(
   return RESULT_ERR_NAME;
 }
 
-double& Point3::operator[](uint i) {
-  DCHECK(i <= 2);
+double& Point3::operator[](int i) {
+  assert(i <= 2);
   return p_[i];
 }
 
-double Point3::operator[](uint i) const {
-  DCHECK(i <= 2);
+double Point3::operator[](int i) const {
+  assert(i <= 2);
   return p_[i];
 }
 
