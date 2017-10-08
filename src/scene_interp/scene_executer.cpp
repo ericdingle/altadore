@@ -59,9 +59,9 @@ bool SceneExecuter::ExecuteDotAccessor(const ASTNode* node,
   const std::string& name = children[0]->token()->value();
 
   std::vector<std::shared_ptr<const Variant>> args;
-  for (int i = 1; i < children.size(); ++i) {
+  for (auto iter = std::next(children.begin()); iter != children.end(); ++iter) {
     std::shared_ptr<const Variant> arg;
-    if (!ExecuteASTNode(children[i].get(), &arg))
+    if (!ExecuteASTNode(iter->get(), &arg))
       return false;
     args.push_back(arg);
   }
@@ -95,7 +95,7 @@ bool SceneExecuter::ExecuteIdentifier(const ASTNode* node,
 
   if (var_map_.count(name) == 0) {
     position_ = node->token()->position();
-    error_ = "%s is undefined" + name;
+    error_ = name + " is undefined";
     return false;
   }
 
@@ -110,9 +110,9 @@ bool SceneExecuter::ExecuteNew(const ASTNode* node,
   const std::string& name = children[0]->token()->value();
 
   std::vector<std::shared_ptr<const Variant>> args;
-  for (int i = 1; i < children.size(); ++i) {
+  for (auto iter = std::next(children.begin()); iter != children.end(); ++iter) {
     std::shared_ptr<const Variant> arg;
-    if (!ExecuteASTNode(children[i].get(), &arg))
+    if (!ExecuteASTNode(iter->get(), &arg))
       return false;
     args.push_back(arg);
   }

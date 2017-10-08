@@ -92,8 +92,8 @@ Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, co
   color += kAmbientIntensity;
 
   // color += diffuse_intensity[i] * light_color[i]
-  for (int i = 0; i < lights_->lights().size(); ++i) {
-    Vector3 light_dir = *lights_->lights()[i]->position() - point;
+  for (const auto& light : lights_->lights()) {
+    Vector3 light_dir = *light->position() - point;
     double max_t = light_dir.Length();
     light_dir.Normalize();
     Ray light_ray(point, light_dir);
@@ -105,7 +105,7 @@ Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, co
     if (diffuse_intensity <= 0)
       continue;
 
-    color += *lights_->lights()[i]->color() * diffuse_intensity;
+    color += *light->color() * diffuse_intensity;
   }
 
   // color *= material_color
@@ -122,8 +122,8 @@ Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Ve
   Color color = GetColor(reflected_ray);
 
   // color += specular_intensity[i] * light_color[i]
-  for (int i = 0; i < lights_->lights().size(); ++i) {
-    Vector3 light_dir = *lights_->lights()[i]->position() - point;
+  for (const auto& light : lights_->lights()) {
+    Vector3 light_dir = *light->position() - point;
     double max_t = light_dir.Length();
     light_dir.Normalize();
     Ray light_ray(point, light_dir);
@@ -139,7 +139,7 @@ Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Ve
       continue;
 
     specular_intensity = pow(specular_intensity, material->shininess());
-    color += *lights_->lights()[i]->color() * specular_intensity;
+    color += *light->color() * specular_intensity;
   }
 
   return color;

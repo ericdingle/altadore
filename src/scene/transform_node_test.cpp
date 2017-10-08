@@ -196,10 +196,10 @@ TEST_F(TransformNodeTest, CalculateTransforms) {
   node.AddChild(std::make_shared<TestSceneNode>(false));
   node.CalculateTransforms(Matrix4::GetScaling(5));
 
-  for (int i = 0; i < node.children().size(); ++i) {
-    TestSceneNode* child = dynamic_cast<TestSceneNode*>(node.children()[i].get());
-    EXPECT_NE(nullptr, child);
-    EXPECT_TRUE(child->transform() == Matrix4::GetScaling(5));
+  for (const auto& child : node.children()) {
+    TestSceneNode* test_child = dynamic_cast<TestSceneNode*>(child.get());
+    EXPECT_NE(nullptr, test_child);
+    EXPECT_TRUE(test_child->transform() == Matrix4::GetScaling(5));
   }
 }
 

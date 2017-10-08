@@ -130,8 +130,8 @@ void TransformNode::Translate(double x, double y, double z) {
 void TransformNode::CalculateTransforms(const Matrix4& parent_transform) {
   Matrix4 total_transform = parent_transform * transform_;
 
-  for (int i = 0; i < children_.size(); ++i) {
-    children_[i]->CalculateTransforms(total_transform);
+  for (const auto& child : children_) {
+    child->CalculateTransforms(total_transform);
   }
 }
 
@@ -139,12 +139,12 @@ bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point,
                                      Vector3* normal, const Material** material) const {
   *t = std::numeric_limits<double>::max();
 
-  for (int i = 0; i < children_.size(); ++i) {
+  for (const auto& child : children_) {
     double t2;
     Point3 point2;
     Vector3 normal2;
     const Material* material2 = NULL;
-    if (children_[i]->FindIntersection(ray, &t2, &point2, &normal2, &material2) && t2 < *t) {
+    if (child->FindIntersection(ray, &t2, &point2, &normal2, &material2) && t2 < *t) {
       assert(material2);
       *t = t2;
       *point = point2;
@@ -157,8 +157,8 @@ bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point,
 }
 
 bool TransformNode::HasIntersection(const Ray& ray, double max_t) const {
-  for (int i = 0; i < children_.size(); ++i) {
-    if (children_[i]->HasIntersection(ray, max_t)) {
+  for (const auto& child : children_) {
+    if (child->HasIntersection(ray, max_t)) {
       return true;
     }
   }
