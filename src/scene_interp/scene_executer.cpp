@@ -44,6 +44,7 @@ bool SceneExecuter::ExecuteASTNode(const ASTNode* node,
       return ExecuteNumber(node, var);
     default:
       assert(false);
+      return false;
   }
 }
 
