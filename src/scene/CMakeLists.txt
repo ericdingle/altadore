@@ -1,4 +1,4 @@
-add_library(scene_lib scene_node.cpp scene_node.h shape_node.cpp shape_node.h transform_node.cpp transform_node.h)
+add_library(scene_lib scene_node.h shape_node.cpp shape_node.h transform_node.cpp transform_node.h)
 target_link_libraries(scene_lib shader_lib shape_lib)
 
 if (altadore_tests)

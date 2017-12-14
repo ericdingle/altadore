@@ -1,4 +1,4 @@
-add_library(shape_lib cube.cpp cube.h shape.cpp shape.h shape_constants.cpp shape_constants.h sphere.cpp sphere.h)
+add_library(shape_lib cube.cpp cube.h shape.h shape_constants.cpp shape_constants.h sphere.cpp sphere.h)
 target_link_libraries(shape_lib algebra_lib)
 
 if (altadore_tests)

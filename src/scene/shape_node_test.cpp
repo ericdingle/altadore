@@ -4,7 +4,6 @@
 #include "shader/color.h"
 #include "shader/material.h"
 #include "shape/cube.h"
-#include "third_party/chaparral/src/executer/variant.h"
 #include "third_party/googletest/googletest/include/gtest/gtest.h"
 
 namespace {
@@ -12,13 +11,6 @@ namespace {
 class TestShape : public Shape {
  public:
   TestShape(bool intersection) : intersection_(intersection) {
-  }
-
-  Result Invoke(
-      const std::string& name,
-      const std::vector<std::shared_ptr<const Variant>>& args,
-      std::shared_ptr<const Variant>* var) {
-    return RESULT_ERR_NAME;
   }
 
   bool FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {
@@ -42,13 +34,6 @@ class TestShapeNode : public ShapeNode {
                 const std::shared_ptr<const Material>& material) : ShapeNode(shape, material) {
   }
 
-  Result Invoke(
-      const std::string& name,
-      const std::vector<std::shared_ptr<const Variant>>& args,
-      std::shared_ptr<const Variant>* var) {
-    return RESULT_ERR_NAME;
-  }
-
   using ShapeNode::transform;
   using ShapeNode::transform_inverse;
   using ShapeNode::transform_inverse_transpose;
@@ -64,37 +49,6 @@ class ShapeNodeTest : public testing::Test {
 
   std::shared_ptr<Material> material_;
 };
-
-TEST_F(ShapeNodeTest, Create) {
-  std::vector<std::shared_ptr<const Variant>> args;
-
-  std::shared_ptr<const Variant> var;
-  std::shared_ptr<Invokable> object;
-
-  object.reset(new Cube());
-  var.reset(new Variant(object));
-  args.push_back(var);
-
-  object.reset(new Material(std::make_shared<Color>(), 1, 1));
-  var.reset(new Variant(object));
-  args.push_back(var);
-
-  EXPECT_EQ(Invokable::RESULT_OK, ShapeNode::Create(args, &object));
-  EXPECT_NE(nullptr, object.get());
-}
-
-TEST_F(ShapeNodeTest, CreateError) {
-  std::vector<std::shared_ptr<const Variant>> args;
-
-  std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, ShapeNode::Create(args, &object));
-
-  std::shared_ptr<const Variant> var(new Variant(1.0));
-  args.push_back(var);
-  args.push_back(var);
-
-  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, ShapeNode::Create(args, &object));
-}
 
 TEST_F(ShapeNodeTest, CalcTransforms) {
   Matrix4 transform = Matrix4::GetScaling(2);

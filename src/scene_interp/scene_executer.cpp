@@ -1,155 +1,82 @@
 #include "scene_interp/scene_executer.h"
 
+#include <algorithm>
 #include <assert.h>
-#include "algebra/point3.h"
+#include "algebra/matrix4.h"
 #include "scene_interp/scene_lexer.h"
-#include "scene/shape_node.h"
-#include "scene/transform_node.h"
-#include "shader/color.h"
-#include "shader/light.h"
-#include "shader/material.h"
-#include "shape/cube.h"
-#include "shape/sphere.h"
-#include "third_party/chaparral/src/executer/invokable.h"
+
+class Object;
 
 SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
-  SetVar("AXIS_X", std::make_shared<Variant>(static_cast<double>(
-      Matrix4::AXIS_X)));
-  SetVar("AXIS_Y", std::make_shared<Variant>(static_cast<double>(
-      Matrix4::AXIS_Y)));
-  SetVar("AXIS_Z", std::make_shared<Variant>(static_cast<double>(
-      Matrix4::AXIS_Z)));
+  SetVariable("AXIS_X", std::make_shared<Any>(static_cast<double>(Matrix4::AXIS_X)));
+  SetVariable("AXIS_Y", std::make_shared<Any>(static_cast<double>(Matrix4::AXIS_Y)));
+  SetVariable("AXIS_Z", std::make_shared<Any>(static_cast<double>(Matrix4::AXIS_Z)));
 }
 
-SceneExecuter::~SceneExecuter() {
+std::shared_ptr<Any> SceneExecuter::GetVariable(const std::string& name) const {
+  auto it = variables_.find(name);
+  return it == variables_.end() ? nullptr : it->second;
 }
 
-void SceneExecuter::SetVar(const std::string& name,
-                           const std::shared_ptr<const Variant>& var) {
-  var_map_[name] = var;
+void SceneExecuter::SetVariable(const std::string& name,
+                                const std::shared_ptr<Any>& any) {
+  variables_[name] = any;
 }
 
-bool SceneExecuter::ExecuteASTNode(const ASTNode* node,
-                                   std::shared_ptr<const Variant>* var) {
-  switch (node->token()->type()) {
-    case SceneLexer::TYPE_DOT:
-      return ExecuteDotAccessor(node, var);
+StatusOr<std::shared_ptr<Any>> SceneExecuter::ExecuteNode(const Node* node) {
+  switch (node->token().type()) {
     case SceneLexer::TYPE_EQUAL:
-      return ExecuteAssignment(node, var);
+      return ExecuteAssignment(node);
+    case SceneLexer::TYPE_DOT:
+      return ExecuteDotAccessor(node);
+    case SceneLexer::TYPE_LEFT_PARENTHESIS:
+      return ExecuteFunction(node);
     case SceneLexer::TYPE_IDENTIFIER:
-      return ExecuteIdentifier(node, var);
-    case SceneLexer::TYPE_NEW:
-      return ExecuteNew(node, var);
+      return ExecuteIdentifier(node);
     case SceneLexer::TYPE_NUMBER:
-      return ExecuteNumber(node, var);
+      return ExecuteNumber(node);
     default:
       assert(false);
-      return false;
+      return Status("WTF!", 1, 1);
   }
 }
 
-bool SceneExecuter::ExecuteDotAccessor(const ASTNode* node,
-                                       std::shared_ptr<const Variant>* var) {
-  const ASTNode* obj_node = node->children()[0].get();
-  std::shared_ptr<Invokable> object;
-  if (!ExecuteASTNodeT(obj_node, &object))
-    return false;
-
-  const std::vector<std::unique_ptr<const ASTNode>>& children =
-      node->children()[1]->children();
-  const std::string& name = children[0]->token()->value();
-
-  std::vector<std::shared_ptr<const Variant>> args;
-  for (auto iter = std::next(children.begin()); iter != children.end(); ++iter) {
-    std::shared_ptr<const Variant> arg;
-    if (!ExecuteASTNode(iter->get(), &arg))
-      return false;
-    args.push_back(arg);
-  }
-
-  Invokable::Result result = object->Invoke(name, args, var);
-  if (result != Invokable::RESULT_OK) {
-    position_ = children[0]->token()->position();
-    error_ = "ERROR";
-    return false;
-  }
-
-  return true;
+StatusOr<std::shared_ptr<Any>> SceneExecuter::ExecuteAssignment(const Node* node) {
+  const std::string& name = node->children()[0]->token().value();
+  ASSIGN_OR_RETURN(auto value, ExecuteNode(node->children()[1].get()));
+  variables_[name] = value;
+  return value;
 }
 
-bool SceneExecuter::ExecuteAssignment(const ASTNode* node,
-                                      std::shared_ptr<const Variant>* var) {
-  const std::string& name = node->children()[0]->token()->value();
-
-  std::shared_ptr<const Variant> right_var;
-  if (!ExecuteASTNode(node->children()[1].get(), &right_var))
-    return false;
-
-  var_map_[name] = right_var;
-  *var = right_var;
-  return true;
+StatusOr<std::shared_ptr<Any>> SceneExecuter::ExecuteDotAccessor(const Node* node) {
+  ASSIGN_OR_RETURN(auto obj, ExecuteNodeT<std::shared_ptr<Object>>(node->children()[0].get()));
+  //return obj->Get(node->children()[1]->token().value());
+  return Status("BARF", 1, 1);
 }
 
-bool SceneExecuter::ExecuteIdentifier(const ASTNode* node,
-                                      std::shared_ptr<const Variant>* var) {
-  const std::string& name = node->token()->value();
+StatusOr<std::shared_ptr<Any>> SceneExecuter::ExecuteFunction(const Node* node) {
+  const auto& children = node->children();
+  ASSIGN_OR_RETURN(auto func, ExecuteNodeT<SceneFunc>(children[0].get()));
 
-  if (var_map_.count(name) == 0) {
-    position_ = node->token()->position();
-    error_ = name + " is undefined";
-    return false;
-  }
+  std::vector<const Node*> args;
+  std::transform(children.begin() + 1, children.end(), std::back_inserter(args),
+                 [](const std::unique_ptr<const Node>& n) { return n.get(); });
 
-  *var = var_map_[name];
-  return true;
+  return func(args);
 }
 
-bool SceneExecuter::ExecuteNew(const ASTNode* node,
-                               std::shared_ptr<const Variant>* var) {
-  const std::vector<std::unique_ptr<const ASTNode>>& children =
-      node->children()[0]->children();
-  const std::string& name = children[0]->token()->value();
+StatusOr<std::shared_ptr<Any>> SceneExecuter::ExecuteIdentifier(const Node* node) {
+  const std::string& name = node->token().value();
 
-  std::vector<std::shared_ptr<const Variant>> args;
-  for (auto iter = std::next(children.begin()); iter != children.end(); ++iter) {
-    std::shared_ptr<const Variant> arg;
-    if (!ExecuteASTNode(iter->get(), &arg))
-      return false;
-    args.push_back(arg);
+  if (variables_.count(name) == 0) {
+    return Status(name + " is undefined", node->token().line(),
+                  node->token().column());
   }
 
-  std::shared_ptr<Invokable> object;
-  Invokable::Result result = Invokable::RESULT_ERR_NAME;
-  if (name == "Color")
-    result = Color::Create(args, &object);
-  else if (name == "Cube")
-    result = Cube::Create(args, &object);
-  else if (name == "Light")
-    result = Light::Create(args, &object);
-  else if (name == "Material")
-    result = Material::Create(args, &object);
-  else if (name == "Point3")
-    result = Point3::Create(args, &object);
-  else if (name == "ShapeNode")
-    result = ShapeNode::Create(args, &object);
-  else if (name == "Sphere")
-    result = Sphere::Create(args, &object);
-  else if (name == "TransformNode")
-    result = TransformNode::Create(args, &object);
-
-  if (result != Invokable::RESULT_OK) {
-    position_ = children[0]->token()->position();
-    error_ = "ERROR";
-    return false;
-  }
-
-  var->reset(new Variant(object));
-  return true;
+  return variables_[name];
 }
 
-bool SceneExecuter::ExecuteNumber(const ASTNode* node,
-                                  std::shared_ptr<const Variant>* var) {
-  double value = atof(node->token()->value().c_str());
-  var->reset(new Variant(value));
-  return true;
+StatusOr<std::shared_ptr<Any>> SceneExecuter::ExecuteNumber(const Node* node) {
+  double value = atof(node->token().value().c_str());
+  return std::make_shared<Any>(value);
 }

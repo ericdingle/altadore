@@ -1,110 +1,69 @@
 #include "scene_interp/scene_lexer.h"
 
+StatusOr<std::unique_ptr<Token>> SceneLexer::GetToken(
+    const char* input, int line, int column) const {
+  char c = *input;
 
-SceneLexer::SceneLexer() {
-}
-
-SceneLexer::~SceneLexer() {
-}
-
-bool SceneLexer::GetToken(const std::string& input,
-                          int index,
-                          int* type,
-                          std::string* value,
-                          int* count,
-                          std::string* error) const {
-  const char& c = input[index];
-
-  if (IsAlpha(c))
-    return GetIdentifierToken(input, index, type, value, count, error);
-  if (c == '-' || IsDigit(c))
-    return GetNumberToken(input, index, type, value, count, error);
+  if (IsAlpha(c)) {
+    return GetIdentifierToken(input, line, column);
+  } else if (c == '-' || IsDigit(c)) {
+    return GetNumberToken(input, line, column);
+  }
 
   int t = -1;
-  if (c == ',')
+  if (c == ',') {
     t = TYPE_COMMA;
-  else if (c == '.')
+  } else if (c == '.') {
     t = TYPE_DOT;
-  else if (c == '=')
+  } else if (c == '=') {
     t = TYPE_EQUAL;
-  else if (c == '(')
+  } else if (c == '(') {
     t = TYPE_LEFT_PARENTHESIS;
-  else if (c == ')')
+  } else if (c == ')') {
     t = TYPE_RIGHT_PARENTHESIS;
-  else if (c == ';')
+  } else if (c == ';') {
     t = TYPE_SEMI_COLON;
+  }
 
   if (t != -1) {
-    *type = t;
-    *value = c;
-    *count = 1;
-    return true;
+    return std::unique_ptr<Token>(new Token(t, c, line, column));
   }
 
-  *error = std::string("Unrecognized token: ") + c;
-  return false;
+  return UnexpectedCharacter(c, line, column);
 }
 
-bool SceneLexer::GetIdentifierToken(const std::string& input,
-                                    int index,
-                                    int* type,
-                                    std::string* value,
-                                    int* count,
-                                    std::string* error) const {
-  const int length = input.length();
-  const int start = index;
+StatusOr<std::unique_ptr<Token>> SceneLexer::GetIdentifierToken(
+    const char* input, int line, int column) const {
+  const char* start = input;
+  ++input;
 
-  ++index;
-  for (; index < length && (IsAlpha(input[index]) || IsDigit(input[index]) || input[index] == '_'); ++index);
+  for (; IsAlpha(*input) || IsDigit(*input) || *input == '_'; ++input);
 
-  *count = index - start;
-  *value = input.substr(start, *count);
-  if (*value == "new")
-    *type = TYPE_NEW;
-  else
-    *type = TYPE_IDENTIFIER;
-  return true;
+  return std::unique_ptr<Token>(new Token(
+      TYPE_IDENTIFIER, std::string(start, input - start), line, column));
 }
 
-bool SceneLexer::GetNumberToken(const std::string& input,
-                                int index,
-                                int* type,
-                                std::string* value,
-                                int* count,
-                                std::string* error) const {
-  const int length = input.length();
-  const int start = index;
+StatusOr<std::unique_ptr<Token>> SceneLexer::GetNumberToken(
+    const char* input, int line, int column) const {
+  const char* start = input;
 
-  if (input[index] == '-' && (++index >= length || !IsDigit(input[index]))) {
-    *error = "Expecting digit";
-    return false;
+  if (*input == '-') {
+    ++input;
   }
 
-  if (input[index] == '0') {
-    ++index;
-    if (index < length && IsDigit(input[index])) {
-      *error = "Unexpected digit";
-      return false;
-    }
-  } else
-    for (; index < length && IsDigit(input[index]); ++index);
-
-  if (index < length && input[index] == '.') {
-    ++index;
-
-    if (index == length) {
-      *error = "Unexpected end of input";
-      return false;
-    } else if (!IsDigit(input[index])) {
-      *error = "Expecting digit";
-      return false;
-    }
-
-    for (; index < length && IsDigit(input[index]); ++index);
+  RETURN_IF_ERROR(ExpectDigit(*input, line, column));
+  if (*input == '0') {
+    ++input;
+  } else {
+    for (; IsDigit(*input); ++input);
   }
 
-  *type = TYPE_NUMBER;
-  *value = input.substr(start, index - start);
-  *count = index - start;
-  return true;
+  if (*input == '.') {
+    ++input;
+    RETURN_IF_ERROR(ExpectDigit(*input, line, column));
+    for (; IsDigit(*input); ++input);
+  }
+
+  return std::unique_ptr<Token>(new Token(
+      TYPE_NUMBER, std::string(start, input - start), line, column));
 }

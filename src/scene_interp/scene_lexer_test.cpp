@@ -1,84 +1,59 @@
 #include "scene_interp/scene_lexer.h"
 
-#include <tuple>
-#include <vector>
-#include "third_party/googletest/googletest/include/gtest/gtest.h"
+#include <utility>
+#include "third_party/bonavista/src/lexer/lexer_test_fixture.h"
+#include "third_party/bonavista/src/lexer/token_test_macros.h"
+#include "third_party/bonavista/src/util/status_test_macros.h"
 
-class SceneLexerTest : public testing::Test {
- protected:
-  SceneLexer lexer_;
-
-  std::string input_;
-  int type_;
-  std::string value_;
-  int count_;
-  std::string error_;
+class SceneLexerTest : public LexerTestFixture<SceneLexer> {
 };
 
-TEST_F(SceneLexerTest, TokenizeUnknown) {
-  input_ = "*";
-  EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-  EXPECT_FALSE(error_.empty());
+TEST_F(SceneLexerTest, GetTokenUnexpected) {
+  EXPECT_STATUS(GetToken("*").status(), "Unexpected character: *", 1, 2);
 }
 
-TEST_F(SceneLexerTest, TokenizeOperator) {
-  std::vector<std::tuple<const char*, SceneLexer::Type>> test_cases = {
-      std::make_tuple(",", SceneLexer::TYPE_COMMA),
-      std::make_tuple(".", SceneLexer::TYPE_DOT),
-      std::make_tuple("=", SceneLexer::TYPE_EQUAL),
-      std::make_tuple("(", SceneLexer::TYPE_LEFT_PARENTHESIS),
-      std::make_tuple(")", SceneLexer::TYPE_RIGHT_PARENTHESIS),
-      std::make_tuple(";", SceneLexer::TYPE_SEMI_COLON),
+TEST_F(SceneLexerTest, GetTokenOperator) {
+  std::pair<const char*, SceneLexer::Type> test_cases[] = {
+      {",", SceneLexer::TYPE_COMMA},
+      {".", SceneLexer::TYPE_DOT},
+      {"=", SceneLexer::TYPE_EQUAL},
+      {"(", SceneLexer::TYPE_LEFT_PARENTHESIS},
+      {")", SceneLexer::TYPE_RIGHT_PARENTHESIS},
+      {";", SceneLexer::TYPE_SEMI_COLON},
       };
 
   for (const auto& test_case : test_cases) {
-    input_ = std::get<0>(test_case);
-    EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-    EXPECT_EQ(std::get<1>(test_case), type_);
-    EXPECT_EQ(input_, value_);
-    EXPECT_EQ(1, count_);
+    EXPECT_TOKEN(*GetToken(test_case.first).value(), test_case.second,
+                 test_case.first, 1, 2);
   }
 }
 
-TEST_F(SceneLexerTest, TokenizeNew) {
-  input_ = "new";
-  EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-  EXPECT_EQ(SceneLexer::TYPE_NEW, type_);
-  EXPECT_EQ(input_, value_);
-  EXPECT_EQ(input_.length(), count_);
+TEST_F(SceneLexerTest, GetTokenIdentifier) {
+  EXPECT_TOKEN(*GetToken("adf9f3q_ue0$").value(), SceneLexer::TYPE_IDENTIFIER,
+               "adf9f3q_ue0", 1, 2);
 }
 
-TEST_F(SceneLexerTest, TokenizeIdentifier) {
-  input_ = "adf9f3q_ue0";
-  EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-  EXPECT_EQ(SceneLexer::TYPE_IDENTIFIER, type_);
-  EXPECT_EQ(input_, value_);
-  EXPECT_EQ(input_.length(), count_);
-}
-
-TEST_F(SceneLexerTest, TokenizeNumber) {
-  std::vector<const char*> test_cases = {
+TEST_F(SceneLexerTest, GetTokenNumber) {
+  const char* test_cases[] = {
     "0", "1", "12", "123",
     "0.1", "12.3", "12.34",
     "-1", "-12.3"
   };
 
   for (const char* test_case : test_cases) {
-    input_ = test_case;
-    EXPECT_TRUE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-    EXPECT_EQ(SceneLexer::TYPE_NUMBER, type_);
-    EXPECT_EQ(input_, value_);
-    EXPECT_EQ(input_.length(), count_);
+    EXPECT_TOKEN(*GetToken(test_case).value(), SceneLexer::TYPE_NUMBER,
+                 test_case, 1, 2);
   }
 }
 
-TEST_F(SceneLexerTest, TokenizeNumberError) {
-  std::vector<const char*> test_cases = { "01", "1.", "-", "-a" };
+TEST_F(SceneLexerTest, GetTokenNumberError) {
+  std::pair<const char*, const char*> test_cases[] = {
+      {"1.", "Unexpected end of input"},
+      {"-", "Unexpected end of input"},
+      {"-a", "Unexpected character: a"},
+      };
 
-  for (const char* test_case : test_cases) {
-    input_ = test_case;
-    error_.clear();
-    EXPECT_FALSE(lexer_.GetToken(input_, 0, &type_, &value_, &count_, &error_));
-    EXPECT_FALSE(error_.empty());
+  for (const auto& test_case : test_cases) {
+    EXPECT_STATUS(GetToken(test_case.first).status(), test_case.second, 1, 2);
   }
 }

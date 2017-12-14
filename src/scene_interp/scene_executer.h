@@ -4,34 +4,34 @@
 #include <map>
 #include <memory>
 #include <string>
+#include "third_party/chaparral/src/executer/any.h"
 #include "third_party/chaparral/src/executer/executer.h"
-#include "third_party/chaparral/src/executer/variant.h"
+
+using SceneFunc = std::function<StatusOr<std::shared_ptr<Any>>(
+    const std::vector<const Node*>&)>;
 
 class SceneExecuter : public Executer {
  public:
   explicit SceneExecuter(Parser* parser);
   SceneExecuter(const SceneExecuter&) = delete;
   SceneExecuter& operator=(const SceneExecuter&) = delete;
-  virtual ~SceneExecuter();
+  ~SceneExecuter() override = default;
 
-  void SetVar(const std::string& name,
-              const std::shared_ptr<const Variant>& var);
+  std::shared_ptr<Any> GetVariable(const std::string& name) const;
+  void SetVariable(const std::string& name,
+                   const std::shared_ptr<Any>& any);
 
  protected:
-  virtual bool ExecuteASTNode(const ASTNode* node,
-                              std::shared_ptr<const Variant>* var);
+  StatusOr<std::shared_ptr<Any>> ExecuteNode(const Node* node) override;
 
  private:
-  bool ExecuteDotAccessor(const ASTNode* node,
-                          std::shared_ptr<const Variant>* var);
-  bool ExecuteAssignment(const ASTNode* node,
-                         std::shared_ptr<const Variant>* var);
-  bool ExecuteIdentifier(const ASTNode* node,
-                         std::shared_ptr<const Variant>* var);
-  bool ExecuteNew(const ASTNode* node, std::shared_ptr<const Variant>* var);
-  bool ExecuteNumber(const ASTNode* node, std::shared_ptr<const Variant>* var);
+  StatusOr<std::shared_ptr<Any>> ExecuteAssignment(const Node* node);
+  StatusOr<std::shared_ptr<Any>> ExecuteDotAccessor(const Node* node);
+  StatusOr<std::shared_ptr<Any>> ExecuteFunction(const Node* node);
+  StatusOr<std::shared_ptr<Any>> ExecuteIdentifier(const Node* node);
+  StatusOr<std::shared_ptr<Any>> ExecuteNumber(const Node* node);
 
-  std::map<std::string, std::shared_ptr<const Variant>> var_map_;
+  std::map<std::string, std::shared_ptr<Any>> variables_;
 };
 
 #endif  // SCENE_INTERP_EXECUTER_H_

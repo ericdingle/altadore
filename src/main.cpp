@@ -72,16 +72,13 @@ int main(int argc, char* argv[]) {
   SceneExecuter executer(&parser);
 
   std::shared_ptr<TransformNode> root(new TransformNode());
-  executer.SetVar("root", std::make_shared<Variant>(
-      std::dynamic_pointer_cast<Invokable>(root)));
-
   std::shared_ptr<LightVector> lights(new LightVector());
-  executer.SetVar("lights", std::make_shared<Variant>(
-      std::dynamic_pointer_cast<Invokable>(lights)));
+  // TODO: set default variables in executer.
 
-  if (!executer.ExecuteAll()) {
-    printf("Error: %s at line %d, column %d\n", executer.error().c_str(),
-           executer.position().line, executer.position().column);
+  Status status = executer.ExecuteAll();
+  if (!status.ok()) {
+    printf("Error: %s at line %d, column %d\n", status.message().c_str(),
+           status.line(), status.column());
     return 1;
   }
 

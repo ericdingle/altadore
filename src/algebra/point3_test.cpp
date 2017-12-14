@@ -1,40 +1,7 @@
 #include "algebra/point3.h"
 
 #include "algebra/vector3.h"
-#include "third_party/chaparral/src/executer/variant.h"
 #include "third_party/googletest/googletest/include/gtest/gtest.h"
-
-TEST(Point3Test, Create) {
-  std::vector<std::shared_ptr<const Variant>> args;
-
-  std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Invokable::RESULT_OK, Point3::Create(args, &object));
-  EXPECT_NE(nullptr, object.get());
-
-  std::shared_ptr<const Variant> var(new Variant(1.0));
-  args.push_back(var);
-  args.push_back(var);
-  args.push_back(var);
-
-  EXPECT_EQ(Invokable::RESULT_OK, Point3::Create(args, &object));
-  EXPECT_NE(nullptr, object.get());
-}
-
-TEST(Point3Test, CreateError) {
-  std::vector<std::shared_ptr<const Variant>> args;
-
-  std::shared_ptr<const Variant> var(new Variant(1.0));
-  args.push_back(var);
-  args.push_back(var);
-
-  std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, Point3::Create(args, &object));
-
-  var.reset(new Variant(2));
-  args.push_back(var);
-
-  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, Point3::Create(args, &object));
-}
 
 TEST(Point3Test, Constructor) {
   Point3 point1;

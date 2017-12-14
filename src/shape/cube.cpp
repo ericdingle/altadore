@@ -3,30 +3,6 @@
 #include <limits>
 #include "algebra/ray.h"
 #include "shape/shape_constants.h"
-#include "third_party/chaparral/src/executer/variant.h"
-
-Invokable::Result Cube::Create(
-    const std::vector<std::shared_ptr<const Variant>>& args,
-    std::shared_ptr<Invokable>* object) {
-  if (args.size() != 0)
-    return RESULT_ERR_ARG_SIZE;
-
-  object->reset(new Cube());;
-  return RESULT_OK;
-}
-
-Cube::Cube() {
-}
-
-Cube::~Cube() {
-}
-
-Invokable::Result Cube::Invoke(
-    const std::string& name,
-    const std::vector<std::shared_ptr<const Variant>>& args,
-    std::shared_ptr<const Variant>* var) {
-  return RESULT_ERR_NAME;
-}
 
 bool Cube::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {
   const Point3& origin = ray.origin();

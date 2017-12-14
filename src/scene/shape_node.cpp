@@ -2,45 +2,10 @@
 
 #include "shader/material.h"
 #include "shape/shape.h"
-#include "third_party/chaparral/src/executer/variant.h"
-
-Invokable::Result ShapeNode::Create(
-    const std::vector<std::shared_ptr<const Variant>>& args,
-    std::shared_ptr<Invokable>* object) {
-  if (args.size() != 2)
-    return RESULT_ERR_ARG_SIZE;
-
-  std::shared_ptr<Invokable> shape_object;
-  if (!args[0]->Get(&shape_object))
-    return RESULT_ERR_ARG_TYPE;
-  std::shared_ptr<Shape> shape = std::dynamic_pointer_cast<Shape>(shape_object);
-  if (!shape.get())
-    return RESULT_ERR_ARG_TYPE;
-
-  std::shared_ptr<Invokable> material_object;
-  if (!args[1]->Get(&material_object))
-    return RESULT_ERR_ARG_TYPE;
-  std::shared_ptr<Material> material = std::dynamic_pointer_cast<Material>(material_object);
-  if (!material.get())
-    return RESULT_ERR_ARG_TYPE;
-
-  object->reset(new ShapeNode(shape, material));
-  return RESULT_OK;
-}
 
 ShapeNode::ShapeNode(const std::shared_ptr<const Shape>& shape,
                      const std::shared_ptr<const Material>& material)
     : SceneNode(), shape_(shape), material_(material) {
-}
-
-ShapeNode::~ShapeNode() {
-}
-
-Invokable::Result ShapeNode::Invoke(
-    const std::string& name,
-    const std::vector<std::shared_ptr<const Variant>>& args,
-    std::shared_ptr<const Variant>* var) {
-  return RESULT_ERR_NAME;
 }
 
 void ShapeNode::CalculateTransforms(const Matrix4& parent_transform) {

@@ -1,38 +1,6 @@
 #include "shader/light.h"
 
-#include "third_party/chaparral/src/executer/variant.h"
 #include "third_party/googletest/googletest/include/gtest/gtest.h"
-
-TEST(LightTest, Create) {
-  std::vector<std::shared_ptr<const Variant>> args;
-
-  std::shared_ptr<const Variant> var;
-  std::shared_ptr<Invokable> object;
-
-  object.reset(new Point3(0.1, 0.2, 0.3));
-  var.reset(new Variant(object));
-  args.push_back(var);
-
-  object.reset(new Color(0.1, 0.2, 0.3));
-  var.reset(new Variant(object));
-  args.push_back(var);
-
-  EXPECT_EQ(Invokable::RESULT_OK, Light::Create(args, &object));
-  EXPECT_NE(nullptr, object.get());
-}
-
-TEST(LightTest, CreateError) {
-  std::vector<std::shared_ptr<const Variant>> args;
-
-  std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, Light::Create(args, &object));
-
-  std::shared_ptr<const Variant> var(new Variant(1.0));
-  args.push_back(var);
-  args.push_back(var);
-
-  EXPECT_EQ(Invokable::RESULT_ERR_ARG_TYPE, Light::Create(args, &object));
-}
 
 TEST(LightTest, Constructor) {
   Light light(std::make_shared<Point3>(1.0, 2.0, 3.0),

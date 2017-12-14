@@ -9,25 +9,16 @@ class Shape;
 
 class ShapeNode : public SceneNode {
  public:
-  static Result Create(
-      const std::vector<std::shared_ptr<const Variant>>& args,
-      std::shared_ptr<Invokable>* object);
-
   ShapeNode(const std::shared_ptr<const Shape>& shape,
             const std::shared_ptr<const Material>& material);
   ShapeNode(const ShapeNode&) = delete;
   ShapeNode& operator=(const ShapeNode&) = delete;
-  virtual ~ShapeNode();
+  ~ShapeNode() override = default;
 
-  virtual Result Invoke(
-      const std::string& name,
-      const std::vector<std::shared_ptr<const Variant>>& args,
-      std::shared_ptr<const Variant>* var);
-
-  virtual void CalculateTransforms(const Matrix4& parent_transform);
-  virtual bool FindIntersection(const Ray& ray, double* t, Point3* point,
-                                Vector3* normal, const Material** material) const;
-  virtual bool HasIntersection(const Ray& ray, double max_t) const;
+  void CalculateTransforms(const Matrix4& parent_transform) override;
+  bool FindIntersection(const Ray& ray, double* t, Point3* point,
+                        Vector3* normal, const Material** material) const override;
+  bool HasIntersection(const Ray& ray, double max_t) const override;
 
  protected:
   const Matrix4& transform() const { return transform_; }

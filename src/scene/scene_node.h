@@ -2,17 +2,16 @@
 #define SCENE_SCENE_NODE_H_
 
 #include "algebra/ray.h"
-#include "third_party/chaparral/src/executer/invokable.h"
 
 class Material;
 class Matrix4;
 
-class SceneNode : public Invokable {
+class SceneNode {
  public:
-  SceneNode();
+  SceneNode() = default;
   SceneNode(const SceneNode&) = delete;
   SceneNode& operator=(const SceneNode&) = delete;
-  virtual ~SceneNode();
+  virtual ~SceneNode() = default;
 
   virtual void CalculateTransforms(const Matrix4& parent_transform) = 0;
   virtual bool FindIntersection(const Ray& ray, double* t, Point3* point,

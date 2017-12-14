@@ -14,13 +14,6 @@ class TestSceneNode : public SceneNode {
         material_(material) {
   }
 
-  Result Invoke(
-      const std::string& name,
-      const std::vector<std::shared_ptr<const Variant>>& args,
-      std::shared_ptr<const Variant>* var) {
-    return RESULT_ERR_NAME;
-  }
-
   void CalculateTransforms(const Matrix4& parent_transform) {
   }
 

@@ -3,7 +3,6 @@
 #include <math.h>
 #include "algebra/ray.h"
 #include "shape/shape_constants.h"
-#include "third_party/chaparral/src/executer/variant.h"
 
 namespace {
 
@@ -41,29 +40,6 @@ int GetRoots(double a, double b, double c, double roots[2]) {
 }
 
 }  // namespace
-
-Invokable::Result Sphere::Create(
-    const std::vector<std::shared_ptr<const Variant>>& args,
-    std::shared_ptr<Invokable>* object) {
-  if (args.size() != 0)
-    return RESULT_ERR_ARG_SIZE;
-
-  object->reset(new Sphere());
-  return RESULT_OK;
-}
-
-Sphere::Sphere() {
-}
-
-Sphere::~Sphere() {
-}
-
-Invokable::Result Sphere::Invoke(
-    const std::string& name,
-    const std::vector<std::shared_ptr<const Variant>>& args,
-    std::shared_ptr<const Variant>* var) {
-  return RESULT_ERR_NAME;
-}
 
 bool Sphere::FindIntersection(const Ray& ray, double* t, Point3* point, Vector3* normal) const {
   double a, b, c;

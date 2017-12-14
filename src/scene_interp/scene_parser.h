@@ -8,30 +8,24 @@ class SceneParser : public Parser {
   explicit SceneParser(TokenStream* token_stream);
   SceneParser(const SceneParser&) = delete;
   SceneParser& operator=(const SceneParser&) = delete;
-  virtual ~SceneParser();
+  ~SceneParser() override = default;
 
-  virtual bool Parse(std::unique_ptr<const ASTNode>* root);
+  StatusOr<std::unique_ptr<Node>> Parse() override;
 
  protected:
-  virtual int GetBindingPower(int type) const;
-  virtual bool ParsePrefixToken(std::unique_ptr<const Token> token,
-                                std::unique_ptr<const ASTNode>* root);
-  virtual bool ParseInfixToken(std::unique_ptr<const Token> token,
-                               std::unique_ptr<const ASTNode> left,
-                               std::unique_ptr<const ASTNode>* root);
+  int GetBindingPower(int type) const override;
+  StatusOr<std::unique_ptr<Node>> ParsePrefixToken(
+      std::unique_ptr<const Token>) override;
+  StatusOr<std::unique_ptr<Node>> ParseInfixToken(
+      std::unique_ptr<const Token>, std::unique_ptr<const Node> left) override;
 
  private:
-  bool ParseNewObject(std::unique_ptr<const Token> token,
-                      std::unique_ptr<const ASTNode>* root);
-  bool ParseDotAccessor(std::unique_ptr<const Token> token,
-                        std::unique_ptr<const ASTNode> left,
-                        std::unique_ptr<const ASTNode>* root);
-  bool ParseAssignment(std::unique_ptr<const Token> token,
-                       std::unique_ptr<const ASTNode> left,
-                       std::unique_ptr<const ASTNode>* root);
-  bool ParseFunction(std::unique_ptr<const Token> token,
-                     std::unique_ptr<const ASTNode> left,
-                     std::unique_ptr<const ASTNode>* root);
+  StatusOr<std::unique_ptr<Node>> ParseDotAccessor(
+      std::unique_ptr<const Token> token, std::unique_ptr<const Node> left);
+  StatusOr<std::unique_ptr<Node>> ParseAssignment(
+      std::unique_ptr<const Token> token, std::unique_ptr<const Node> left);
+  StatusOr<std::unique_ptr<Node>> ParseFunction(
+      std::unique_ptr<const Token> token, std::unique_ptr<const Node> left);
 };
 
 #endif  // SCENE_INTERP_SCENE_PARSER_H_

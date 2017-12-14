@@ -1,26 +1,7 @@
 #include "shape/sphere.h"
 
 #include "algebra/ray.h"
-#include "third_party/chaparral/src/executer/variant.h"
 #include "third_party/googletest/googletest/include/gtest/gtest.h"
-
-TEST(SphereTest, Create) {
-  std::vector<std::shared_ptr<const Variant>> args;
-
-  std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Invokable::RESULT_OK, Sphere::Create(args, &object));
-  EXPECT_NE(nullptr, object.get());
-}
-
-TEST(SphereTest, CreateError) {
-  std::vector<std::shared_ptr<const Variant>> args;
-
-  std::shared_ptr<const Variant> var(new Variant(1.0));
-  args.push_back(var);
-
-  std::shared_ptr<Invokable> object;
-  EXPECT_EQ(Invokable::RESULT_ERR_ARG_SIZE, Sphere::Create(args, &object));
-}
 
 TEST(SphereTest, FindIntersection) {
   Sphere sphere;
