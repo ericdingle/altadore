@@ -4,8 +4,7 @@
 #include <assert.h>
 #include "algebra/matrix4.h"
 #include "scene_interp/scene_lexer.h"
-
-class Object;
+#include "scene_interp/scene_object.h"
 
 SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
   SetVariable("AXIS_X", Any(static_cast<double>(Matrix4::AXIS_X)));
@@ -48,9 +47,8 @@ StatusOr<Any> SceneExecuter::ExecuteAssignment(const Node* node) {
 }
 
 StatusOr<Any> SceneExecuter::ExecuteDotAccessor(const Node* node) {
-  ASSIGN_OR_RETURN(auto obj, ExecuteNodeT<std::shared_ptr<Object>>(node->children()[0].get()));
-  //return obj->Get(node->children()[1]->token().value());
-  return Status("BARF", 1, 1);
+  ASSIGN_OR_RETURN(auto obj, ExecuteNodeT<std::shared_ptr<SceneObject>>(node->children()[0].get()));
+  return obj->Get(node->children()[1]->token().value());
 }
 
 StatusOr<Any> SceneExecuter::ExecuteFunction(const Node* node) {

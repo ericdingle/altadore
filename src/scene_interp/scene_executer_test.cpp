@@ -1,7 +1,7 @@
-#include "scene_interp/scene_executer.h"
-
 #include "algebra/matrix4.h"
+#include "scene_interp/scene_executer.h"
 #include "scene_interp/scene_lexer.h"
+#include "scene_interp/scene_object.h"
 #include "scene_interp/scene_parser.h"
 #include "third_party/bonavista/src/util/status_test_macros.h"
 #include "third_party/chaparral/src/executer/any_test_macros.h"
@@ -17,13 +17,23 @@ TEST_F(SceneExecuterTest, Constants) {
   EXPECT_ANY(Execute("AXIS_Z;").value(), double, Matrix4::AXIS_Z);
 }
 
-/*
+class TestSceneObject : public SceneObject {
+ public:
+  StatusOr<Any> Get(const std::string& name) {
+    return name == "one" ? Any(1) : Any(2);
+  }
+};
+
 TEST_F(SceneExecuterTest, ExecuteDotAccessor) {
+  Init("a.one; a.two;");
+  executer_->SetVariable("a", Any(std::shared_ptr<SceneObject>(new TestSceneObject())));
+  EXPECT_ANY(executer_->Execute().value(), int, 1);
+  EXPECT_ANY(executer_->Execute().value(), int, 2);
 }
 
 TEST_F(SceneExecuterTest, ExecuteDotAccessorError) {
+  EXPECT_STATUS(Execute("a.one;").status(), "a is undefined", 1, 1);
 }
-*/
 
 TEST_F(SceneExecuterTest, ExecuteAssignment) {
   EXPECT_ANY(Execute("a = 1;").value(), double, 1);
