@@ -31,7 +31,13 @@ class SceneExecuter : public Executer {
   static Status ExpectSize(const std::vector<const Node*>& args, int size,
                            int line, int column);
 
+  StatusOr<Any> CreateColor(
+      const std::vector<const Node*>&, int line, int column);
+  StatusOr<Any> CreateLight(
+      const std::vector<const Node*>&, int line, int column);
   StatusOr<Any> CreatePoint3(
+      const std::vector<const Node*>&, int line, int column);
+  StatusOr<Any> CreateMaterial(
       const std::vector<const Node*>&, int line, int column);
 
   std::map<std::string, Any> variables_;

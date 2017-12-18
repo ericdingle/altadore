@@ -6,6 +6,9 @@
 #include "algebra/point3.h"
 #include "scene_interp/scene_lexer.h"
 #include "scene_interp/scene_object.h"
+#include "shader/color.h"
+#include "shader/light.h"
+#include "shader/material.h"
 
 using namespace std::placeholders;
 
@@ -14,8 +17,14 @@ SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
   SetVariable("AXIS_Y", Any(static_cast<double>(Matrix4::AXIS_Y)));
   SetVariable("AXIS_Z", Any(static_cast<double>(Matrix4::AXIS_Z)));
 
+  SetVariable("Color", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreateColor, this, _1, _2, _3))));
+  SetVariable("Light", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreateLight, this, _1, _2, _3))));
   SetVariable("Point3", Any(SceneFunc(std::bind(
       &SceneExecuter::CreatePoint3, this, _1, _2, _3))));
+  SetVariable("Material", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreateMaterial, this, _1, _2, _3))));
 }
 
 Any SceneExecuter::GetVariable(const std::string& name) const {
@@ -90,6 +99,23 @@ Status SceneExecuter::ExpectSize(const std::vector<const Node*>& args, int size,
       "Expecting " + std::to_string(size) + " argument(s)", line, column);
 }
 
+StatusOr<Any> SceneExecuter::CreateColor(
+    const std::vector<const Node*>& args, int line, int column) {
+  RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
+  ASSIGN_OR_RETURN(double r, ExecuteNodeT<double>(args[0]));
+  ASSIGN_OR_RETURN(double g, ExecuteNodeT<double>(args[1]));
+  ASSIGN_OR_RETURN(double b, ExecuteNodeT<double>(args[2]));
+  return Any(std::make_shared<Color>(r, g, b));
+};
+
+StatusOr<Any> SceneExecuter::CreateLight(
+    const std::vector<const Node*>& args, int line, int column) {
+  RETURN_IF_ERROR(ExpectSize(args, 2, line, column));
+  ASSIGN_OR_RETURN(auto p, ExecuteNodeT<std::shared_ptr<Point3>>(args[0]));
+  ASSIGN_OR_RETURN(auto c, ExecuteNodeT<std::shared_ptr<Color>>(args[1]));
+  return Any(std::make_shared<Light>(p, c));
+};
+
 StatusOr<Any> SceneExecuter::CreatePoint3(
     const std::vector<const Node*>& args, int line, int column) {
   RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
@@ -97,4 +123,13 @@ StatusOr<Any> SceneExecuter::CreatePoint3(
   ASSIGN_OR_RETURN(double y, ExecuteNodeT<double>(args[1]));
   ASSIGN_OR_RETURN(double z, ExecuteNodeT<double>(args[2]));
   return Any(std::make_shared<Point3>(x, y, z));
+};
+
+StatusOr<Any> SceneExecuter::CreateMaterial(
+    const std::vector<const Node*>& args, int line, int column) {
+  RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
+  ASSIGN_OR_RETURN(auto c, ExecuteNodeT<std::shared_ptr<Color>>(args[0]));
+  ASSIGN_OR_RETURN(double s, ExecuteNodeT<double>(args[1]));
+  ASSIGN_OR_RETURN(double r, ExecuteNodeT<double>(args[2]));
+  return Any(std::make_shared<Material>(c, s, r));
 };
