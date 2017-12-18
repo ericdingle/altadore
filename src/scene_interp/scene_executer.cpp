@@ -9,6 +9,8 @@
 #include "shader/color.h"
 #include "shader/light.h"
 #include "shader/material.h"
+#include "shape/cube.h"
+#include "shape/sphere.h"
 
 using namespace std::placeholders;
 
@@ -19,12 +21,16 @@ SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
 
   SetVariable("Color", Any(SceneFunc(std::bind(
       &SceneExecuter::CreateColor, this, _1, _2, _3))));
+  SetVariable("Cube", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreateCube, this, _1, _2, _3))));
   SetVariable("Light", Any(SceneFunc(std::bind(
       &SceneExecuter::CreateLight, this, _1, _2, _3))));
-  SetVariable("Point3", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreatePoint3, this, _1, _2, _3))));
   SetVariable("Material", Any(SceneFunc(std::bind(
       &SceneExecuter::CreateMaterial, this, _1, _2, _3))));
+  SetVariable("Point3", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreatePoint3, this, _1, _2, _3))));
+  SetVariable("Sphere", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreateSphere, this, _1, _2, _3))));
 }
 
 Any SceneExecuter::GetVariable(const std::string& name) const {
@@ -108,12 +114,27 @@ StatusOr<Any> SceneExecuter::CreateColor(
   return Any(std::make_shared<Color>(r, g, b));
 };
 
+StatusOr<Any> SceneExecuter::CreateCube(
+    const std::vector<const Node*>& args, int line, int column) {
+  RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
+  return Any(std::make_shared<Cube>());
+};
+
 StatusOr<Any> SceneExecuter::CreateLight(
     const std::vector<const Node*>& args, int line, int column) {
   RETURN_IF_ERROR(ExpectSize(args, 2, line, column));
   ASSIGN_OR_RETURN(auto p, ExecuteNodeT<std::shared_ptr<Point3>>(args[0]));
   ASSIGN_OR_RETURN(auto c, ExecuteNodeT<std::shared_ptr<Color>>(args[1]));
   return Any(std::make_shared<Light>(p, c));
+};
+
+StatusOr<Any> SceneExecuter::CreateMaterial(
+    const std::vector<const Node*>& args, int line, int column) {
+  RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
+  ASSIGN_OR_RETURN(auto c, ExecuteNodeT<std::shared_ptr<Color>>(args[0]));
+  ASSIGN_OR_RETURN(double s, ExecuteNodeT<double>(args[1]));
+  ASSIGN_OR_RETURN(double r, ExecuteNodeT<double>(args[2]));
+  return Any(std::make_shared<Material>(c, s, r));
 };
 
 StatusOr<Any> SceneExecuter::CreatePoint3(
@@ -125,11 +146,9 @@ StatusOr<Any> SceneExecuter::CreatePoint3(
   return Any(std::make_shared<Point3>(x, y, z));
 };
 
-StatusOr<Any> SceneExecuter::CreateMaterial(
+StatusOr<Any> SceneExecuter::CreateSphere(
     const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
-  ASSIGN_OR_RETURN(auto c, ExecuteNodeT<std::shared_ptr<Color>>(args[0]));
-  ASSIGN_OR_RETURN(double s, ExecuteNodeT<double>(args[1]));
-  ASSIGN_OR_RETURN(double r, ExecuteNodeT<double>(args[2]));
-  return Any(std::make_shared<Material>(c, s, r));
+  RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
+  return Any(std::make_shared<Sphere>());
 };
+

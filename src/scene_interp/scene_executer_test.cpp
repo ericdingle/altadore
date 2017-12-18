@@ -7,6 +7,8 @@
 #include "shader/color.h"
 #include "shader/light.h"
 #include "shader/material.h"
+#include "shape/cube.h"
+#include "shape/sphere.h"
 #include "third_party/bonavista/src/util/status_test_macros.h"
 #include "third_party/chaparral/src/executer/any_test_macros.h"
 #include "third_party/chaparral/src/executer/executer_test_fixture.h"
@@ -100,6 +102,15 @@ TEST_F(SceneExecuterTest, CreateColorError) {
   EXPECT_STATUS(Execute("Color(1, 2, a);").status(), "a is undefined", 1, 13);
 }
 
+TEST_F(SceneExecuterTest, CreateCube) {
+  std::shared_ptr<Cube> cube;
+  EXPECT_TRUE(Execute("Cube();").value().Get(&cube));
+}
+
+TEST_F(SceneExecuterTest, CreateCubeError) {
+  EXPECT_STATUS(Execute("Cube(1);").status(), "Expecting 0 argument(s)", 1, 5);
+}
+
 TEST_F(SceneExecuterTest, CreateLight) {
   std::shared_ptr<Light> light;
   EXPECT_TRUE(Execute("Light(Point3(0, 0, 0), Color(0, 0, 0));").value().Get(&light));
@@ -109,6 +120,20 @@ TEST_F(SceneExecuterTest, CreateLightError) {
   EXPECT_STATUS(Execute("Light();").status(), "Expecting 2 argument(s)", 1, 6);
   EXPECT_STATUS(Execute("Light(a, Color(0, 0, 0));").status(), "a is undefined", 1, 7);
   EXPECT_STATUS(Execute("Light(Point3(0, 0, 0), a);").status(), "a is undefined", 1, 24);
+}
+
+TEST_F(SceneExecuterTest, CreateMaterial) {
+  std::shared_ptr<Material> material;
+  EXPECT_TRUE(Execute("Material(Color(0, 0, 0), 0.1, 0.2);").value().Get(&material));
+  EXPECT_EQ(0.1, material->shininess());
+  EXPECT_EQ(0.2, material->reflectivity());
+}
+
+TEST_F(SceneExecuterTest, CreateMaterialError) {
+  EXPECT_STATUS(Execute("Material();").status(), "Expecting 3 argument(s)", 1, 9);
+  EXPECT_STATUS(Execute("Material(a, 1, 2);").status(), "a is undefined", 1, 10);
+  EXPECT_STATUS(Execute("Material(Color(0, 0, 0), a, 2);").status(), "a is undefined", 1, 26);
+  EXPECT_STATUS(Execute("Material(Color(0, 0, 0), 1, a);").status(), "a is undefined", 1, 29);
 }
 
 TEST_F(SceneExecuterTest, CreatePoint3) {
@@ -126,17 +151,11 @@ TEST_F(SceneExecuterTest, CreatePoint3Error) {
   EXPECT_STATUS(Execute("Point3(1, 2, a);").status(), "a is undefined", 1, 14);
 }
 
-TEST_F(SceneExecuterTest, CreateMaterial) {
-  std::shared_ptr<Material> material;
-  EXPECT_TRUE(Execute("Material(Color(0, 0, 0), 0.1, 0.2);").value().Get(&material));
-  EXPECT_EQ(0.1, material->shininess());
-  EXPECT_EQ(0.2, material->reflectivity());
+TEST_F(SceneExecuterTest, CreateSphere) {
+  std::shared_ptr<Sphere> sphere;
+  EXPECT_TRUE(Execute("Sphere();").value().Get(&sphere));
 }
 
-TEST_F(SceneExecuterTest, CreateMaterialError) {
-  EXPECT_STATUS(Execute("Material();").status(), "Expecting 3 argument(s)", 1, 9);
-  EXPECT_STATUS(Execute("Material(a, 1, 2);").status(), "a is undefined", 1, 10);
-  EXPECT_STATUS(Execute("Material(Color(0, 0, 0), a, 2);").status(), "a is undefined", 1, 26);
-  EXPECT_STATUS(Execute("Material(Color(0, 0, 0), 1, a);").status(), "a is undefined", 1, 29);
+TEST_F(SceneExecuterTest, CreateSphereError) {
+  EXPECT_STATUS(Execute("Sphere(1);").status(), "Expecting 0 argument(s)", 1, 7);
 }
-

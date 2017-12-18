@@ -33,11 +33,15 @@ class SceneExecuter : public Executer {
 
   StatusOr<Any> CreateColor(
       const std::vector<const Node*>&, int line, int column);
+  StatusOr<Any> CreateCube(
+      const std::vector<const Node*>&, int line, int column);
   StatusOr<Any> CreateLight(
+      const std::vector<const Node*>&, int line, int column);
+  StatusOr<Any> CreateMaterial(
       const std::vector<const Node*>&, int line, int column);
   StatusOr<Any> CreatePoint3(
       const std::vector<const Node*>&, int line, int column);
-  StatusOr<Any> CreateMaterial(
+  StatusOr<Any> CreateSphere(
       const std::vector<const Node*>&, int line, int column);
 
   std::map<std::string, Any> variables_;
