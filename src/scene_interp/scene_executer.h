@@ -6,7 +6,8 @@
 #include "third_party/chaparral/src/executer/any.h"
 #include "third_party/chaparral/src/executer/executer.h"
 
-using SceneFunc = std::function<StatusOr<Any>(const std::vector<const Node*>&)>;
+using SceneFunc = std::function<StatusOr<Any>(
+    const std::vector<const Node*>&, int line, int column)>;
 
 class SceneExecuter : public Executer {
  public:
@@ -21,12 +22,17 @@ class SceneExecuter : public Executer {
  protected:
   StatusOr<Any> ExecuteNode(const Node* node) override;
 
- private:
   StatusOr<Any> ExecuteAssignment(const Node* node);
   StatusOr<Any> ExecuteDotAccessor(const Node* node);
   StatusOr<Any> ExecuteFunction(const Node* node);
   StatusOr<Any> ExecuteIdentifier(const Node* node);
   StatusOr<Any> ExecuteNumber(const Node* node);
+
+  static Status ExpectSize(const std::vector<const Node*>& args, int size,
+                           int line, int column);
+
+  StatusOr<Any> CreatePoint3(
+      const std::vector<const Node*>&, int line, int column);
 
   std::map<std::string, Any> variables_;
 };

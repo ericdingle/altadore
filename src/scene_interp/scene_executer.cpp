@@ -3,13 +3,19 @@
 #include <algorithm>
 #include <assert.h>
 #include "algebra/matrix4.h"
+#include "algebra/point3.h"
 #include "scene_interp/scene_lexer.h"
 #include "scene_interp/scene_object.h"
+
+using namespace std::placeholders;
 
 SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
   SetVariable("AXIS_X", Any(static_cast<double>(Matrix4::AXIS_X)));
   SetVariable("AXIS_Y", Any(static_cast<double>(Matrix4::AXIS_Y)));
   SetVariable("AXIS_Z", Any(static_cast<double>(Matrix4::AXIS_Z)));
+
+  SetVariable("Point3", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreatePoint3, this, _1, _2, _3))));
 }
 
 Any SceneExecuter::GetVariable(const std::string& name) const {
@@ -59,7 +65,7 @@ StatusOr<Any> SceneExecuter::ExecuteFunction(const Node* node) {
   std::transform(children.begin() + 1, children.end(), std::back_inserter(args),
                  [](const std::unique_ptr<const Node>& n) { return n.get(); });
 
-  return func(args);
+  return func(args, node->token().line(), node->token().column());
 }
 
 StatusOr<Any> SceneExecuter::ExecuteIdentifier(const Node* node) {
@@ -77,3 +83,18 @@ StatusOr<Any> SceneExecuter::ExecuteNumber(const Node* node) {
   double value = atof(node->token().value().c_str());
   return Any(value);
 }
+
+Status SceneExecuter::ExpectSize(const std::vector<const Node*>& args, int size,
+                                 int line, int column) {
+  return args.size() == size ? Status() : Status(
+      "Expecting " + std::to_string(size) + " argument(s)", line, column);
+}
+
+StatusOr<Any> SceneExecuter::CreatePoint3(
+    const std::vector<const Node*>& args, int line, int column) {
+  RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
+  ASSIGN_OR_RETURN(double x, ExecuteNodeT<double>(args[0]));
+  ASSIGN_OR_RETURN(double y, ExecuteNodeT<double>(args[1]));
+  ASSIGN_OR_RETURN(double z, ExecuteNodeT<double>(args[2]));
+  return Any(std::make_shared<Point3>(x, y, z));
+};
