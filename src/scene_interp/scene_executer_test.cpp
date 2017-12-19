@@ -1,5 +1,7 @@
 #include "algebra/matrix4.h"
 #include "algebra/point3.h"
+#include "scene/shape_node.h"
+#include "scene/transform_node.h"
 #include "scene_interp/scene_executer.h"
 #include "scene_interp/scene_lexer.h"
 #include "scene_interp/scene_object.h"
@@ -103,8 +105,9 @@ TEST_F(SceneExecuterTest, CreateColorError) {
 }
 
 TEST_F(SceneExecuterTest, CreateCube) {
-  std::shared_ptr<Cube> cube;
-  EXPECT_TRUE(Execute("Cube();").value().Get(&cube));
+  std::shared_ptr<SceneObject> obj;
+  EXPECT_TRUE(Execute("Cube();").value().Get(&obj));
+  EXPECT_TRUE(std::dynamic_pointer_cast<Cube>(obj));
 }
 
 TEST_F(SceneExecuterTest, CreateCubeError) {
@@ -151,11 +154,32 @@ TEST_F(SceneExecuterTest, CreatePoint3Error) {
   EXPECT_STATUS(Execute("Point3(1, 2, a);").status(), "a is undefined", 1, 14);
 }
 
+TEST_F(SceneExecuterTest, CreateShapeNode) {
+  std::shared_ptr<ShapeNode> shape_node;
+  EXPECT_TRUE(Execute("ShapeNode(Cube(), Material(Color(0, 0, 0), 1, 1));").value().Get(&shape_node));
+}
+
+TEST_F(SceneExecuterTest, CreateShapeNodeError) {
+  EXPECT_STATUS(Execute("ShapeNode();").status(), "Expecting 2 argument(s)", 1, 10);
+  EXPECT_STATUS(Execute("ShapeNode(a, Material(Color(0, 0, 0), 1, 1));").status(), "a is undefined", 1, 11);
+  EXPECT_STATUS(Execute("ShapeNode(Cube(), a);").status(), "a is undefined", 1, 19);
+}
+
 TEST_F(SceneExecuterTest, CreateSphere) {
-  std::shared_ptr<Sphere> sphere;
-  EXPECT_TRUE(Execute("Sphere();").value().Get(&sphere));
+  std::shared_ptr<SceneObject> obj;
+  EXPECT_TRUE(Execute("Sphere();").value().Get(&obj));
+  EXPECT_TRUE(std::dynamic_pointer_cast<Sphere>(obj));
 }
 
 TEST_F(SceneExecuterTest, CreateSphereError) {
   EXPECT_STATUS(Execute("Sphere(1);").status(), "Expecting 0 argument(s)", 1, 7);
+}
+
+TEST_F(SceneExecuterTest, CreateTransformNode) {
+  std::shared_ptr<TransformNode> transform;
+  EXPECT_TRUE(Execute("TransformNode();").value().Get(&transform));
+}
+
+TEST_F(SceneExecuterTest, CreateTransformNodeError) {
+  EXPECT_STATUS(Execute("TransformNode(1);").status(), "Expecting 0 argument(s)", 1, 14);
 }

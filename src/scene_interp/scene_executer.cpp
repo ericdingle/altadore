@@ -4,6 +4,8 @@
 #include <assert.h>
 #include "algebra/matrix4.h"
 #include "algebra/point3.h"
+#include "scene/shape_node.h"
+#include "scene/transform_node.h"
 #include "scene_interp/scene_lexer.h"
 #include "scene_interp/scene_object.h"
 #include "shader/color.h"
@@ -29,8 +31,12 @@ SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
       &SceneExecuter::CreateMaterial, this, _1, _2, _3))));
   SetVariable("Point3", Any(SceneFunc(std::bind(
       &SceneExecuter::CreatePoint3, this, _1, _2, _3))));
+  SetVariable("ShapeNode", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreateShapeNode, this, _1, _2, _3))));
   SetVariable("Sphere", Any(SceneFunc(std::bind(
       &SceneExecuter::CreateSphere, this, _1, _2, _3))));
+  SetVariable("TransformNode", Any(SceneFunc(std::bind(
+      &SceneExecuter::CreateTransformNode, this, _1, _2, _3))));
 }
 
 Any SceneExecuter::GetVariable(const std::string& name) const {
@@ -117,7 +123,7 @@ StatusOr<Any> SceneExecuter::CreateColor(
 StatusOr<Any> SceneExecuter::CreateCube(
     const std::vector<const Node*>& args, int line, int column) {
   RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
-  return Any(std::make_shared<Cube>());
+  return Any(std::shared_ptr<SceneObject>(new CubeObject()));
 };
 
 StatusOr<Any> SceneExecuter::CreateLight(
@@ -146,9 +152,22 @@ StatusOr<Any> SceneExecuter::CreatePoint3(
   return Any(std::make_shared<Point3>(x, y, z));
 };
 
+StatusOr<Any> SceneExecuter::CreateShapeNode(
+    const std::vector<const Node*>& args, int line, int column) {
+  RETURN_IF_ERROR(ExpectSize(args, 2, line, column));
+  ASSIGN_OR_RETURN(auto s, ExecuteNodeObject<Shape>(args[0]));
+  ASSIGN_OR_RETURN(auto m, ExecuteNodeT<std::shared_ptr<Material>>(args[1]));
+  return Any(std::make_shared<ShapeNode>(s, m));
+};
+
 StatusOr<Any> SceneExecuter::CreateSphere(
     const std::vector<const Node*>& args, int line, int column) {
   RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
-  return Any(std::make_shared<Sphere>());
+  return Any(std::shared_ptr<SceneObject>(new SphereObject()));
 };
 
+StatusOr<Any> SceneExecuter::CreateTransformNode(
+    const std::vector<const Node*>& args, int line, int column) {
+  RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
+  return Any(std::make_shared<TransformNode>());
+};
