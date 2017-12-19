@@ -157,7 +157,7 @@ StatusOr<Any> SceneExecuter::CreateShapeNode(
   RETURN_IF_ERROR(ExpectSize(args, 2, line, column));
   ASSIGN_OR_RETURN(auto s, ExecuteNodeObject<Shape>(args[0]));
   ASSIGN_OR_RETURN(auto m, ExecuteNodeT<std::shared_ptr<Material>>(args[1]));
-  return Any(std::make_shared<ShapeNode>(s, m));
+  return Any(std::shared_ptr<SceneObject>(new ShapeNodeObject(s, m)));
 };
 
 StatusOr<Any> SceneExecuter::CreateSphere(
@@ -169,5 +169,5 @@ StatusOr<Any> SceneExecuter::CreateSphere(
 StatusOr<Any> SceneExecuter::CreateTransformNode(
     const std::vector<const Node*>& args, int line, int column) {
   RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
-  return Any(std::make_shared<TransformNode>());
+  return Any(std::shared_ptr<SceneObject>(new TransformNodeObject()));
 };

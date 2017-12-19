@@ -1,7 +1,5 @@
 #include "algebra/matrix4.h"
 #include "algebra/point3.h"
-#include "scene/shape_node.h"
-#include "scene/transform_node.h"
 #include "scene_interp/scene_executer.h"
 #include "scene_interp/scene_lexer.h"
 #include "scene_interp/scene_object.h"
@@ -9,8 +7,6 @@
 #include "shader/color.h"
 #include "shader/light.h"
 #include "shader/material.h"
-#include "shape/cube.h"
-#include "shape/sphere.h"
 #include "third_party/bonavista/src/util/status_test_macros.h"
 #include "third_party/chaparral/src/executer/any_test_macros.h"
 #include "third_party/chaparral/src/executer/executer_test_fixture.h"
@@ -155,8 +151,9 @@ TEST_F(SceneExecuterTest, CreatePoint3Error) {
 }
 
 TEST_F(SceneExecuterTest, CreateShapeNode) {
-  std::shared_ptr<ShapeNode> shape_node;
-  EXPECT_TRUE(Execute("ShapeNode(Cube(), Material(Color(0, 0, 0), 1, 1));").value().Get(&shape_node));
+  std::shared_ptr<SceneObject> obj;
+  EXPECT_TRUE(Execute("ShapeNode(Cube(), Material(Color(0, 0, 0), 1, 1));").value().Get(&obj));
+  EXPECT_TRUE(std::dynamic_pointer_cast<ShapeNode>(obj));
 }
 
 TEST_F(SceneExecuterTest, CreateShapeNodeError) {
@@ -176,8 +173,9 @@ TEST_F(SceneExecuterTest, CreateSphereError) {
 }
 
 TEST_F(SceneExecuterTest, CreateTransformNode) {
-  std::shared_ptr<TransformNode> transform;
-  EXPECT_TRUE(Execute("TransformNode();").value().Get(&transform));
+  std::shared_ptr<SceneObject> obj;
+  EXPECT_TRUE(Execute("TransformNode();").value().Get(&obj));
+  EXPECT_TRUE(std::dynamic_pointer_cast<TransformNode>(obj));
 }
 
 TEST_F(SceneExecuterTest, CreateTransformNodeError) {
