@@ -7,6 +7,8 @@
 #include "shader/color.h"
 #include "shader/light.h"
 #include "shader/material.h"
+#include "shape/cube.h"
+#include "shape/sphere.h"
 #include "third_party/bonavista/src/util/status_test_macros.h"
 #include "third_party/chaparral/src/executer/any_test_macros.h"
 #include "third_party/chaparral/src/executer/executer_test_fixture.h"
@@ -101,7 +103,7 @@ TEST_F(SceneExecuterTest, CreateColorError) {
 }
 
 TEST_F(SceneExecuterTest, CreateCube) {
-  std::shared_ptr<SceneObject> obj;
+  std::shared_ptr<Shape> obj;
   EXPECT_TRUE(Execute("Cube();").value().Get(&obj));
   EXPECT_TRUE(std::dynamic_pointer_cast<Cube>(obj));
 }
@@ -163,7 +165,7 @@ TEST_F(SceneExecuterTest, CreateShapeNodeError) {
 }
 
 TEST_F(SceneExecuterTest, CreateSphere) {
-  std::shared_ptr<SceneObject> obj;
+  std::shared_ptr<Shape> obj;
   EXPECT_TRUE(Execute("Sphere();").value().Get(&obj));
   EXPECT_TRUE(std::dynamic_pointer_cast<Sphere>(obj));
 }

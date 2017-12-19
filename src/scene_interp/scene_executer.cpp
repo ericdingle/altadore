@@ -8,6 +8,8 @@
 #include "scene/transform_node.h"
 #include "scene_interp/scene_lexer.h"
 #include "scene_interp/scene_object.h"
+#include "shape/cube.h"
+#include "shape/sphere.h"
 #include "shader/color.h"
 #include "shader/light.h"
 #include "shader/material.h"
@@ -123,7 +125,7 @@ StatusOr<Any> SceneExecuter::CreateColor(
 StatusOr<Any> SceneExecuter::CreateCube(
     const std::vector<const Node*>& args, int line, int column) {
   RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
-  return Any(std::shared_ptr<SceneObject>(new CubeObject()));
+  return Any(std::shared_ptr<Shape>(new Cube()));
 };
 
 StatusOr<Any> SceneExecuter::CreateLight(
@@ -155,7 +157,7 @@ StatusOr<Any> SceneExecuter::CreatePoint3(
 StatusOr<Any> SceneExecuter::CreateShapeNode(
     const std::vector<const Node*>& args, int line, int column) {
   RETURN_IF_ERROR(ExpectSize(args, 2, line, column));
-  ASSIGN_OR_RETURN(auto s, ExecuteNodeObject<Shape>(args[0]));
+  ASSIGN_OR_RETURN(auto s, ExecuteNodeT<std::shared_ptr<Shape>>(args[0]));
   ASSIGN_OR_RETURN(auto m, ExecuteNodeT<std::shared_ptr<Material>>(args[1]));
   return Any(std::shared_ptr<SceneObject>(new ShapeNodeObject(s, m)));
 };
@@ -163,7 +165,7 @@ StatusOr<Any> SceneExecuter::CreateShapeNode(
 StatusOr<Any> SceneExecuter::CreateSphere(
     const std::vector<const Node*>& args, int line, int column) {
   RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
-  return Any(std::shared_ptr<SceneObject>(new SphereObject()));
+  return Any(std::shared_ptr<Shape>(new Sphere()));
 };
 
 StatusOr<Any> SceneExecuter::CreateTransformNode(
