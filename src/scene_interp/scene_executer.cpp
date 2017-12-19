@@ -77,7 +77,7 @@ StatusOr<Any> SceneExecuter::ExecuteAssignment(const Node* node) {
 
 StatusOr<Any> SceneExecuter::ExecuteDotAccessor(const Node* node) {
   ASSIGN_OR_RETURN(auto obj, ExecuteNodeT<std::shared_ptr<SceneObject>>(node->children()[0].get()));
-  return obj->Get(node->children()[1]->token().value());
+  return obj->Get(node->children()[1]->token());
 }
 
 StatusOr<Any> SceneExecuter::ExecuteFunction(const Node* node) {

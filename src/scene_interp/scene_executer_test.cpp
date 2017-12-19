@@ -25,8 +25,8 @@ TEST_F(SceneExecuterTest, DefaultVariables) {
 
 class TestSceneObject : public SceneObject {
  public:
-  StatusOr<Any> Get(const std::string& name) override {
-    return name == "one" ? Any(1) : Any(2);
+  StatusOr<Any> Get(const Token& token) override {
+    return token.value() == "one" ? Any(1) : Any(2);
   }
 };
 
