@@ -8,7 +8,7 @@
 #include "third_party/chaparral/src/executer/executer.h"
 
 using SceneFunc = std::function<StatusOr<Any>(
-    const std::vector<const Node*>&, int line, int column)>;
+    const Token&, const std::vector<const Node*>&)>;
 
 class SceneExecuter : public Executer {
  public:
@@ -20,7 +20,12 @@ class SceneExecuter : public Executer {
   Any GetVariable(const std::string& name) const;
   void SetVariable(const std::string& name, const Any& any);
 
+  static Status ExpectSize(
+      const Token& token, const std::vector<const Node*>& args, int size);
+
  protected:
+  friend class SceneObject;
+
   StatusOr<Any> ExecuteNode(const Node* node) override;
 
   StatusOr<Any> ExecuteAssignment(const Node* node);
@@ -29,25 +34,22 @@ class SceneExecuter : public Executer {
   StatusOr<Any> ExecuteIdentifier(const Node* node);
   StatusOr<Any> ExecuteNumber(const Node* node);
 
-  static Status ExpectSize(const std::vector<const Node*>& args, int size,
-                           int line, int column);
-
   StatusOr<Any> CreateColor(
-      const std::vector<const Node*>&, int line, int column);
+      const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> CreateCube(
-      const std::vector<const Node*>&, int line, int column);
+      const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> CreateLight(
-      const std::vector<const Node*>&, int line, int column);
+      const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> CreateMaterial(
-      const std::vector<const Node*>&, int line, int column);
+      const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> CreatePoint3(
-      const std::vector<const Node*>&, int line, int column);
+      const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> CreateShapeNode(
-      const std::vector<const Node*>&, int line, int column);
+      const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> CreateSphere(
-      const std::vector<const Node*>&, int line, int column);
+      const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> CreateTransformNode(
-      const std::vector<const Node*>&, int line, int column);
+      const Token& token, const std::vector<const Node*>& args);
 
   std::map<std::string, Any> variables_;
 };

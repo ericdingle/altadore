@@ -25,7 +25,10 @@ TEST_F(SceneExecuterTest, DefaultVariables) {
 
 class TestSceneObject : public SceneObject {
  public:
-  StatusOr<Any> Get(const Token& token) override {
+  TestSceneObject() : SceneObject(nullptr) {}
+
+  StatusOr<Any> Get(const std::shared_ptr<SceneObject>& obj, const Token& token)
+      override {
     return token.value() == "one" ? Any(1) : Any(2);
   }
 };
@@ -50,11 +53,11 @@ TEST_F(SceneExecuterTest, ExecuteAssignmentError) {
   EXPECT_STATUS(Execute("a = b;").status(), "b is undefined", 1, 5);
 }
 
-StatusOr<Any> Func(const std::vector<const Node*>& args, int line, int column) {
+StatusOr<Any> Func(const Token& token, const std::vector<const Node*>& args) {
   if (!args.empty()) {
     return Any(1);
   }
-  return Status("error", line, column);
+  return Status("error", token.line(), token.column());
 }
 
 TEST_F(SceneExecuterTest, ExecuteFunction) {

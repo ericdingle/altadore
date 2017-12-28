@@ -1,26 +1,38 @@
-#ifndef EXECUTER_SCENE_OBJECT_H_
-#define EXECUTER_SCENE_OBJECT_H_
+#ifndef SCENE_INTERP_SCENE_OBJECT_H_
+#define SCENE_INTERP_SCENE_OBJECT_H_
 
 #include <string>
 #include "scene/shape_node.h"
 #include "scene/transform_node.h"
 #include "third_party/bonavista/src/lexer/token.h"
+#include "third_party/bonavista/src/parser/node.h"
 #include "third_party/bonavista/src/util/status_or.h"
 #include "third_party/chaparral/src/executer/any.h"
 
+class SceneExecuter;
+
 class SceneObject {
  public:
-  SceneObject() = default;
+  explicit SceneObject(SceneExecuter* executer);
   SceneObject(const SceneObject&) = delete;
   SceneObject& operator=(const SceneObject&) = delete;
   virtual ~SceneObject() = default;
 
-  virtual StatusOr<Any> Get(const Token& token);
+  virtual StatusOr<Any> Get(const std::shared_ptr<SceneObject>& obj,
+                            const Token& token);
+
+ protected:
+  template <typename T>
+  StatusOr<T> ExecuteNodeT(const Node* node);
+
+ private:
+  SceneExecuter* executer_;
 };
 
 class ShapeNodeObject : public ShapeNode, public SceneObject {
  public:
-  using ShapeNode::ShapeNode;
+  ShapeNodeObject(const std::shared_ptr<const Shape>& shape,
+                  const std::shared_ptr<const Material>& material);
   ShapeNodeObject(const ShapeNodeObject&) = delete;
   ShapeNodeObject& operator=(const ShapeNodeObject&) = delete;
   ~ShapeNodeObject() override = default;
@@ -28,10 +40,19 @@ class ShapeNodeObject : public ShapeNode, public SceneObject {
 
 class TransformNodeObject : public TransformNode, public SceneObject {
  public:
-  TransformNodeObject() = default;
+  explicit TransformNodeObject(SceneExecuter* executer);
   TransformNodeObject(const TransformNodeObject&) = delete;
   TransformNodeObject& operator=(const TransformNodeObject&) = delete;
   ~TransformNodeObject() override = default;
+
+  StatusOr<Any> Get(const std::shared_ptr<SceneObject>& obj, const Token& token)
+      override;
+
+ private:
+  StatusOr<Any> AddChild(const Token& token, const std::vector<const Node*>& args);
+  StatusOr<Any> Rotate(const Token& token, const std::vector<const Node*>& args);
+  StatusOr<Any> Scale(const Token& token, const std::vector<const Node*>& args);
+  StatusOr<Any> Translate(const Token& token, const std::vector<const Node*>& args);
 };
 
-#endif  // EXECUTER_SCENE_OBJECT_H_
+#endif  // SCENE_INTERP_SCENE_OBJECT_H_

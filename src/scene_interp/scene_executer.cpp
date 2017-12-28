@@ -24,21 +24,21 @@ SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
   SetVariable("AXIS_Z", Any(static_cast<double>(Matrix4::AXIS_Z)));
 
   SetVariable("Color", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreateColor, this, _1, _2, _3))));
+      &SceneExecuter::CreateColor, this, _1, _2))));
   SetVariable("Cube", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreateCube, this, _1, _2, _3))));
+      &SceneExecuter::CreateCube, this, _1, _2))));
   SetVariable("Light", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreateLight, this, _1, _2, _3))));
+      &SceneExecuter::CreateLight, this, _1, _2))));
   SetVariable("Material", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreateMaterial, this, _1, _2, _3))));
+      &SceneExecuter::CreateMaterial, this, _1, _2))));
   SetVariable("Point3", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreatePoint3, this, _1, _2, _3))));
+      &SceneExecuter::CreatePoint3, this, _1, _2))));
   SetVariable("ShapeNode", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreateShapeNode, this, _1, _2, _3))));
+      &SceneExecuter::CreateShapeNode, this, _1, _2))));
   SetVariable("Sphere", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreateSphere, this, _1, _2, _3))));
+      &SceneExecuter::CreateSphere, this, _1, _2))));
   SetVariable("TransformNode", Any(SceneFunc(std::bind(
-      &SceneExecuter::CreateTransformNode, this, _1, _2, _3))));
+      &SceneExecuter::CreateTransformNode, this, _1, _2))));
 }
 
 Any SceneExecuter::GetVariable(const std::string& name) const {
@@ -48,6 +48,12 @@ Any SceneExecuter::GetVariable(const std::string& name) const {
 
 void SceneExecuter::SetVariable(const std::string& name, const Any& any) {
   variables_[name] = any;
+}
+
+Status SceneExecuter::ExpectSize(
+    const Token& token, const std::vector<const Node*>& args, int size) {
+  return args.size() == size ? Status() : Status(
+      "Expecting " + std::to_string(size) + " argument(s)", token.line(), token.column());
 }
 
 StatusOr<Any> SceneExecuter::ExecuteNode(const Node* node) {
@@ -77,7 +83,7 @@ StatusOr<Any> SceneExecuter::ExecuteAssignment(const Node* node) {
 
 StatusOr<Any> SceneExecuter::ExecuteDotAccessor(const Node* node) {
   ASSIGN_OR_RETURN(auto obj, ExecuteNodeT<std::shared_ptr<SceneObject>>(node->children()[0].get()));
-  return obj->Get(node->children()[1]->token());
+  return obj->Get(obj, node->children()[1]->token());
 }
 
 StatusOr<Any> SceneExecuter::ExecuteFunction(const Node* node) {
@@ -88,7 +94,7 @@ StatusOr<Any> SceneExecuter::ExecuteFunction(const Node* node) {
   std::transform(children.begin() + 1, children.end(), std::back_inserter(args),
                  [](const std::unique_ptr<const Node>& n) { return n.get(); });
 
-  return func(args, node->token().line(), node->token().column());
+  return func(node->token(), args);
 }
 
 StatusOr<Any> SceneExecuter::ExecuteIdentifier(const Node* node) {
@@ -107,15 +113,9 @@ StatusOr<Any> SceneExecuter::ExecuteNumber(const Node* node) {
   return Any(value);
 }
 
-Status SceneExecuter::ExpectSize(const std::vector<const Node*>& args, int size,
-                                 int line, int column) {
-  return args.size() == size ? Status() : Status(
-      "Expecting " + std::to_string(size) + " argument(s)", line, column);
-}
-
 StatusOr<Any> SceneExecuter::CreateColor(
-    const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(ExpectSize(token, args, 3));
   ASSIGN_OR_RETURN(double r, ExecuteNodeT<double>(args[0]));
   ASSIGN_OR_RETURN(double g, ExecuteNodeT<double>(args[1]));
   ASSIGN_OR_RETURN(double b, ExecuteNodeT<double>(args[2]));
@@ -123,22 +123,22 @@ StatusOr<Any> SceneExecuter::CreateColor(
 };
 
 StatusOr<Any> SceneExecuter::CreateCube(
-    const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(ExpectSize(token, args, 0));
   return Any(std::shared_ptr<Shape>(new Cube()));
 };
 
 StatusOr<Any> SceneExecuter::CreateLight(
-    const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 2, line, column));
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(ExpectSize(token, args, 2));
   ASSIGN_OR_RETURN(auto p, ExecuteNodeT<std::shared_ptr<Point3>>(args[0]));
   ASSIGN_OR_RETURN(auto c, ExecuteNodeT<std::shared_ptr<Color>>(args[1]));
   return Any(std::make_shared<Light>(p, c));
 };
 
 StatusOr<Any> SceneExecuter::CreateMaterial(
-    const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(ExpectSize(token, args, 3));
   ASSIGN_OR_RETURN(auto c, ExecuteNodeT<std::shared_ptr<Color>>(args[0]));
   ASSIGN_OR_RETURN(double s, ExecuteNodeT<double>(args[1]));
   ASSIGN_OR_RETURN(double r, ExecuteNodeT<double>(args[2]));
@@ -146,8 +146,8 @@ StatusOr<Any> SceneExecuter::CreateMaterial(
 };
 
 StatusOr<Any> SceneExecuter::CreatePoint3(
-    const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 3, line, column));
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(ExpectSize(token, args, 3));
   ASSIGN_OR_RETURN(double x, ExecuteNodeT<double>(args[0]));
   ASSIGN_OR_RETURN(double y, ExecuteNodeT<double>(args[1]));
   ASSIGN_OR_RETURN(double z, ExecuteNodeT<double>(args[2]));
@@ -155,21 +155,21 @@ StatusOr<Any> SceneExecuter::CreatePoint3(
 };
 
 StatusOr<Any> SceneExecuter::CreateShapeNode(
-    const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 2, line, column));
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(ExpectSize(token, args, 2));
   ASSIGN_OR_RETURN(auto s, ExecuteNodeT<std::shared_ptr<Shape>>(args[0]));
   ASSIGN_OR_RETURN(auto m, ExecuteNodeT<std::shared_ptr<Material>>(args[1]));
   return Any(std::shared_ptr<SceneObject>(new ShapeNodeObject(s, m)));
 };
 
 StatusOr<Any> SceneExecuter::CreateSphere(
-    const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(ExpectSize(token, args, 0));
   return Any(std::shared_ptr<Shape>(new Sphere()));
 };
 
 StatusOr<Any> SceneExecuter::CreateTransformNode(
-    const std::vector<const Node*>& args, int line, int column) {
-  RETURN_IF_ERROR(ExpectSize(args, 0, line, column));
-  return Any(std::shared_ptr<SceneObject>(new TransformNodeObject()));
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(ExpectSize(token, args, 0));
+  return Any(std::shared_ptr<SceneObject>(new TransformNodeObject(this)));
 };

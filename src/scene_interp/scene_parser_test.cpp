@@ -41,7 +41,7 @@ TEST_F(SceneParserTest, ParseDotAccessor) {
 
 TEST_F(SceneParserTest, ParseDotAccessorError) {
   std::pair<const char*, const char*> test_cases[] = {
-      {"a.);", "Unexpected token: )"},
+      {"a.*;", "Unexpected character: *"},
       {"a.5;", "Unexpected token: 5"}
       };
 

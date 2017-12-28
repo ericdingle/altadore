@@ -55,11 +55,9 @@ StatusOr<std::unique_ptr<Node>> SceneParser::ParseDotAccessor(
     std::unique_ptr<const Token> token, std::unique_ptr<const Node> left) {
   std::unique_ptr<Node> node(new Node(std::move(token)));
 
-  RETURN_IF_ERROR(ExpectToken(left->token(), SceneLexer::TYPE_IDENTIFIER));
   node->AddChild(std::move(left));
 
-  ASSIGN_OR_RETURN(auto right, ParseExpression(GetBindingPower(
-      node->token().type())));
+  ASSIGN_OR_RETURN(auto right, ParseExpression(GetBindingPower(node->token().type())));
   RETURN_IF_ERROR(ExpectToken(right->token(), SceneLexer::TYPE_IDENTIFIER));
   node->AddChild(std::move(right));
 
