@@ -22,10 +22,6 @@ ShapeNodeObject::ShapeNodeObject(const std::shared_ptr<const Shape>& shape,
     : ShapeNode(shape, material), SceneObject(nullptr) {
 }
 
-TransformNodeObject::TransformNodeObject(SceneExecuter* executer)
-    : TransformNode(), SceneObject(executer) {
-}
-
 StatusOr<Any> TransformNodeObject::Get(const std::shared_ptr<SceneObject>& obj,
                                        const Token& token) {
   auto ptr = std::dynamic_pointer_cast<TransformNodeObject>(obj);
@@ -49,7 +45,7 @@ StatusOr<Any> TransformNodeObject::AddChild(
   ASSIGN_OR_RETURN(auto obj, ExecuteNodeT<std::shared_ptr<SceneObject>>(args[0]));
   auto node = std::dynamic_pointer_cast<SceneNode>(obj);
   if (!node) {
-    return Status("Expecting type: SceneNode", args[0]->token().line(),
+    return Status("Expected type: SceneNode", args[0]->token().line(),
                   args[0]->token().column());
   }
   TransformNode::AddChild(node);
@@ -87,4 +83,26 @@ StatusOr<Any> TransformNodeObject::Translate(
   ASSIGN_OR_RETURN(double z, ExecuteNodeT<double>(args[2]));
   TransformNode::Translate(x, y, z);
   return Any();
+}
+
+LightVector::LightVector(SceneExecuter* executer) : SceneObject(executer) {
+}
+
+StatusOr<Any> LightVector::Get(const std::shared_ptr<SceneObject>& obj,
+                               const Token& token) {
+  auto ptr = std::dynamic_pointer_cast<LightVector>(obj);
+
+  if (token.value() == "AddLight") {
+    return Any(SceneFunc(std::bind(&LightVector::AddLight, ptr, _1, _2)));
+  }
+
+  return SceneObject::Get(obj, token);
+}
+
+StatusOr<Any> LightVector::AddLight(
+    const Token& token, const std::vector<const Node*>& args) {
+  RETURN_IF_ERROR(SceneExecuter::ExpectSize(token, args, 1));
+  ASSIGN_OR_RETURN(auto light, ExecuteNodeT<std::shared_ptr<Light>>(args[0]));
+  std::vector<std::shared_ptr<Light>>::push_back(light);
+  return Any(light);
 }

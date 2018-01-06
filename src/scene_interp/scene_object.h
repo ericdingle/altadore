@@ -1,9 +1,12 @@
 #ifndef SCENE_INTERP_SCENE_OBJECT_H_
 #define SCENE_INTERP_SCENE_OBJECT_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 #include "scene/shape_node.h"
 #include "scene/transform_node.h"
+#include "shader/light.h"
 #include "third_party/bonavista/src/lexer/token.h"
 #include "third_party/bonavista/src/parser/node.h"
 #include "third_party/bonavista/src/util/status_or.h"
@@ -40,7 +43,7 @@ class ShapeNodeObject : public ShapeNode, public SceneObject {
 
 class TransformNodeObject : public TransformNode, public SceneObject {
  public:
-  explicit TransformNodeObject(SceneExecuter* executer);
+  using SceneObject::SceneObject;
   TransformNodeObject(const TransformNodeObject&) = delete;
   TransformNodeObject& operator=(const TransformNodeObject&) = delete;
   ~TransformNodeObject() override = default;
@@ -53,6 +56,20 @@ class TransformNodeObject : public TransformNode, public SceneObject {
   StatusOr<Any> Rotate(const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> Scale(const Token& token, const std::vector<const Node*>& args);
   StatusOr<Any> Translate(const Token& token, const std::vector<const Node*>& args);
+};
+
+class LightVector : public std::vector<std::shared_ptr<Light>>, public SceneObject {
+ public:
+  explicit LightVector(SceneExecuter* executer);
+  LightVector(const LightVector&) = delete;
+  LightVector& operator=(const LightVector&) = delete;
+  ~LightVector() override = default;
+
+  StatusOr<Any> Get(const std::shared_ptr<SceneObject>& obj, const Token& token)
+      override;
+
+ private:
+  StatusOr<Any> AddLight(const Token& token, const std::vector<const Node*>& args);
 };
 
 #endif  // SCENE_INTERP_SCENE_OBJECT_H_

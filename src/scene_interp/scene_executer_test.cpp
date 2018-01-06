@@ -21,6 +21,10 @@ TEST_F(SceneExecuterTest, DefaultVariables) {
   EXPECT_ANY(Execute("AXIS_X;").value(), double, Matrix4::AXIS_X);
   EXPECT_ANY(Execute("AXIS_Y;").value(), double, Matrix4::AXIS_Y);
   EXPECT_ANY(Execute("AXIS_Z;").value(), double, Matrix4::AXIS_Z);
+
+  std::shared_ptr<SceneObject> obj;
+  EXPECT_TRUE(Execute("lights;").value().Get(&obj));
+  EXPECT_TRUE(std::dynamic_pointer_cast<LightVector>(obj));
 }
 
 class TestSceneObject : public SceneObject {

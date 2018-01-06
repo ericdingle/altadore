@@ -10,6 +10,12 @@ class TransformNodeObjectTest
     : public ExecuterTestFixture<SceneLexer, SceneParser, SceneExecuter> {
 };
 
+TEST_F(TransformNodeObjectTest, Constructor) {
+  std::shared_ptr<SceneObject> node;
+  EXPECT_TRUE(Execute("TransformNode();").value().Get(&node));
+  EXPECT_TRUE(std::dynamic_pointer_cast<TransformNode>(node));
+}
+
 TEST_F(TransformNodeObjectTest, Undefined) {
   EXPECT_STATUS(Execute("TransformNode().method();").status(), "method is undefined", 1, 17);
 }
@@ -25,7 +31,8 @@ TEST_F(TransformNodeObjectTest, AddChildError) {
                 "Expecting 1 argument(s)", 1, 25);
   EXPECT_STATUS(Execute("TransformNode().AddChild(Cube());").status(),
                 "Expected type: St10shared_ptrI11SceneObjectE", 1, 30);
-  // TODO: test if arg is SceneObject but not SceneNode.
+  EXPECT_STATUS(Execute("TransformNode().AddChild(lights);").status(),
+                "Expected type: SceneNode", 1, 26);
 }
 
 TEST_F(TransformNodeObjectTest, Rotate) {
@@ -73,3 +80,24 @@ TEST_F(TransformNodeObjectTest, TranslateError) {
                 "Expected type: d", 1, 33);
 }
 
+class LightVectorTest
+    : public ExecuterTestFixture<SceneLexer, SceneParser, SceneExecuter> {
+};
+
+TEST_F(LightVectorTest, Undefined) {
+  EXPECT_STATUS(Execute("lights.method();").status(), "method is undefined", 1, 8);
+}
+
+TEST_F(LightVectorTest, AddLight) {
+  std::shared_ptr<Light> light;
+  EXPECT_TRUE(Execute("lights.AddLight(Light(Point3(0, 0, 0), Color(0, 0, 0)));"
+                      ).value().Get(&light));
+  EXPECT_TRUE(light);
+}
+
+TEST_F(LightVectorTest, AddLightError) {
+  EXPECT_STATUS(Execute("lights.AddLight();").status(),
+                "Expecting 1 argument(s)", 1, 16);
+  EXPECT_STATUS(Execute("lights.AddLight(Cube());").status(),
+                "Expected type: St10shared_ptrI5LightE", 1, 21);
+}
