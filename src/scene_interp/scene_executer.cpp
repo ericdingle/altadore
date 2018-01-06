@@ -23,6 +23,7 @@ SceneExecuter::SceneExecuter(Parser* parser) : Executer(parser) {
   SetVariable("AXIS_Y", Any(static_cast<double>(Matrix4::AXIS_Y)));
   SetVariable("AXIS_Z", Any(static_cast<double>(Matrix4::AXIS_Z)));
 
+  SetVariable("root", Any(std::shared_ptr<SceneObject>(new TransformNodeObject(this))));
   SetVariable("lights", Any(std::shared_ptr<SceneObject>(new LightVector(this))));
 
   SetVariable("Color", Any(SceneFunc(std::bind(

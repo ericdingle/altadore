@@ -1,5 +1,6 @@
 #include "algebra/matrix4.h"
 #include "algebra/point3.h"
+#include "scene/transform_node.h"
 #include "scene_interp/scene_executer.h"
 #include "scene_interp/scene_lexer.h"
 #include "scene_interp/scene_object.h"
@@ -23,8 +24,11 @@ TEST_F(SceneExecuterTest, DefaultVariables) {
   EXPECT_ANY(Execute("AXIS_Z;").value(), double, Matrix4::AXIS_Z);
 
   std::shared_ptr<SceneObject> obj;
+  EXPECT_TRUE(Execute("root;").value().Get(&obj));
+  EXPECT_TRUE(std::dynamic_pointer_cast<TransformNode>(obj));
+
   EXPECT_TRUE(Execute("lights;").value().Get(&obj));
-  EXPECT_TRUE(std::dynamic_pointer_cast<LightVector>(obj));
+  EXPECT_TRUE(std::dynamic_pointer_cast<std::vector<std::shared_ptr<Light>>>(obj));
 }
 
 class TestSceneObject : public SceneObject {

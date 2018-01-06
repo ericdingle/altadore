@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <fstream>
 #include <memory>
 #include <unistd.h>
@@ -5,8 +6,9 @@
 #include "scene/transform_node.h"
 #include "scene_interp/scene_executer.h"
 #include "scene_interp/scene_lexer.h"
+#include "scene_interp/scene_object.h"
 #include "scene_interp/scene_parser.h"
-#include "shader/light_vector.h"
+#include "shader/light.h"
 #include "third_party/bonavista/src/lexer/token_stream.h"
 
 int main(int argc, char* argv[]) {
@@ -41,7 +43,7 @@ int main(int argc, char* argv[]) {
 
   // Check flags.
   if (input_file.empty()) {
-    printf("Missing input file flag.\n");
+    printf("Missing --input_file flag.\n");
     return 1;
   }
 
@@ -62,6 +64,10 @@ int main(int argc, char* argv[]) {
 
   // Read input file.
   std::ifstream input_stream(input_file);
+  if (!input_stream.good()) {
+    printf("Could not read: %s\n", input_file.c_str());
+    return 1;
+  }
   std::string input((std::istreambuf_iterator<char>(input_stream)),
                     (std::istreambuf_iterator<char>()));
 
@@ -71,10 +77,6 @@ int main(int argc, char* argv[]) {
   SceneParser parser(&stream);
   SceneExecuter executer(&parser);
 
-  std::shared_ptr<TransformNode> root(new TransformNode());
-  std::shared_ptr<LightVector> lights(new LightVector());
-  // TODO: set default variables in executer.
-
   Status status = executer.ExecuteAll();
   if (!status.ok()) {
     printf("Error: %s at line %d, column %d\n", status.message().c_str(),
@@ -82,11 +84,17 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  std::shared_ptr<SceneObject> obj;
+  assert(executer.GetVariable("root").Get(&obj));
+  auto root = std::dynamic_pointer_cast<TransformNode>(obj);
+  assert(executer.GetVariable("lights").Get(&obj));
+  auto lights = std::dynamic_pointer_cast<std::vector<std::shared_ptr<Light>>>(obj);
+
   // Render scene.
   root->CalculateTransforms(Matrix4());
   RayTracer ray_tracer(root, lights);
   if (!ray_tracer.Render(output_file.c_str(), width, height, anti_alias)) {
-    printf("Could not render!");
+    printf("Could not render!\n");
     return 1;
   }
 

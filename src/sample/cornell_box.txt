@@ -1,39 +1,39 @@
 root.Translate(0, 0, -15);
 
-left_wall_trans = root.AddChild(new TransformNode());
+left_wall_trans = root.AddChild(TransformNode());
 left_wall_trans.Scale(0.01, 5, 5);
 left_wall_trans.Translate(-5, 0, 0);
 
-left_wall = left_wall_trans.AddChild(new ShapeNode(new Cube(), new Material(new Color(1, 0, 0), 10, 0)));
+left_wall = left_wall_trans.AddChild(ShapeNode(Cube(), Material(Color(1, 0, 0), 10, 0)));
 
-right_wall_trans = root.AddChild(new TransformNode());
+right_wall_trans = root.AddChild(TransformNode());
 right_wall_trans.Scale(0.01, 5, 5);
 right_wall_trans.Translate(5, 0, 0);
 
-right_wall = right_wall_trans.AddChild(new ShapeNode(new Cube(), new Material(new Color(0, 1, 0), 10, 0)));
+right_wall = right_wall_trans.AddChild(ShapeNode(Cube(), Material(Color(0, 1, 0), 10, 0)));
 
-back_wall_trans = root.AddChild(new TransformNode());
+back_wall_trans = root.AddChild(TransformNode());
 back_wall_trans.Scale(5, 5, 0.01);
 back_wall_trans.Translate(0, 0, -5);
 
-back_wall = back_wall_trans.AddChild(new ShapeNode(new Cube(), new Material(new Color(1, 1, 1), 10, 0)));
+back_wall = back_wall_trans.AddChild(ShapeNode(Cube(), Material(Color(1, 1, 1), 10, 0)));
 
-ceiling_trans = root.AddChild(new TransformNode());
+ceiling_trans = root.AddChild(TransformNode());
 ceiling_trans.Scale(5, 0.01, 5);
 ceiling_trans.Translate(0, 5, 0);
 
-ceiling = ceiling_trans.AddChild(new ShapeNode(new Cube(), new Material(new Color(1, 1, 1), 10, 0)));
+ceiling = ceiling_trans.AddChild(ShapeNode(Cube(), Material(Color(1, 1, 1), 10, 0)));
 
-floor_trans = root.AddChild(new TransformNode());
+floor_trans = root.AddChild(TransformNode());
 floor_trans.Scale(5, 0.01, 5);
 floor_trans.Translate(0, -5, 0);
 
-floor = floor_trans.AddChild(new ShapeNode(new Cube(), new Material(new Color(1, 1, 1), 10, 0)));
+floor = floor_trans.AddChild(ShapeNode(Cube(), Material(Color(1, 1, 1), 10, 0)));
 
-box1_trans = root.AddChild(new TransformNode());
-box1_trans.Scale(2);
+box1_trans = root.AddChild(TransformNode());
+box1_trans.Scale(2, 2, 2);
 box1_trans.Translate(-2, -3, -1.5);
 
-box1 = box1_trans.AddChild(new ShapeNode(new Sphere(), new Material(new Color(1, 1, 1), 10, 0.5)));
+box1 = box1_trans.AddChild(ShapeNode(Sphere(), Material(Color(1, 1, 1), 10, 0.5)));
 
-lights.AddLight(new Light(new Point3(0, 4, -15), new Color(1, 1, 1)));
+lights.AddLight(Light(Point3(0, 4, -15), Color(1, 1, 1)));

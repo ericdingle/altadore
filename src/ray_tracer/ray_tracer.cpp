@@ -9,8 +9,9 @@
 #include "ray_tracer/ray_tracer_constants.h"
 #include "shader/material.h"
 
-RayTracer::RayTracer(const std::shared_ptr<const TransformNode>& root,
-                     const std::shared_ptr<const LightVector>& lights)
+RayTracer::RayTracer(
+    const std::shared_ptr<const TransformNode>& root,
+    const std::shared_ptr<const std::vector<std::shared_ptr<Light>>>& lights)
     : root_(root), lights_(lights) {
 }
 
@@ -92,7 +93,7 @@ Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, co
   color += kAmbientIntensity;
 
   // color += diffuse_intensity[i] * light_color[i]
-  for (const auto& light : lights_->lights()) {
+  for (const auto& light : *lights_) {
     Vector3 light_dir = *light->position() - point;
     double max_t = light_dir.Length();
     light_dir.Normalize();
@@ -122,7 +123,7 @@ Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Ve
   Color color = GetColor(reflected_ray);
 
   // color += specular_intensity[i] * light_color[i]
-  for (const auto& light : lights_->lights()) {
+  for (const auto& light : *lights_) {
     Vector3 light_dir = *light->position() - point;
     double max_t = light_dir.Length();
     light_dir.Normalize();
