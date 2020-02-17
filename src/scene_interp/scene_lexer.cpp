@@ -1,13 +1,13 @@
 #include "scene_interp/scene_lexer.h"
 
 StatusOr<std::unique_ptr<Token>> SceneLexer::GetToken(
-    const char* input, int line, int column) const {
-  char c = *input;
+    std::string_view input, int line, int column) const {
+  char c = input[0];
 
   if (IsAlpha(c)) {
-    return GetIdentifierToken(input, line, column);
+    return GetIdentifierToken(input.data(), line, column);
   } else if (c == '-' || IsDigit(c)) {
-    return GetNumberToken(input, line, column);
+    return GetNumberToken(input.data(), line, column);
   }
 
   int t = -1;
@@ -26,7 +26,7 @@ StatusOr<std::unique_ptr<Token>> SceneLexer::GetToken(
   }
 
   if (t != -1) {
-    return std::unique_ptr<Token>(new Token(t, c, line, column));
+    return std::unique_ptr<Token>(new Token(t, input.substr(0, 1), line, column));
   }
 
   return UnexpectedCharacter(c, line, column);
@@ -40,7 +40,7 @@ StatusOr<std::unique_ptr<Token>> SceneLexer::GetIdentifierToken(
   for (; IsAlpha(*input) || IsDigit(*input) || *input == '_'; ++input);
 
   return std::unique_ptr<Token>(new Token(
-      TYPE_IDENTIFIER, std::string(start, input - start), line, column));
+      TYPE_IDENTIFIER, std::string_view(start, input - start), line, column));
 }
 
 StatusOr<std::unique_ptr<Token>> SceneLexer::GetNumberToken(
@@ -65,5 +65,5 @@ StatusOr<std::unique_ptr<Token>> SceneLexer::GetNumberToken(
   }
 
   return std::unique_ptr<Token>(new Token(
-      TYPE_NUMBER, std::string(start, input - start), line, column));
+      TYPE_NUMBER, std::string_view(start, input - start), line, column));
 }

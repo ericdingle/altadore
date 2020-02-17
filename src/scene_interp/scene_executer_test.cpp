@@ -11,7 +11,6 @@
 #include "shape/cube.h"
 #include "shape/sphere.h"
 #include "third_party/bonavista/src/util/status_test_macros.h"
-#include "third_party/chaparral/src/executer/any_test_macros.h"
 #include "third_party/chaparral/src/executer/executer_test_fixture.h"
 
 class SceneExecuterTest
@@ -19,15 +18,14 @@ class SceneExecuterTest
 };
 
 TEST_F(SceneExecuterTest, DefaultVariables) {
-  EXPECT_ANY(Execute("AXIS_X;").value(), double, Matrix4::AXIS_X);
-  EXPECT_ANY(Execute("AXIS_Y;").value(), double, Matrix4::AXIS_Y);
-  EXPECT_ANY(Execute("AXIS_Z;").value(), double, Matrix4::AXIS_Z);
+  EXPECT_EQ(Matrix4::AXIS_X, std::any_cast<double>(Execute("AXIS_X;").value()));
+  EXPECT_EQ(Matrix4::AXIS_Y, std::any_cast<double>(Execute("AXIS_Y;").value()));
+  EXPECT_EQ(Matrix4::AXIS_Z, std::any_cast<double>(Execute("AXIS_Z;").value()));
 
-  std::shared_ptr<SceneObject> obj;
-  EXPECT_TRUE(Execute("root;").value().Get(&obj));
+  auto obj = std::any_cast<std::shared_ptr<SceneObject>>(Execute("root;").value());
   EXPECT_TRUE(std::dynamic_pointer_cast<TransformNode>(obj));
 
-  EXPECT_TRUE(Execute("lights;").value().Get(&obj));
+  obj = std::any_cast<std::shared_ptr<SceneObject>>(Execute("lights;").value());
   EXPECT_TRUE(std::dynamic_pointer_cast<std::vector<std::shared_ptr<Light>>>(obj));
 }
 
@@ -35,17 +33,18 @@ class TestSceneObject : public SceneObject {
  public:
   TestSceneObject() : SceneObject(nullptr) {}
 
-  StatusOr<Any> Get(const std::shared_ptr<SceneObject>& obj, const Token& token)
+  StatusOr<std::any> Get(const std::shared_ptr<SceneObject>& obj, const Token& token)
       override {
-    return token.value() == "one" ? Any(1) : Any(2);
+    return std::any(token.value() == "one" ? 1 : 2);
   }
 };
 
 TEST_F(SceneExecuterTest, ExecuteDotAccessor) {
   Init("a.one; a.two;");
-  executer_->SetVariable("a", Any(std::shared_ptr<SceneObject>(new TestSceneObject())));
-  EXPECT_ANY(executer_->Execute().value(), int, 1);
-  EXPECT_ANY(executer_->Execute().value(), int, 2);
+  executer_->SetVariable("a", std::any(std::shared_ptr<SceneObject>(
+      new TestSceneObject())));
+  EXPECT_EQ(1, std::any_cast<int>(executer_->Execute().value()));
+  EXPECT_EQ(2, std::any_cast<int>(executer_->Execute().value()));
 }
 
 TEST_F(SceneExecuterTest, ExecuteDotAccessorError) {
@@ -53,17 +52,17 @@ TEST_F(SceneExecuterTest, ExecuteDotAccessorError) {
 }
 
 TEST_F(SceneExecuterTest, ExecuteAssignment) {
-  EXPECT_ANY(Execute("a = 1;").value(), double, 1);
-  EXPECT_ANY(executer_->GetVariable("a"), double, 1);
+  EXPECT_EQ(1, std::any_cast<double>(Execute("a = 1;").value()));
+  EXPECT_EQ(1, std::any_cast<double>(executer_->GetVariable("a")));
 }
 
 TEST_F(SceneExecuterTest, ExecuteAssignmentError) {
   EXPECT_STATUS(Execute("a = b;").status(), "b is undefined", 1, 5);
 }
 
-StatusOr<Any> Func(const Token& token, const std::vector<const Node*>& args) {
+StatusOr<std::any> Func(const Token& token, const std::vector<const Node*>& args) {
   if (!args.empty()) {
-    return Any(1);
+    return std::any(1);
   }
   return Status("error", token.line(), token.column());
 }
@@ -71,8 +70,8 @@ StatusOr<Any> Func(const Token& token, const std::vector<const Node*>& args) {
 TEST_F(SceneExecuterTest, ExecuteFunction) {
   Init("a(1);");
   SceneFunc func = &Func;
-  executer_->SetVariable("a", Any(func));
-  EXPECT_ANY(executer_->Execute().value(), int, 1);
+  executer_->SetVariable("a", std::any(func));
+  EXPECT_EQ(1, std::any_cast<int>(executer_->Execute().value()));
 }
 
 TEST_F(SceneExecuterTest, ExecuteFunctionError) {
@@ -80,14 +79,14 @@ TEST_F(SceneExecuterTest, ExecuteFunctionError) {
 
   Init("a();");
   SceneFunc func = &Func;
-  executer_->SetVariable("a", Any(func));
+  executer_->SetVariable("a", std::any(func));
   EXPECT_STATUS(executer_->Execute().status(), "error", 1, 2);
 }
 
 TEST_F(SceneExecuterTest, ExecuteIdentifier) {
   Init("a;");
-  executer_->SetVariable("a", Any(5));
-  EXPECT_ANY(executer_->Execute().value(), int, 5);
+  executer_->SetVariable("a", std::any(5));
+  EXPECT_EQ(5, std::any_cast<int>(executer_->Execute().value()));
 }
 
 TEST_F(SceneExecuterTest, ExecuteIdentifierError) {
@@ -95,12 +94,12 @@ TEST_F(SceneExecuterTest, ExecuteIdentifierError) {
 }
 
 TEST_F(SceneExecuterTest, ExecuteNumber) {
-  EXPECT_ANY(Execute("1;").value(), double, 1);
+  EXPECT_EQ(1, std::any_cast<double>(Execute("1;").value()));
 }
 
 TEST_F(SceneExecuterTest, CreateColor) {
-  std::shared_ptr<Color> color;
-  EXPECT_TRUE(Execute("Color(0.1, 0.2, 0.3);").value().Get(&color));
+  auto color = std::any_cast<std::shared_ptr<Color>>(
+      Execute("Color(0.1, 0.2, 0.3);").value());
   EXPECT_EQ(0.1, color->r());
   EXPECT_EQ(0.2, color->g());
   EXPECT_EQ(0.3, color->b());
@@ -114,8 +113,7 @@ TEST_F(SceneExecuterTest, CreateColorError) {
 }
 
 TEST_F(SceneExecuterTest, CreateCube) {
-  std::shared_ptr<Shape> obj;
-  EXPECT_TRUE(Execute("Cube();").value().Get(&obj));
+  auto obj = std::any_cast<std::shared_ptr<Shape>>(Execute("Cube();").value());
   EXPECT_TRUE(std::dynamic_pointer_cast<Cube>(obj));
 }
 
@@ -124,8 +122,8 @@ TEST_F(SceneExecuterTest, CreateCubeError) {
 }
 
 TEST_F(SceneExecuterTest, CreateLight) {
-  std::shared_ptr<Light> light;
-  EXPECT_TRUE(Execute("Light(Point3(0, 0, 0), Color(0, 0, 0));").value().Get(&light));
+  auto light = std::any_cast<std::shared_ptr<Light>>(
+      Execute("Light(Point3(0, 0, 0), Color(0, 0, 0));").value());
 }
 
 TEST_F(SceneExecuterTest, CreateLightError) {
@@ -135,8 +133,8 @@ TEST_F(SceneExecuterTest, CreateLightError) {
 }
 
 TEST_F(SceneExecuterTest, CreateMaterial) {
-  std::shared_ptr<Material> material;
-  EXPECT_TRUE(Execute("Material(Color(0, 0, 0), 0.1, 0.2);").value().Get(&material));
+  auto material = std::any_cast<std::shared_ptr<Material>>(
+      Execute("Material(Color(0, 0, 0), 0.1, 0.2);").value());
   EXPECT_EQ(0.1, material->shininess());
   EXPECT_EQ(0.2, material->reflectivity());
 }
@@ -149,8 +147,8 @@ TEST_F(SceneExecuterTest, CreateMaterialError) {
 }
 
 TEST_F(SceneExecuterTest, CreatePoint3) {
-  std::shared_ptr<Point3> point3;
-  EXPECT_TRUE(Execute("Point3(0.1, 0.2, 0.3);").value().Get(&point3));
+  auto point3 = std::any_cast<std::shared_ptr<Point3>>(
+      Execute("Point3(0.1, 0.2, 0.3);").value());
   EXPECT_EQ(0.1, (*point3)[0]);
   EXPECT_EQ(0.2, (*point3)[1]);
   EXPECT_EQ(0.3, (*point3)[2]);
@@ -164,8 +162,8 @@ TEST_F(SceneExecuterTest, CreatePoint3Error) {
 }
 
 TEST_F(SceneExecuterTest, CreateShapeNode) {
-  std::shared_ptr<SceneObject> obj;
-  EXPECT_TRUE(Execute("ShapeNode(Cube(), Material(Color(0, 0, 0), 1, 1));").value().Get(&obj));
+  auto obj = std::any_cast<std::shared_ptr<SceneObject>>(
+      Execute("ShapeNode(Cube(), Material(Color(0, 0, 0), 1, 1));").value());
   EXPECT_TRUE(std::dynamic_pointer_cast<ShapeNode>(obj));
 }
 
@@ -176,8 +174,7 @@ TEST_F(SceneExecuterTest, CreateShapeNodeError) {
 }
 
 TEST_F(SceneExecuterTest, CreateSphere) {
-  std::shared_ptr<Shape> obj;
-  EXPECT_TRUE(Execute("Sphere();").value().Get(&obj));
+  auto obj = std::any_cast<std::shared_ptr<Shape>>(Execute("Sphere();").value());
   EXPECT_TRUE(std::dynamic_pointer_cast<Sphere>(obj));
 }
 
@@ -186,8 +183,8 @@ TEST_F(SceneExecuterTest, CreateSphereError) {
 }
 
 TEST_F(SceneExecuterTest, CreateTransformNode) {
-  std::shared_ptr<SceneObject> obj;
-  EXPECT_TRUE(Execute("TransformNode();").value().Get(&obj));
+  auto obj = std::any_cast<std::shared_ptr<SceneObject>>(
+      Execute("TransformNode();").value());
   EXPECT_TRUE(std::dynamic_pointer_cast<TransformNode>(obj));
 }
 

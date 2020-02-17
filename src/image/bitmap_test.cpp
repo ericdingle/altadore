@@ -92,7 +92,7 @@ TEST_F(BitmapTest, Save) {
   EXPECT_NE(nullptr, file.get());
 
   TestBitmap::HeaderMagic header_magic_buffer, header_magic;
-  EXPECT_EQ(1, fread(&header_magic_buffer, sizeof(TestBitmap::HeaderMagic), 1, file.get()));
+  EXPECT_EQ(1U, fread(&header_magic_buffer, sizeof(TestBitmap::HeaderMagic), 1, file.get()));
   EXPECT_EQ(0, memcmp(&header_magic_buffer, &header_magic, sizeof(TestBitmap::HeaderMagic)));
 
   // 6 byte wide rows, padded by 2 bytes, times 3 rows
@@ -102,21 +102,21 @@ TEST_F(BitmapTest, Save) {
                      sizeof(TestBitmap::Header) +
                      sizeof(TestBitmap::InfoHeader) +
                      data_size;
-  EXPECT_EQ(1, fread(&header_buffer, sizeof(TestBitmap::Header), 1, file.get()));
+  EXPECT_EQ(1U, fread(&header_buffer, sizeof(TestBitmap::Header), 1, file.get()));
   EXPECT_EQ(0, memcmp(&header_buffer, &header, sizeof(TestBitmap::Header)));
 
   TestBitmap::InfoHeader info_header_buffer, info_header;
   info_header.width = 2;
   info_header.height = 3;
   info_header.data_size = data_size;
-  EXPECT_EQ(1, fread(&info_header_buffer, sizeof(TestBitmap::InfoHeader), 1, file.get()));
+  EXPECT_EQ(1U, fread(&info_header_buffer, sizeof(TestBitmap::InfoHeader), 1, file.get()));
   EXPECT_EQ(0, memcmp(&info_header_buffer, &info_header, sizeof(TestBitmap::InfoHeader)));
 
   // 4 black pixels followed by 2 white.
   TestBitmap::Color color_buffer, black;
   for (int y = 0; y < 3; ++y) {
     for (int x = 0; x < 2; ++x) {
-      EXPECT_EQ(1, fread(&color_buffer, sizeof(TestBitmap::Color), 1, file.get()));
+      EXPECT_EQ(1U, fread(&color_buffer, sizeof(TestBitmap::Color), 1, file.get()));
       if (y == 2) {
         EXPECT_EQ(0, memcmp(&color_buffer, &white, sizeof(TestBitmap::Color)));
       } else {

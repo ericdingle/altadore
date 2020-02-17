@@ -46,7 +46,7 @@ class TestTransformNode : public TransformNode {
 TEST(TransformNodeTest, AddChild) {
   TestTransformNode node;
   node.AddChild(std::make_shared<TransformNode>());
-  EXPECT_EQ(1, node.children().size());
+  EXPECT_EQ(1, static_cast<int>(node.children().size()));
 }
 
 TEST(TransformNodeTest, Transform) {

@@ -3,7 +3,6 @@
 #include "scene_interp/scene_object.h"
 #include "scene_interp/scene_parser.h"
 #include "third_party/bonavista/src/util/status_test_macros.h"
-#include "third_party/chaparral/src/executer/any_test_macros.h"
 #include "third_party/chaparral/src/executer/executer_test_fixture.h"
 
 class TransformNodeObjectTest
@@ -11,8 +10,8 @@ class TransformNodeObjectTest
 };
 
 TEST_F(TransformNodeObjectTest, Constructor) {
-  std::shared_ptr<SceneObject> node;
-  EXPECT_TRUE(Execute("TransformNode();").value().Get(&node));
+  auto node = std::any_cast<std::shared_ptr<SceneObject>>(
+      Execute("TransformNode();").value());
   EXPECT_TRUE(std::dynamic_pointer_cast<TransformNode>(node));
 }
 
@@ -21,8 +20,8 @@ TEST_F(TransformNodeObjectTest, Undefined) {
 }
 
 TEST_F(TransformNodeObjectTest, AddChild) {
-  std::shared_ptr<SceneObject> node;
-  EXPECT_TRUE(Execute("TransformNode().AddChild(TransformNode());").value().Get(&node));
+  auto node = std::any_cast<std::shared_ptr<SceneObject>>(
+      Execute("TransformNode().AddChild(TransformNode());").value());
   EXPECT_TRUE(std::dynamic_pointer_cast<TransformNode>(node));
 }
 
@@ -89,10 +88,8 @@ TEST_F(LightVectorTest, Undefined) {
 }
 
 TEST_F(LightVectorTest, AddLight) {
-  std::shared_ptr<Light> light;
-  EXPECT_TRUE(Execute("lights.AddLight(Light(Point3(0, 0, 0), Color(0, 0, 0)));"
-                      ).value().Get(&light));
-  EXPECT_TRUE(light);
+  auto light = std::any_cast<std::shared_ptr<Light>>(
+      Execute("lights.AddLight(Light(Point3(0, 0, 0), Color(0, 0, 0)));").value());
 }
 
 TEST_F(LightVectorTest, AddLightError) {

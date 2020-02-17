@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 
   // Execute scene.
   SceneLexer lexer;
-  TokenStream stream(&lexer, input);
+  TokenStream stream(lexer, input);
   SceneParser parser(&stream);
   SceneExecuter executer(&parser);
 
@@ -84,10 +84,10 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  std::shared_ptr<SceneObject> obj;
-  assert(executer.GetVariable("root").Get(&obj));
+  auto obj = std::any_cast<std::shared_ptr<SceneObject>>(executer.GetVariable("root"));
   auto root = std::dynamic_pointer_cast<TransformNode>(obj);
-  assert(executer.GetVariable("lights").Get(&obj));
+
+  obj = std::any_cast<std::shared_ptr<SceneObject>>(executer.GetVariable("lights"));
   auto lights = std::dynamic_pointer_cast<std::vector<std::shared_ptr<Light>>>(obj);
 
   // Render scene.

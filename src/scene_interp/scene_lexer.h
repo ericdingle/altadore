@@ -22,7 +22,7 @@ class SceneLexer : public Lexer {
   };
 
   StatusOr<std::unique_ptr<Token>> GetToken(
-      const char* input, int line, int column) const override;
+      std::string_view input, int line, int column) const override;
 
  private:
   StatusOr<std::unique_ptr<Token>> GetIdentifierToken(
