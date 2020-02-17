@@ -21,8 +21,7 @@ class SceneObject {
   SceneObject& operator=(const SceneObject&) = delete;
   virtual ~SceneObject() = default;
 
-  virtual StatusOr<std::any> Get(const std::shared_ptr<SceneObject>& obj,
-                                 const Token& token);
+  virtual StatusOr<std::any> Get(const Token& token);
 
  protected:
   template <typename T>
@@ -48,8 +47,7 @@ class TransformNodeObject : public TransformNode, public SceneObject {
   TransformNodeObject& operator=(const TransformNodeObject&) = delete;
   ~TransformNodeObject() override = default;
 
-  StatusOr<std::any> Get(const std::shared_ptr<SceneObject>& obj, const Token& token)
-      override;
+  StatusOr<std::any> Get(const Token& token) override;
 
  private:
   StatusOr<std::any> AddChild(const Token& token, const std::vector<const Node*>& args);
@@ -65,8 +63,7 @@ class LightVector : public std::vector<std::shared_ptr<Light>>, public SceneObje
   LightVector& operator=(const LightVector&) = delete;
   ~LightVector() override = default;
 
-  StatusOr<std::any> Get(const std::shared_ptr<SceneObject>& obj, const Token& token)
-      override;
+  StatusOr<std::any> Get(const Token& token) override;
 
  private:
   StatusOr<std::any> AddLight(const Token& token, const std::vector<const Node*>& args);

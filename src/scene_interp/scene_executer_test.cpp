@@ -33,8 +33,7 @@ class TestSceneObject : public SceneObject {
  public:
   TestSceneObject() : SceneObject(nullptr) {}
 
-  StatusOr<std::any> Get(const std::shared_ptr<SceneObject>& obj, const Token& token)
-      override {
+  StatusOr<std::any> Get(const Token& token) override {
     return std::any(token.value() == "one" ? 1 : 2);
   }
 };

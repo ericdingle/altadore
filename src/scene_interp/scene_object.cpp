@@ -7,8 +7,7 @@ using namespace std::placeholders;
 SceneObject::SceneObject(SceneExecuter* executer) : executer_(executer) {
 }
 
-StatusOr<std::any> SceneObject::Get(const std::shared_ptr<SceneObject>& obj,
-                               const Token& token) {
+StatusOr<std::any> SceneObject::Get(const Token& token) {
   return Status(std::string(token.value()) + " is undefined", token.line(), token.column());
 }
 
@@ -22,21 +21,18 @@ ShapeNodeObject::ShapeNodeObject(const std::shared_ptr<const Shape>& shape,
     : ShapeNode(shape, material), SceneObject(nullptr) {
 }
 
-StatusOr<std::any> TransformNodeObject::Get(const std::shared_ptr<SceneObject>& obj,
-                                       const Token& token) {
-  auto ptr = std::dynamic_pointer_cast<TransformNodeObject>(obj);
-
+StatusOr<std::any> TransformNodeObject::Get(const Token& token) {
   if (token.value() == "AddChild") {
-    return std::any(SceneFunc(std::bind(&TransformNodeObject::AddChild, ptr, _1, _2)));
+    return std::any(SceneFunc(std::bind(&TransformNodeObject::AddChild, this, _1, _2)));
   } else if (token.value() == "Rotate") {
-    return std::any(SceneFunc(std::bind(&TransformNodeObject::Rotate, ptr, _1, _2)));
+    return std::any(SceneFunc(std::bind(&TransformNodeObject::Rotate, this, _1, _2)));
   } else if (token.value() == "Scale") {
-    return std::any(SceneFunc(std::bind(&TransformNodeObject::Scale, ptr, _1, _2)));
+    return std::any(SceneFunc(std::bind(&TransformNodeObject::Scale, this, _1, _2)));
   } else if (token.value() == "Translate") {
-    return std::any(SceneFunc(std::bind(&TransformNodeObject::Translate, ptr, _1, _2)));
+    return std::any(SceneFunc(std::bind(&TransformNodeObject::Translate, this, _1, _2)));
   }
 
-  return SceneObject::Get(obj, token);
+  return SceneObject::Get(token);
 }
 
 StatusOr<std::any> TransformNodeObject::AddChild(
@@ -85,15 +81,12 @@ StatusOr<std::any> TransformNodeObject::Translate(
   return std::any();
 }
 
-StatusOr<std::any> LightVector::Get(const std::shared_ptr<SceneObject>& obj,
-                               const Token& token) {
-  auto ptr = std::dynamic_pointer_cast<LightVector>(obj);
-
+StatusOr<std::any> LightVector::Get(const Token& token) {
   if (token.value() == "AddLight") {
-    return std::any(SceneFunc(std::bind(&LightVector::AddLight, ptr, _1, _2)));
+    return std::any(SceneFunc(std::bind(&LightVector::AddLight, this, _1, _2)));
   }
 
-  return SceneObject::Get(obj, token);
+  return SceneObject::Get(token);
 }
 
 StatusOr<std::any> LightVector::AddLight(
