@@ -40,8 +40,8 @@ class TestSceneNode : public SceneNode {
 
 class TestRayTracer : public RayTracer {
  public:
-  TestRayTracer(const std::shared_ptr<const TransformNode>& root,
-                const std::shared_ptr<const std::vector<std::shared_ptr<Light>>>& lights)
+  TestRayTracer(const TransformNode& root,
+                const std::vector<std::shared_ptr<Light>>& lights)
       : RayTracer(root, lights) {
   }
 
@@ -58,13 +58,8 @@ class RayTracerTest : public testing::Test {
   }
 
  protected:
-  void SetUp() {
-    root_.reset(new TransformNode());
-    lights_.reset(new std::vector<std::shared_ptr<Light>>());
-  }
-
-  std::shared_ptr<TransformNode> root_;
-  std::shared_ptr<std::vector<std::shared_ptr<Light>>> lights_;
+  TransformNode root_;
+  std::vector<std::shared_ptr<Light>> lights_;
 
   Ray ray_;
   Point3 point_;
@@ -73,7 +68,7 @@ class RayTracerTest : public testing::Test {
 
 TEST_F(RayTracerTest, GetColor) {
   Material material(std::make_shared<Color>(1.0, 1.0, 1.0), 20, 0.5);
-  root_->AddChild(std::make_shared<TestSceneNode>(true, false, &material));
+  root_.AddChild(std::make_shared<TestSceneNode>(true, false, &material));
   TestRayTracer ray_tracer(root_, lights_);
 
   Color color = ray_tracer.GetColor(ray_);
@@ -81,7 +76,7 @@ TEST_F(RayTracerTest, GetColor) {
 }
 
 TEST_F(RayTracerTest, GetColorNoIntersection) {
-  root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
+  root_.AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   TestRayTracer ray_tracer(root_, lights_);
 
   Color color = ray_tracer.GetColor(ray_);
@@ -89,8 +84,8 @@ TEST_F(RayTracerTest, GetColorNoIntersection) {
 }
 
 TEST_F(RayTracerTest, GetAbsorbedColor) {
-  root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
-  lights_->push_back(std::make_shared<Light>(
+  root_.AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
+  lights_.push_back(std::make_shared<Light>(
       std::make_shared<Point3>(1.0, 0.0, 0.0),
       std::make_shared<Color>(0.4, 0.4, 0.4)));
   TestRayTracer ray_tracer(root_, lights_);
@@ -103,7 +98,7 @@ TEST_F(RayTracerTest, GetAbsorbedColor) {
 }
 
 TEST_F(RayTracerTest, GetAbsorbedColorNoLights) {
-  root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
+  root_.AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   TestRayTracer ray_tracer(root_, lights_);
 
   std::shared_ptr<Material> material(new Material(
@@ -113,8 +108,8 @@ TEST_F(RayTracerTest, GetAbsorbedColorNoLights) {
 }
 
 TEST_F(RayTracerTest, GetAbsorbedColorShadows) {
-  root_->AddChild(std::make_shared<TestSceneNode>(false, true, nullptr));
-  lights_->push_back(std::make_shared<Light>(
+  root_.AddChild(std::make_shared<TestSceneNode>(false, true, nullptr));
+  lights_.push_back(std::make_shared<Light>(
       std::make_shared<Point3>(),
       std::make_shared<Color>(1.0, 1.0, 1.0)));
   TestRayTracer ray_tracer(root_, lights_);
@@ -126,8 +121,8 @@ TEST_F(RayTracerTest, GetAbsorbedColorShadows) {
 }
 
 TEST_F(RayTracerTest, GetReflectedColor) {
-  root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
-  lights_->push_back(std::make_shared<Light>(
+  root_.AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
+  lights_.push_back(std::make_shared<Light>(
       std::make_shared<Point3>(-1.0, 0.0, 0.0),
       std::make_shared<Color>(0.4, 0.4, 0.4)));
   TestRayTracer ray_tracer(root_, lights_);
@@ -142,7 +137,7 @@ TEST_F(RayTracerTest, GetReflectedColor) {
 }
 
 TEST_F(RayTracerTest, GetReflectedColorNoLights) {
-  root_->AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
+  root_.AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   TestRayTracer ray_tracer(root_, lights_);
 
   std::shared_ptr<Material> material(new Material(
@@ -152,8 +147,8 @@ TEST_F(RayTracerTest, GetReflectedColorNoLights) {
 }
 
 TEST_F(RayTracerTest, GetReflectedColorShadows) {
-  root_->AddChild(std::make_shared<TestSceneNode>(false, true, nullptr));
-  lights_->push_back(std::make_shared<Light>(
+  root_.AddChild(std::make_shared<TestSceneNode>(false, true, nullptr));
+  lights_.push_back(std::make_shared<Light>(
       std::make_shared<Point3>(),
       std::make_shared<Color>(1.0, 1.0, 1.0)));
   TestRayTracer ray_tracer(root_, lights_);

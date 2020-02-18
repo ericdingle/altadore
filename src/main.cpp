@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 
   // Render scene.
   root->CalculateTransforms(Matrix4());
-  RayTracer ray_tracer(root, lights);
+  RayTracer ray_tracer(*root, *lights);
   if (!ray_tracer.Render(output_file.c_str(), width, height, anti_alias)) {
     printf("Could not render!\n");
     return 1;

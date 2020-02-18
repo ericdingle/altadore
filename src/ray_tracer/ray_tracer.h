@@ -8,11 +8,11 @@
 
 class RayTracer {
  public:
-  RayTracer(const std::shared_ptr<const TransformNode>& root,
-            const std::shared_ptr<const std::vector<std::shared_ptr<Light>>>& lights);
+  RayTracer(const TransformNode& root,
+            const std::vector<std::shared_ptr<Light>>& lights);
   RayTracer(const RayTracer&) = delete;
   RayTracer operator=(const RayTracer&) = delete;
-  ~RayTracer();
+  ~RayTracer() = default;
 
   bool Render(const char* file_name, int width, int height, bool anti_alias);
 
@@ -22,8 +22,8 @@ class RayTracer {
   Color GetReflectedColor(const Ray& ray, const Point3& point, const Vector3& normal, const Material* material);
 
  private:
-  std::shared_ptr<const TransformNode> root_;
-  std::shared_ptr<const std::vector<std::shared_ptr<Light>>> lights_;
+  const TransformNode& root_;
+  const std::vector<std::shared_ptr<Light>>& lights_;
 };
 
 #endif  // RAY_TRACER_RAY_TRACER_H_

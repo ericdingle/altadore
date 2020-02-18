@@ -9,13 +9,9 @@
 #include "ray_tracer/ray_tracer_constants.h"
 #include "shader/material.h"
 
-RayTracer::RayTracer(
-    const std::shared_ptr<const TransformNode>& root,
-    const std::shared_ptr<const std::vector<std::shared_ptr<Light>>>& lights)
+RayTracer::RayTracer(const TransformNode& root,
+                     const std::vector<std::shared_ptr<Light>>& lights)
     : root_(root), lights_(lights) {
-}
-
-RayTracer::~RayTracer() {
 }
 
 bool RayTracer::Render(const char* file_name, int width, int height, bool anti_alias) {
@@ -69,7 +65,7 @@ Color RayTracer::GetColor(const Ray& ray) {
   Point3 point;
   Vector3 normal;
   const Material* material = NULL;
-  if (!root_->FindIntersection(ray, &t, &point, &normal, &material))
+  if (!root_.FindIntersection(ray, &t, &point, &normal, &material))
     return Color();
   assert(material);
 
@@ -93,13 +89,13 @@ Color RayTracer::GetAbsorbedColor(const Point3& point, const Vector3& normal, co
   color += kAmbientIntensity;
 
   // color += diffuse_intensity[i] * light_color[i]
-  for (const auto& light : *lights_) {
+  for (const auto& light : lights_) {
     Vector3 light_dir = *light->position() - point;
     double max_t = light_dir.Length();
     light_dir.Normalize();
     Ray light_ray(point, light_dir);
 
-    if (root_->HasIntersection(light_ray, max_t))
+    if (root_.HasIntersection(light_ray, max_t))
       continue;
 
     double diffuse_intensity = light_dir.Dot(normal);
@@ -123,13 +119,13 @@ Color RayTracer::GetReflectedColor(const Ray& ray, const Point3& point, const Ve
   Color color = GetColor(reflected_ray);
 
   // color += specular_intensity[i] * light_color[i]
-  for (const auto& light : *lights_) {
+  for (const auto& light : lights_) {
     Vector3 light_dir = *light->position() - point;
     double max_t = light_dir.Length();
     light_dir.Normalize();
     Ray light_ray(point, light_dir);
 
-    if (root_->HasIntersection(light_ray, max_t))
+    if (root_.HasIntersection(light_ray, max_t))
       continue;
 
     Vector3 reflection = -light_dir + normal * 2 * light_dir.Dot(normal);
