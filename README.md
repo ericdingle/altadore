@@ -1,6 +1,6 @@
 # altadore
 
-An ray tracer library written in C++.
+A ray tracer library written in C++.
 
 ## Build steps.
 
