@@ -36,7 +36,7 @@ bool TransformNode::FindIntersection(const Ray& ray, double* t, Point3* point,
   *t = std::numeric_limits<double>::max();
 
   for (const auto& child : children_) {
-    double t2;
+    double t2 = 0.0;
     Point3 point2;
     Vector3 normal2;
     const Material* material2 = NULL;

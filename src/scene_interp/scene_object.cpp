@@ -22,14 +22,15 @@ ShapeNodeObject::ShapeNodeObject(const std::shared_ptr<const Shape>& shape,
 }
 
 StatusOr<std::any> TransformNodeObject::Get(const Token& token) {
+  auto obj = shared_from_this();
   if (token.value() == "AddChild") {
-    return std::any(SceneFunc(std::bind(&TransformNodeObject::AddChild, this, _1, _2)));
+    return std::any(SceneFunc(std::bind(&TransformNodeObject::AddChild, obj, _1, _2)));
   } else if (token.value() == "Rotate") {
-    return std::any(SceneFunc(std::bind(&TransformNodeObject::Rotate, this, _1, _2)));
+    return std::any(SceneFunc(std::bind(&TransformNodeObject::Rotate, obj, _1, _2)));
   } else if (token.value() == "Scale") {
-    return std::any(SceneFunc(std::bind(&TransformNodeObject::Scale, this, _1, _2)));
+    return std::any(SceneFunc(std::bind(&TransformNodeObject::Scale, obj, _1, _2)));
   } else if (token.value() == "Translate") {
-    return std::any(SceneFunc(std::bind(&TransformNodeObject::Translate, this, _1, _2)));
+    return std::any(SceneFunc(std::bind(&TransformNodeObject::Translate, obj, _1, _2)));
   }
 
   return SceneObject::Get(token);

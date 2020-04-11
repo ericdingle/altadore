@@ -61,9 +61,9 @@ class RayTracerTest : public testing::Test {
   TransformNode root_;
   std::vector<std::shared_ptr<Light>> lights_;
 
-  Ray ray_;
   Point3 point_;
   Vector3 normal_;
+  Ray ray_;
 };
 
 TEST_F(RayTracerTest, GetColor) {

@@ -61,7 +61,7 @@ bool RayTracer::Render(const char* file_name, int width, int height, bool anti_a
 }
 
 Color RayTracer::GetColor(const Ray& ray) {
-  double t;
+  double t = 0.0;
   Point3 point;
   Vector3 normal;
   const Material* material = NULL;

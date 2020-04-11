@@ -40,7 +40,8 @@ class ShapeNodeObject : public ShapeNode, public SceneObject {
   ~ShapeNodeObject() override = default;
 };
 
-class TransformNodeObject : public TransformNode, public SceneObject {
+class TransformNodeObject : public TransformNode, public SceneObject,
+                            public std::enable_shared_from_this<TransformNodeObject> {
  public:
   using SceneObject::SceneObject;
   TransformNodeObject(const TransformNodeObject&) = delete;
