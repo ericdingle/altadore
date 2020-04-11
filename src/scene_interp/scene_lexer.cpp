@@ -26,7 +26,7 @@ StatusOr<std::unique_ptr<Token>> SceneLexer::GetToken(
   }
 
   if (t != -1) {
-    return std::unique_ptr<Token>(new Token(t, input.substr(0, 1), line, column));
+    return std::make_unique<Token>(t, input.substr(0, 1), line, column);
   }
 
   return UnexpectedCharacter(c, line, column);
@@ -39,8 +39,8 @@ StatusOr<std::unique_ptr<Token>> SceneLexer::GetIdentifierToken(
 
   for (; IsAlpha(*input) || IsDigit(*input) || *input == '_'; ++input);
 
-  return std::unique_ptr<Token>(new Token(
-      TYPE_IDENTIFIER, std::string_view(start, input - start), line, column));
+  return std::make_unique<Token>(
+      TYPE_IDENTIFIER, std::string_view(start, input - start), line, column);
 }
 
 StatusOr<std::unique_ptr<Token>> SceneLexer::GetNumberToken(
@@ -64,6 +64,6 @@ StatusOr<std::unique_ptr<Token>> SceneLexer::GetNumberToken(
     for (; IsDigit(*input); ++input);
   }
 
-  return std::unique_ptr<Token>(new Token(
-      TYPE_NUMBER, std::string_view(start, input - start), line, column));
+  return std::make_unique<Token>(
+      TYPE_NUMBER, std::string_view(start, input - start), line, column);
 }

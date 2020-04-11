@@ -30,7 +30,7 @@ StatusOr<std::unique_ptr<Node>> SceneParser::ParsePrefixToken(
     std::unique_ptr<const Token> token) {
   if (token->IsType(SceneLexer::TYPE_IDENTIFIER) ||
       token->IsType(SceneLexer::TYPE_NUMBER)) {
-    return std::unique_ptr<Node>(new Node(std::move(token)));
+    return std::make_unique<Node>(std::move(token));
   }
 
   return UnexpectedToken(*token);
@@ -53,7 +53,7 @@ StatusOr<std::unique_ptr<Node>> SceneParser::ParseInfixToken(
 
 StatusOr<std::unique_ptr<Node>> SceneParser::ParseDotAccessor(
     std::unique_ptr<const Token> token, std::unique_ptr<const Node> left) {
-  std::unique_ptr<Node> node(new Node(std::move(token)));
+  auto node = std::make_unique<Node>(std::move(token));
 
   node->AddChild(std::move(left));
 
@@ -66,7 +66,7 @@ StatusOr<std::unique_ptr<Node>> SceneParser::ParseDotAccessor(
 
 StatusOr<std::unique_ptr<Node>> SceneParser::ParseAssignment(
     std::unique_ptr<const Token> token, std::unique_ptr<const Node> left) {
-  std::unique_ptr<Node> node(new Node(std::move(token)));
+  auto node = std::make_unique<Node>(std::move(token));
 
   RETURN_IF_ERROR(ExpectToken(left->token(), SceneLexer::TYPE_IDENTIFIER));
   node->AddChild(std::move(left));
@@ -79,7 +79,7 @@ StatusOr<std::unique_ptr<Node>> SceneParser::ParseAssignment(
 
 StatusOr<std::unique_ptr<Node>> SceneParser::ParseFunction(
     std::unique_ptr<const Token> token, std::unique_ptr<const Node> left) {
-  std::unique_ptr<Node> node(new Node(std::move(token)));
+  auto node = std::make_unique<Node>(std::move(token));
 
   node->AddChild(std::move(left));
 

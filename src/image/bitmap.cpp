@@ -6,7 +6,7 @@
 
 Bitmap::Bitmap(int width, int height) : width_(width), height_(height) {
   int size = width * height;
-  data_.reset(new Color[size]);
+  data_ = std::make_unique<Color[]>(size);
 }
 
 Bitmap::~Bitmap() {
@@ -28,7 +28,7 @@ void Bitmap::AntiAlias() {
   int new_height = height_ / 2;
 
   int size = new_width * new_height;
-  std::unique_ptr<Color[]> new_data(new Color[size]);
+  auto new_data = std::make_unique<Color[]>(size);
 
   for (int x = 0; x < width_; x += 2) {
     for (int y = 0; y < height_; y += 2) {
@@ -54,7 +54,7 @@ void Bitmap::AntiAlias() {
 
   width_ = new_width;
   height_ = new_height;
-  data_.reset(new_data.release());
+  data_ = std::move(new_data);
 }
 
 bool Bitmap::Save(const char* file_name) const {

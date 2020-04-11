@@ -91,9 +91,8 @@ TEST_F(RayTracerTest, GetAbsorbedColor) {
   TestRayTracer ray_tracer(root_, lights_);
 
   Vector3 normal(1.0, 0.0, 0.0);
-  std::shared_ptr<Material> material(new Material(
-      std::make_shared<Color>(0.5, 0.5, 0.5), 0, 0));
-  Color color = ray_tracer.GetAbsorbedColor(point_, normal, material.get());
+  Material material(std::make_shared<Color>(0.5, 0.5, 0.5), 0, 0);
+  Color color = ray_tracer.GetAbsorbedColor(point_, normal, &material);
   EXPECT_TRUE(color == Color(0.25, 0.25, 0.25));
 }
 
@@ -101,9 +100,8 @@ TEST_F(RayTracerTest, GetAbsorbedColorNoLights) {
   root_.AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   TestRayTracer ray_tracer(root_, lights_);
 
-  std::shared_ptr<Material> material(new Material(
-      std::make_shared<Color>(0.5, 0.5, 0.5), 0, 0));
-  Color color = ray_tracer.GetAbsorbedColor(point_, normal_, material.get());
+  Material material(std::make_shared<Color>(0.5, 0.5, 0.5), 0, 0);
+  Color color = ray_tracer.GetAbsorbedColor(point_, normal_, &material);
   EXPECT_TRUE(color == Color(0.05, 0.05, 0.05));
 }
 
@@ -114,9 +112,8 @@ TEST_F(RayTracerTest, GetAbsorbedColorShadows) {
       std::make_shared<Color>(1.0, 1.0, 1.0)));
   TestRayTracer ray_tracer(root_, lights_);
 
-  std::shared_ptr<Material> material(new Material(
-      std::make_shared<Color>(0.5, 0.5, 0.5), 0, 0));
-  Color color = ray_tracer.GetAbsorbedColor(point_, normal_, material.get());
+  Material material(std::make_shared<Color>(0.5, 0.5, 0.5), 0, 0);
+  Color color = ray_tracer.GetAbsorbedColor(point_, normal_, &material);
   EXPECT_TRUE(color == Color(0.05, 0.05, 0.05));
 }
 
@@ -130,9 +127,8 @@ TEST_F(RayTracerTest, GetReflectedColor) {
   Vector3 direction(-1.0, 0.0, 0.0);
   Ray ray(Point3(), direction);
   Vector3 normal(0.0, 1.0, 0.0);
-  std::shared_ptr<Material> material(new Material(
-      std::make_shared<Color>(), 20, 0));
-  Color color = ray_tracer.GetReflectedColor(ray, point_, normal, material.get());
+  Material material(std::make_shared<Color>(), 20, 0);
+  Color color = ray_tracer.GetReflectedColor(ray, point_, normal, &material);
   EXPECT_TRUE(color == Color(0.4, 0.4, 0.4));
 }
 
@@ -140,9 +136,8 @@ TEST_F(RayTracerTest, GetReflectedColorNoLights) {
   root_.AddChild(std::make_shared<TestSceneNode>(false, false, nullptr));
   TestRayTracer ray_tracer(root_, lights_);
 
-  std::shared_ptr<Material> material(new Material(
-      std::make_shared<Color>(), 10, 0));
-  Color color = ray_tracer.GetReflectedColor(ray_, point_, normal_, material.get());
+  Material material(std::make_shared<Color>(), 10, 0);
+  Color color = ray_tracer.GetReflectedColor(ray_, point_, normal_, &material);
   EXPECT_TRUE(color == Color());
 }
 
@@ -153,8 +148,7 @@ TEST_F(RayTracerTest, GetReflectedColorShadows) {
       std::make_shared<Color>(1.0, 1.0, 1.0)));
   TestRayTracer ray_tracer(root_, lights_);
 
-  std::shared_ptr<Material> material(new Material(
-      std::make_shared<Color>(), 10, 0));
-  Color color = ray_tracer.GetReflectedColor(ray_, point_, normal_, material.get());
+  Material material(std::make_shared<Color>(), 10, 0);
+  Color color = ray_tracer.GetReflectedColor(ray_, point_, normal_, &material);
   EXPECT_TRUE(color == Color());
 }

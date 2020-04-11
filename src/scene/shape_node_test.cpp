@@ -44,7 +44,7 @@ class TestShapeNode : public ShapeNode {
 class ShapeNodeTest : public testing::Test {
  protected:
   void SetUp() {
-    material_.reset(new Material(std::make_shared<Color>(), 1, 1));
+    material_ = std::make_shared<Material>(std::make_shared<Color>(), 1, 1);
   }
 
   std::shared_ptr<Material> material_;
