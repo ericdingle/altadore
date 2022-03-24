@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 
   // Check flags.
   if (input_file.empty()) {
-    printf("Missing --input_file flag.\n");
+    printf("Missing input file flag (-i).\n");
     return 1;
   }
 
