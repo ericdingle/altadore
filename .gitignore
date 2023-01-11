@@ -1,16 +1,1 @@
-Makefile
-*.mk
-*.Makefile
-
-out
-
-*.ncb
-*.sln
-*.suo
-*.user
-*.vcproj
-
-Debug
-Release
-
-*.pyc
+bazel*
